@@ -21,7 +21,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
   const qrValue = `Name: ${data.nameEnglish}\nDOB: ${data.dob}\nMobile: ${data.mobile}\nFarmer ID: ${data.farmerId}\nAddress: ${data.address}\nIssued: ${displayIssueDate}`;
 
   return (
-    <div className="flex flex-col gap-10 items-center py-6 card-preview-container">
+    <div className="flex flex-col gap-10 items-center card-preview-container">
       {/* Front Side */}
       <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
         
