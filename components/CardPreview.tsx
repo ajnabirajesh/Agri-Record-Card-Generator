@@ -49,14 +49,18 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
 
   const currentScale = forceFullScale ? 1 : scale;
 
-  // ScaledCard now includes 'print-force-scale' which is targeted in index.html @media print
+  // IMPORTANT: For PDF generation (forceFullScale), we avoid 'transform' entirely to prevent blank output.
   const ScaledCard = ({ children }: { children: React.ReactNode }) => (
     <div 
-      className="card-container-transition origin-top flex flex-col items-center print-force-scale"
-      style={{ 
+      className={`card-container-transition origin-top flex flex-col items-center ${!forceFullScale ? 'print-force-scale' : ''}`}
+      style={forceFullScale ? {
+        width: '600px',
+        height: '380px',
+        marginBottom: '2rem'
+      } : { 
         transform: `scale(${currentScale})`,
         height: `${380 * currentScale}px`,
-        width: forceFullScale ? '600px' : '100%',
+        width: '100%',
         marginBottom: '2.5rem'
       }}
     >

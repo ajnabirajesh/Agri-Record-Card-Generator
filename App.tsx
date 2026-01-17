@@ -16,8 +16,8 @@ const App: React.FC = () => {
   const handleSaveAsPDF = async () => {
     setIsGenerating(true);
     
-    // Ensure all state changes are settled
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Allow a bit more time for any pending renders
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const element = document.getElementById('pdf-download-area');
     if (!element) {
@@ -25,36 +25,29 @@ const App: React.FC = () => {
       return;
     }
 
+    // Configure options specifically for better rendering
     const opt = {
-      margin:       [0.4, 0.4, 0.4, 0.4],
-      filename:     `AgriRecord_${farmerData.nameEnglish.replace(/\s+/g, '_')}.pdf`,
+      margin:       [10, 10, 10, 10], // mm
+      filename:     `AgriCard_${farmerData.nameEnglish.replace(/\s+/g, '_')}.pdf`,
       image:        { type: 'jpeg', quality: 1.0 },
       html2canvas:  { 
-        scale: 2, 
+        scale: 2.5, // High resolution
         useCORS: true, 
-        logging: false,
-        letterRendering: true,
         backgroundColor: '#ffffff',
-        onclone: (clonedDoc: Document) => {
-            // Force the capture area to be visible in the clone
-            const area = clonedDoc.getElementById('pdf-download-area');
-            if (area) {
-                area.style.position = 'static';
-                area.style.opacity = '1';
-                area.style.visibility = 'visible';
-                area.style.display = 'block';
-            }
-        }
+        scrollY: 0,
+        scrollX: 0
       },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
+      // Use the worker API for more reliable output
       // @ts-ignore
-      await window.html2pdf().set(opt).from(element).save();
+      const worker = window.html2pdf().from(element).set(opt);
+      await worker.save();
     } catch (err) {
-      console.error("PDF generation failed:", err);
-      alert("Error saving PDF. Try using the Print button instead.");
+      console.error("PDF Error:", err);
+      alert("There was an issue saving the PDF. Please try again or use the Print button.");
     } finally {
       setIsGenerating(false);
     }
@@ -144,9 +137,9 @@ const App: React.FC = () => {
                     <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-md mb-6 border border-white/20">
                         <Printer className="w-10 h-10 text-[#cddc39]" />
                     </div>
-                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Standard PVC Card Download</h3>
+                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Download Professional ID Card</h3>
                     <p className="text-emerald-100/70 max-w-md text-sm leading-relaxed mb-6">
-                        Ready-to-use high resolution PDF. 1:1 scale for official identification.
+                        Get a high-resolution PDF copy. Standard 1:1 scale. Perfect for PVC card printing.
                     </p>
                     <button 
                         onClick={handleSaveAsPDF}
@@ -154,7 +147,7 @@ const App: React.FC = () => {
                         className="bg-[#cddc39] text-[#064e3b] px-12 py-4 rounded-2xl font-black text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
                     >
                         {isGenerating ? <Loader2 className="animate-spin" /> : <Download />}
-                        {isGenerating ? 'GENERATING...' : 'DOWNLOAD NOW'}
+                        {isGenerating ? 'GENERATING PDF...' : 'SAVE AS PDF'}
                     </button>
                 </div>
             </div>
@@ -170,7 +163,7 @@ const App: React.FC = () => {
                 <div>
                     <h4 className="font-bold text-sm mb-1">Quick Instructions</h4>
                     <p className="text-xs leading-relaxed opacity-80">
-                        Fill details below. Your card updates in real-time.
+                        Enter farmer details. Upload a square photo for best results. Use the scan button to auto-fill details from an existing card.
                     </p>
                 </div>
             </div>
@@ -184,7 +177,7 @@ const App: React.FC = () => {
 
       {/* Hidden PDF Capture Container (Better handled now) */}
       <div id="pdf-download-area" className="pdf-capture-area">
-        <div style={{ padding: '20px', background: 'white', width: '210mm', minHeight: '297mm', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ padding: '20px', background: 'white', width: '650px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
            <CardPreview data={farmerData} forceFullScale={true} />
         </div>
       </div>
@@ -196,10 +189,8 @@ const App: React.FC = () => {
                 © 2026 Agri Record Management System <span className="mx-3 text-slate-200">|</span> Digital India Initiative
               </p>
               <div className="flex items-center justify-center gap-1.5 text-slate-400">
-                <span className="text-xs font-semibold uppercase tracking-widest">Crafted with</span>
                 <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-widest">by</span>
-                <span className="text-[#064e3b] font-black">Ajnabi Creation</span>
+                <span className="text-xs font-semibold uppercase tracking-widest">Developed with care for Indian Farmers</span>
               </div>
            </div>
         </div>

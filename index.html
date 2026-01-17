@@ -30,17 +30,14 @@
         flex-shrink: 0;
       }
 
-      /* Fixed Capture Area Fix: Use opacity instead of extreme positioning */
+      /* Capture area: Keep it in the DOM flow but hide it visually without using display:none or opacity:0 */
       .pdf-capture-area {
-        position: fixed;
+        position: absolute;
         top: 0;
-        left: 0;
-        width: 210mm;
-        height: auto;
-        opacity: 0;
-        pointer-events: none;
-        z-index: -1000;
+        left: -9999px; /* Move far left so it's not seen */
+        width: 650px; /* Width of the card container */
         background: white;
+        visibility: visible;
       }
 
       @media print {
