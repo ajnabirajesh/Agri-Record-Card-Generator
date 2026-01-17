@@ -7,54 +7,15 @@ import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube
 
 const App: React.FC = () => {
   const [farmerData, setFarmerData] = useState<FarmerData>(INITIAL_FARMER_DATA);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleSaveAsPDF = async () => {
-    setIsGenerating(true);
-    
-    // Allow UI to update
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const element = document.getElementById('pdf-download-area');
-    if (!element) {
-      setIsGenerating(false);
-      return;
-    }
-
-    const opt = {
-      margin:       [0.4, 0, 0.4, 0], // in inches
-      filename:     `AgriCard_${farmerData.nameEnglish.replace(/\s+/g, '_')}.pdf`,
-      image:        { type: 'jpeg', quality: 1.0 },
-      html2canvas:  { 
-        scale: 2.5, 
-        useCORS: true, 
-        backgroundColor: '#ffffff',
-        onclone: (clonedDoc: Document) => {
-          // Force visibility of the capture area in the virtual clone
-          const captureArea = clonedDoc.getElementById('pdf-download-area');
-          if (captureArea) {
-            captureArea.style.left = '0';
-            captureArea.style.position = 'static';
-            captureArea.style.visibility = 'visible';
-          }
-        }
-      },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-
-    try {
-      // @ts-ignore
-      await window.html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error("PDF Error:", err);
-      alert("Failed to save PDF. Try using the 'Print' button and select 'Save as PDF'.");
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleSaveAsPDF = () => {
+    // Relying on native browser print for the 'Save' button as well
+    // This opens the system print dialog which allows "Save as PDF" reliably.
+    window.print();
   };
 
   return (
@@ -97,16 +58,11 @@ const App: React.FC = () => {
 
              <button 
                 onClick={handleSaveAsPDF}
-                disabled={isGenerating}
-                className="group flex items-center gap-2 bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-2.5 py-1.5 md:px-6 md:py-3 rounded-lg md:rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95 disabled:opacity-50"
+                className="group flex items-center gap-2 bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-2.5 py-1.5 md:px-6 md:py-3 rounded-lg md:rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95"
              >
-               {isGenerating ? (
-                 <Loader2 className="w-3.5 h-3.5 md:w-5 h-5 animate-spin" />
-               ) : (
-                 <Download className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" />
-               )}
+               <Download className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                <span className="text-[9px] md:text-base uppercase tracking-tight md:tracking-normal font-black">
-                 {isGenerating ? 'WAIT...' : 'SAVE'}
+                 SAVE
                </span>
              </button>
           </div>
@@ -132,26 +88,25 @@ const App: React.FC = () => {
                 <CardPreview data={farmerData} />
             </div>
 
-            <div className="no-print mt-12 p-10 bg-[#064e3b] rounded-[40px] shadow-2xl relative overflow-hidden group">
+            <div className="no-print mt-12 p-10 bg-[#064e3b] rounded-[40px] shadow-2xl relative overflow-hidden group text-center">
                 <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:rotate-45 transition-transform duration-1000">
                     <Leaf className="w-64 h-64" />
                 </div>
                 
-                <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="relative z-10 flex flex-col items-center">
                     <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-md mb-6 border border-white/20">
                         <Printer className="w-10 h-10 text-[#cddc39]" />
                     </div>
-                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Standard PVC Card Download</h3>
-                    <p className="text-emerald-100/70 max-w-md text-sm leading-relaxed mb-6">
-                        High resolution PDF ready for printing.
+                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Print / Save Farmer ID</h3>
+                    <p className="text-emerald-100/70 max-w-md text-sm leading-relaxed mb-8">
+                        Click Save to open the print dialog. Select <b>"Save as PDF"</b> to download your high-quality card.
                     </p>
                     <button 
                         onClick={handleSaveAsPDF}
-                        disabled={isGenerating}
                         className="bg-[#cddc39] text-[#064e3b] px-12 py-4 rounded-2xl font-black text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
                     >
-                        {isGenerating ? <Loader2 className="animate-spin" /> : <Download />}
-                        {isGenerating ? 'GENERATING...' : 'DOWNLOAD PDF'}
+                        <Download className="w-5 h-5" />
+                        SAVE / DOWNLOAD
                     </button>
                 </div>
             </div>
@@ -165,9 +120,9 @@ const App: React.FC = () => {
                     <Info className="w-6 h-6 text-emerald-700" />
                 </div>
                 <div>
-                    <h4 className="font-bold text-sm mb-1">Quick Instructions</h4>
+                    <h4 className="font-bold text-sm mb-1">How it works</h4>
                     <p className="text-xs leading-relaxed opacity-80">
-                        Enter details correctly for accurate card generation. Use the scan button to auto-fill from an existing card image.
+                        Fill in the details. Use the "Scan Old Card" feature to auto-fill details using AI.
                     </p>
                 </div>
             </div>
@@ -179,44 +134,44 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Hidden PDF Capture Container */}
-      <div id="pdf-download-area" className="pdf-capture-area">
-        <div style={{ padding: '0.4in', background: 'white', width: '700px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-           <CardPreview data={farmerData} forceFullScale={true} />
-        </div>
-      </div>
-
-      {/* FOOTER SECTION WITH CREDITS */}
-      <footer className="no-print bg-white border-t py-12 md:py-16 mt-10">
+      {/* FOOTER SECTION - RESTORED CREDITS PER REQUEST */}
+      <footer className="no-print bg-white border-t py-12 md:py-20 mt-10">
         <div className="max-w-7xl mx-auto px-4 text-center">
-           <div className="flex flex-col items-center gap-6">
-              <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.4em] leading-relaxed">
-                © 2026 Agri Record Management System <span className="hidden md:inline mx-3 text-slate-200">|</span> Digital India Initiative
-              </p>
+           <div className="flex flex-col items-center gap-10">
+              <div className="space-y-2">
+                <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.5em] leading-relaxed">
+                    © 2026 Agri Record Management System <span className="hidden md:inline mx-3 text-slate-200">|</span> Digital India
+                </p>
+              </div>
 
-              <div className="group cursor-default">
-                  <div className="flex items-center justify-center gap-2 mb-4 text-slate-400">
-                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest">Crafted with</span>
-                    <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse" />
-                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest">by</span>
+              <div className="flex flex-col items-center">
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400">CRAFTED WITH</span>
+                    <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400">BY</span>
                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-3">
+                  
+                  <div className="flex flex-wrap items-center justify-center gap-4">
                     <a 
                       href="https://instagram.com/ajnabicreation" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="px-5 py-2.5 bg-emerald-50 text-[#064e3b] rounded-full border border-emerald-100 text-[12px] md:text-sm font-black shadow-sm hover:bg-[#064e3b] hover:text-white transition-all duration-300 active:scale-95"
+                      className="group flex items-center gap-3 px-6 py-3 bg-emerald-50 hover:bg-[#064e3b] rounded-2xl border border-emerald-100 transition-all duration-300 shadow-sm active:scale-95"
                     >
-                      Ajnabi Creation
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 group-hover:bg-[#cddc39]"></div>
+                      <span className="text-sm font-black text-[#064e3b] group-hover:text-white">Ajnabi Creation</span>
                     </a>
-                    <span className="text-slate-300 font-bold text-sm">&</span>
+                    
+                    <span className="text-slate-300 font-black text-lg italic">&</span>
+                    
                     <a 
                       href="https://instagram.com/ajnabirajesh" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="px-5 py-2.5 bg-slate-50 text-slate-800 rounded-full border border-slate-100 text-[12px] md:text-sm font-black shadow-sm hover:bg-slate-800 hover:text-white transition-all duration-300 active:scale-95"
+                      className="group flex items-center gap-3 px-6 py-3 bg-slate-50 hover:bg-slate-900 rounded-2xl border border-slate-100 transition-all duration-300 shadow-sm active:scale-95"
                     >
-                      Rajesh Yadav
+                      <div className="w-2 h-2 rounded-full bg-slate-400 group-hover:bg-[#cddc39]"></div>
+                      <span className="text-sm font-black text-slate-700 group-hover:text-white">Rajesh Yadav</span>
                     </a>
                   </div>
               </div>
