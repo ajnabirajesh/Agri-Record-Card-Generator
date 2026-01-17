@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { FarmerData, INITIAL_FARMER_DATA } from './types';
 import FarmerForm from './components/FarmerForm';
 import CardPreview from './components/CardPreview';
@@ -165,6 +166,8 @@ const App: React.FC = () => {
            <p className="mt-2 text-[10px] text-slate-300">Powered by Gemini Pro Vision & React 18</p>
         </div>
       </footer>
+
+      <SpeedInsights />
     </div>
   );
 };
