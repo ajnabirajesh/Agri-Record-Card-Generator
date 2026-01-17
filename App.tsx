@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { FarmerData, INITIAL_FARMER_DATA } from './types';
 import FarmerForm from './components/FarmerForm';
 import CardPreview from './components/CardPreview';
@@ -201,6 +202,8 @@ const App: React.FC = () => {
            </div>
         </div>
       </footer>
+
+      <SpeedInsights />
     </div>
   );
 };
