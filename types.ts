@@ -24,18 +24,18 @@ export interface FarmerData {
 }
 
 export const INITIAL_FARMER_DATA: FarmerData = {
-  nameHindi: 'चंदर देवी',
-  nameEnglish: 'Chandar Devi',
-  dob: '01/01/1960',
-  gender: 'Female',
+  nameHindi: 'Hindi Name',
+  nameEnglish: 'English Name',
+  dob: '01/01/2026',
+  gender: 'Male',
   mobile: '7070200199',
-  aadhaar: '308269488292',
-  farmerId: '234 03 81 09 69',
-  address: 'W/o: Rajendra Prasad Yadav, Khakhai, Ward No-02, SUPAUL, 852138',
+  aadhaar: '0000-0000-0000',
+  farmerId: '000-00-00-00-00',
+  address: 'Address',
   photoUrl: 'https://picsum.photos/200/200',
-  downloadDate: '13/01/2026',
+  downloadDate: '0',
   landDetails: [
-    { id: '1', district: 'SUPAUL', subDistrict: 'Kishanpur', village: 'Abhuaar', khata: '32', khasra: '1684', area: '0.2' },
-    { id: '2', district: 'SUPAUL', subDistrict: 'Kishanpur', village: 'Abhuaar', khata: '2715', khasra: '1866', area: '0.028' },
+    { id: '1', district: 'Jila', subDistrict: 'Block', village: 'Moja', khata: '0', khasra: '0', area: '0' },
+    { id: '2', district: 'Jila', subDistrict: 'Block', village: 'Moja', khata: '0', khasra: '0', area: '0' },
   ],
 };
