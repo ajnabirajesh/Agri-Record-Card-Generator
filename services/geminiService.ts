@@ -2,17 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { FarmerData } from "../types";
 
-// Safety check for process.env
-const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
-
 export const extractFarmerDataFromImage = async (base64Image: string): Promise<Partial<FarmerData> | null> => {
-  if (!apiKey) {
-    console.error("API_KEY is missing. Please set it in Vercel Environment Variables.");
-    alert("API Key missing! Check console for instructions.");
-    return null;
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Directly initialize using the environment variable as per guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const response = await ai.models.generateContent({
@@ -64,11 +56,17 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
 
     const text = response.text;
     if (text) {
-      return JSON.parse(text);
+      try {
+        return JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", text);
+        return null;
+      }
     }
     return null;
   } catch (error) {
-    console.error("Error extracting data:", error);
+    console.error("Error extracting data from Gemini:", error);
+    // Silent fail in UI but logged for developers
     return null;
   }
 };
