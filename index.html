@@ -11,17 +11,6 @@
     <meta name="description" content="Official tool to generate, preview, and print professional Farmer ID cards with QR codes and land details. Digital India Initiative." />
     <meta name="theme-color" content="#064e3b" />
 
-    <!-- Open Graph / Facebook / WhatsApp -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://agri-record.vercel.app/" />
-    <meta property="og:site_name" content="Agri Record Management" />
-    <meta property="og:title" content="Agri Record - Farmer ID Card Generator" />
-    <meta property="og:description" content="Official portal for generating digital Farmer Identity Cards. Verified QR & Land Records enabled." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1200&h=630&auto=format&fit=crop" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/jpeg" />
-
     <!-- Professional SVG Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23064e3b'%3E%3Cpath d='M21 16.5c0 .38-.21.71-.53.88l-7.97 4.13a1.07 1.07 0 0 1-.94 0l-7.97-4.13c-.32-.17-.53-.5-.53-.88V7.5c0-.38.21-.71.53-.88l7.97-4.13a1.07 1.07 0 0 1 .94 0l7.97 4.13c.32.17.53.5.53.88v9z' fill='%23cddc39'/%3E%3Cpath d='M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z' fill='%23064e3b' opacity='.2'/%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7l-8-4zm0 2.2L18.5 8.5 12 11.8 5.5 8.5 12 5.2z' fill='%23064e3b'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%238bc34a'/%3E%3C/svg%3E">
 
@@ -35,20 +24,22 @@
         -webkit-tap-highlight-color: transparent;
       }
       
-      /* Base Card Dimensions */
       .card-ratio {
         width: 600px; 
         height: 380px;
         flex-shrink: 0;
       }
 
-      /* Hidden printable container - Refined to prevent blank PDF */
+      /* Fixed Capture Area Fix: Use opacity instead of extreme positioning */
       .pdf-capture-area {
-        position: absolute;
-        top: -20000px;
+        position: fixed;
+        top: 0;
         left: 0;
-        width: 210mm; /* Fixed A4 width */
-        z-index: -999;
+        width: 210mm;
+        height: auto;
+        opacity: 0;
+        pointer-events: none;
+        z-index: -1000;
         background: white;
       }
 
@@ -73,11 +64,6 @@
           height: 380px !important;
           width: 600px !important;
           margin: 0 auto 0.5cm auto !important;
-        }
-        .card-preview-container {
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
         }
         .card-ratio {
             box-shadow: none !important;

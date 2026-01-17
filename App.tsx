@@ -16,8 +16,8 @@ const App: React.FC = () => {
   const handleSaveAsPDF = async () => {
     setIsGenerating(true);
     
-    // Tiny delay to ensure the DOM has updated with forceFullScale
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Ensure all state changes are settled
+    await new Promise(resolve => setTimeout(resolve, 800));
 
     const element = document.getElementById('pdf-download-area');
     if (!element) {
@@ -26,16 +26,25 @@ const App: React.FC = () => {
     }
 
     const opt = {
-      margin:       [0.4, 0],
+      margin:       [0.4, 0.4, 0.4, 0.4],
       filename:     `AgriRecord_${farmerData.nameEnglish.replace(/\s+/g, '_')}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
+      image:        { type: 'jpeg', quality: 1.0 },
       html2canvas:  { 
-        scale: 2.5, 
+        scale: 2, 
         useCORS: true, 
         logging: false,
         letterRendering: true,
         backgroundColor: '#ffffff',
-        allowTaint: true
+        onclone: (clonedDoc: Document) => {
+            // Force the capture area to be visible in the clone
+            const area = clonedDoc.getElementById('pdf-download-area');
+            if (area) {
+                area.style.position = 'static';
+                area.style.opacity = '1';
+                area.style.visibility = 'visible';
+                area.style.display = 'block';
+            }
+        }
       },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
@@ -45,7 +54,7 @@ const App: React.FC = () => {
       await window.html2pdf().set(opt).from(element).save();
     } catch (err) {
       console.error("PDF generation failed:", err);
-      alert("Error saving PDF. Please try the Print button instead.");
+      alert("Error saving PDF. Try using the Print button instead.");
     } finally {
       setIsGenerating(false);
     }
@@ -126,27 +135,26 @@ const App: React.FC = () => {
                 <CardPreview data={farmerData} />
             </div>
 
-            {/* CTA Section */}
-            <div className="no-print mt-4 md:mt-12 p-6 md:p-10 bg-[#064e3b] rounded-3xl md:rounded-[40px] shadow-2xl relative overflow-hidden group">
+            <div className="no-print mt-12 p-10 bg-[#064e3b] rounded-[40px] shadow-2xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:rotate-45 transition-transform duration-1000">
-                    <Leaf className="w-48 h-48 md:w-64 h-64" />
+                    <Leaf className="w-64 h-64" />
                 </div>
                 
                 <div className="relative z-10 flex flex-col items-center text-center">
-                    <div className="bg-white/10 p-3 md:p-5 rounded-2xl md:rounded-3xl backdrop-blur-md mb-4 md:mb-6 border border-white/20">
-                        <Printer className="w-6 h-6 md:w-10 h-10 text-[#cddc39]" />
+                    <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-md mb-6 border border-white/20">
+                        <Printer className="w-10 h-10 text-[#cddc39]" />
                     </div>
-                    <h3 className="text-lg md:text-2xl font-black text-white mb-2 tracking-tight">Standard PVC Card Download</h3>
-                    <p className="text-emerald-100/70 max-w-md text-[10px] md:text-sm leading-relaxed mb-6">
-                        Ready-to-use high resolution PDF. Guaranteed 1:1 scale for official identification.
+                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Standard PVC Card Download</h3>
+                    <p className="text-emerald-100/70 max-w-md text-sm leading-relaxed mb-6">
+                        Ready-to-use high resolution PDF. 1:1 scale for official identification.
                     </p>
                     <button 
                         onClick={handleSaveAsPDF}
                         disabled={isGenerating}
-                        className="bg-[#cddc39] text-[#064e3b] px-8 py-3 md:px-12 md:py-4 rounded-xl md:rounded-2xl font-black text-sm md:text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
+                        className="bg-[#cddc39] text-[#064e3b] px-12 py-4 rounded-2xl font-black text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
                     >
                         {isGenerating ? <Loader2 className="animate-spin" /> : <Download />}
-                        {isGenerating ? 'GENERATING PDF...' : 'DOWNLOAD NOW'}
+                        {isGenerating ? 'GENERATING...' : 'DOWNLOAD NOW'}
                     </button>
                 </div>
             </div>
@@ -154,7 +162,7 @@ const App: React.FC = () => {
 
         {/* Editor Sidebar */}
         <div className="no-print lg:col-span-5 order-2 lg:order-1">
-          <div className="sticky top-20 md:top-28 space-y-6">
+          <div className="sticky top-28 space-y-6">
             <div className="hidden md:flex bg-emerald-50 border border-emerald-100 p-5 rounded-2xl gap-4 text-emerald-800 shadow-sm">
                 <div className="bg-emerald-200/50 p-2 rounded-full h-fit">
                     <Info className="w-6 h-6 text-emerald-700" />
@@ -162,67 +170,36 @@ const App: React.FC = () => {
                 <div>
                     <h4 className="font-bold text-sm mb-1">Quick Instructions</h4>
                     <p className="text-xs leading-relaxed opacity-80">
-                        Fill details below. Your card updates in real-time. Use the Save button for high-quality download.
+                        Fill details below. Your card updates in real-time.
                     </p>
                 </div>
             </div>
 
-            <div className="glass-card rounded-2xl md:rounded-3xl shadow-xl overflow-hidden border-2 border-emerald-50/50">
+            <div className="glass-card rounded-3xl shadow-xl overflow-hidden border-2 border-emerald-50/50">
                 <FarmerForm data={farmerData} onChange={setFarmerData} />
             </div>
           </div>
         </div>
       </main>
 
-      {/* Hidden Print-Only Container (for window.print) */}
-      <div className="hidden print-only bg-white">
-        <div className="flex flex-col items-center py-4 bg-white">
-          <CardPreview data={farmerData} />
-        </div>
-      </div>
-
-      {/* Hidden High-Resolution PDF Capture Container (for html2pdf) */}
+      {/* Hidden PDF Capture Container (Better handled now) */}
       <div id="pdf-download-area" className="pdf-capture-area">
-        <div className="flex flex-col items-center py-10 bg-white">
-           {/* Passing isGenerating as a hint to stay solid */}
+        <div style={{ padding: '20px', background: 'white', width: '210mm', minHeight: '297mm', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
            <CardPreview data={farmerData} forceFullScale={true} />
         </div>
       </div>
 
-      <footer className="no-print bg-white border-t py-12 md:py-16 mt-10">
+      <footer className="no-print bg-white border-t py-16 mt-10">
         <div className="max-w-7xl mx-auto px-4 text-center">
            <div className="flex flex-col items-center gap-6">
-              <p className="text-slate-400 font-bold text-[9px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.4em] leading-relaxed">
-                © 2026 Agri Record Management System <br className="md:hidden" /> 
-                <span className="hidden md:inline mx-3 text-slate-200">|</span> 
-                Digital India Initiative
+              <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.4em] leading-relaxed">
+                © 2026 Agri Record Management System <span className="mx-3 text-slate-200">|</span> Digital India Initiative
               </p>
-
-              <div className="group cursor-default">
-                  <div className="flex items-center justify-center gap-1.5 mb-2 text-slate-400">
-                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest">Crafted with</span>
-                    <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse" />
-                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest">by</span>
-                  </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-                    <a 
-                      href="https://instagram.com/ajnabicreation" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="px-4 py-1.5 bg-emerald-50 text-[#064e3b] rounded-full border border-emerald-100 text-[11px] md:text-sm font-black shadow-sm hover:bg-[#064e3b] hover:text-white transition-all duration-300 active:scale-95"
-                    >
-                      Ajnabi Creation
-                    </a>
-                    <span className="text-slate-300 font-bold text-sm">&</span>
-                    <a 
-                      href="https://instagram.com/ajnabirajesh" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="px-4 py-1.5 bg-slate-50 text-slate-800 rounded-full border border-slate-100 text-[11px] md:text-sm font-black shadow-sm hover:bg-slate-800 hover:text-white transition-all duration-300 active:scale-95"
-                    >
-                      Rajesh Yadav
-                    </a>
-                  </div>
+              <div className="flex items-center justify-center gap-1.5 text-slate-400">
+                <span className="text-xs font-semibold uppercase tracking-widest">Crafted with</span>
+                <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse" />
+                <span className="text-xs font-semibold uppercase tracking-widest">by</span>
+                <span className="text-[#064e3b] font-black">Ajnabi Creation</span>
               </div>
            </div>
         </div>
