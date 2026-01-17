@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const handleSaveAsPDF = async () => {
     setIsGenerating(true);
     
-    // Allow a bit more time for any pending renders
+    // Allow UI to update
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const element = document.getElementById('pdf-download-area');
@@ -25,29 +25,33 @@ const App: React.FC = () => {
       return;
     }
 
-    // Configure options specifically for better rendering
     const opt = {
-      margin:       [10, 10, 10, 10], // mm
+      margin:       [0.4, 0, 0.4, 0], // in inches
       filename:     `AgriCard_${farmerData.nameEnglish.replace(/\s+/g, '_')}.pdf`,
       image:        { type: 'jpeg', quality: 1.0 },
       html2canvas:  { 
-        scale: 2.5, // High resolution
+        scale: 2.5, 
         useCORS: true, 
         backgroundColor: '#ffffff',
-        scrollY: 0,
-        scrollX: 0
+        onclone: (clonedDoc: Document) => {
+          // Force visibility of the capture area in the virtual clone
+          const captureArea = clonedDoc.getElementById('pdf-download-area');
+          if (captureArea) {
+            captureArea.style.left = '0';
+            captureArea.style.position = 'static';
+            captureArea.style.visibility = 'visible';
+          }
+        }
       },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-      // Use the worker API for more reliable output
       // @ts-ignore
-      const worker = window.html2pdf().from(element).set(opt);
-      await worker.save();
+      await window.html2pdf().set(opt).from(element).save();
     } catch (err) {
       console.error("PDF Error:", err);
-      alert("There was an issue saving the PDF. Please try again or use the Print button.");
+      alert("Failed to save PDF. Try using the 'Print' button and select 'Save as PDF'.");
     } finally {
       setIsGenerating(false);
     }
@@ -55,7 +59,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      {/* Premium Header */}
+      {/* Header */}
       <header className="no-print sticky top-0 z-50 bg-[#064e3b] text-white shadow-2xl border-b border-emerald-800">
         <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4 group cursor-default">
@@ -137,9 +141,9 @@ const App: React.FC = () => {
                     <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-md mb-6 border border-white/20">
                         <Printer className="w-10 h-10 text-[#cddc39]" />
                     </div>
-                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Download Professional ID Card</h3>
+                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Standard PVC Card Download</h3>
                     <p className="text-emerald-100/70 max-w-md text-sm leading-relaxed mb-6">
-                        Get a high-resolution PDF copy. Standard 1:1 scale. Perfect for PVC card printing.
+                        High resolution PDF ready for printing.
                     </p>
                     <button 
                         onClick={handleSaveAsPDF}
@@ -147,7 +151,7 @@ const App: React.FC = () => {
                         className="bg-[#cddc39] text-[#064e3b] px-12 py-4 rounded-2xl font-black text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
                     >
                         {isGenerating ? <Loader2 className="animate-spin" /> : <Download />}
-                        {isGenerating ? 'GENERATING PDF...' : 'SAVE AS PDF'}
+                        {isGenerating ? 'GENERATING...' : 'DOWNLOAD PDF'}
                     </button>
                 </div>
             </div>
@@ -163,7 +167,7 @@ const App: React.FC = () => {
                 <div>
                     <h4 className="font-bold text-sm mb-1">Quick Instructions</h4>
                     <p className="text-xs leading-relaxed opacity-80">
-                        Enter farmer details. Upload a square photo for best results. Use the scan button to auto-fill details from an existing card.
+                        Enter details correctly for accurate card generation. Use the scan button to auto-fill from an existing card image.
                     </p>
                 </div>
             </div>
@@ -175,22 +179,46 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Hidden PDF Capture Container (Better handled now) */}
+      {/* Hidden PDF Capture Container */}
       <div id="pdf-download-area" className="pdf-capture-area">
-        <div style={{ padding: '20px', background: 'white', width: '650px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ padding: '0.4in', background: 'white', width: '700px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
            <CardPreview data={farmerData} forceFullScale={true} />
         </div>
       </div>
 
-      <footer className="no-print bg-white border-t py-16 mt-10">
+      {/* FOOTER SECTION WITH CREDITS */}
+      <footer className="no-print bg-white border-t py-12 md:py-16 mt-10">
         <div className="max-w-7xl mx-auto px-4 text-center">
            <div className="flex flex-col items-center gap-6">
-              <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.4em] leading-relaxed">
-                © 2026 Agri Record Management System <span className="mx-3 text-slate-200">|</span> Digital India Initiative
+              <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.4em] leading-relaxed">
+                © 2026 Agri Record Management System <span className="hidden md:inline mx-3 text-slate-200">|</span> Digital India Initiative
               </p>
-              <div className="flex items-center justify-center gap-1.5 text-slate-400">
-                <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse" />
-                <span className="text-xs font-semibold uppercase tracking-widest">Developed with care for Indian Farmers</span>
+
+              <div className="group cursor-default">
+                  <div className="flex items-center justify-center gap-2 mb-4 text-slate-400">
+                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest">Crafted with</span>
+                    <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse" />
+                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-widest">by</span>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <a 
+                      href="https://instagram.com/ajnabicreation" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-5 py-2.5 bg-emerald-50 text-[#064e3b] rounded-full border border-emerald-100 text-[12px] md:text-sm font-black shadow-sm hover:bg-[#064e3b] hover:text-white transition-all duration-300 active:scale-95"
+                    >
+                      Ajnabi Creation
+                    </a>
+                    <span className="text-slate-300 font-bold text-sm">&</span>
+                    <a 
+                      href="https://instagram.com/ajnabirajesh" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-5 py-2.5 bg-slate-50 text-slate-800 rounded-full border border-slate-100 text-[12px] md:text-sm font-black shadow-sm hover:bg-slate-800 hover:text-white transition-all duration-300 active:scale-95"
+                    >
+                      Rajesh Yadav
+                    </a>
+                  </div>
               </div>
            </div>
         </div>
