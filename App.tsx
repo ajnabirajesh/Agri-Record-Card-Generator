@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { FarmerData, INITIAL_FARMER_DATA } from './types';
 import FarmerForm from './components/FarmerForm';
 import CardPreview from './components/CardPreview';
-import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2 } from 'lucide-react';
+import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube } from 'lucide-react';
 
 const App: React.FC = () => {
   const [farmerData, setFarmerData] = useState<FarmerData>(INITIAL_FARMER_DATA);
@@ -35,30 +35,41 @@ const App: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
+             {/* Support Button */}
+             <a 
+                href="https://youtube.com/@ajnabihelps" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-red-600/10 hover:bg-red-600 text-white font-bold px-3 py-2.5 md:px-4 md:py-3 rounded-xl transition-all border border-red-600/30 active:scale-95 text-xs uppercase tracking-wider"
+             >
+               <Youtube className="w-4 h-4" />
+               <span className="hidden lg:inline">Support</span>
+             </a>
+
              {/* Dedicated Print Button */}
              <button 
                 onClick={handlePrint}
                 disabled={isGenerating}
-                className="group flex items-center gap-2 bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold px-4 py-3 rounded-xl transition-all border border-emerald-600 active:scale-95 disabled:opacity-50"
+                className="group flex items-center gap-2 bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold px-3 py-2.5 md:px-4 md:py-3 rounded-xl transition-all border border-emerald-600 active:scale-95 disabled:opacity-50"
              >
                <Printer className="w-4 h-4" />
-               <span className="hidden md:inline text-xs uppercase tracking-wider">Print Card</span>
+               <span className="hidden md:inline text-xs uppercase tracking-wider">Print</span>
              </button>
 
              {/* Existing Download Button */}
              <button 
                 onClick={handlePrint}
                 disabled={isGenerating}
-                className="group flex items-center gap-3 bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-6 py-3 rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95 disabled:opacity-50"
+                className="group flex items-center gap-2 md:gap-3 bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-4 py-2.5 md:px-6 md:py-3 rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95 disabled:opacity-50"
              >
                {isGenerating ? (
                  <Loader2 className="w-5 h-5 animate-spin" />
                ) : (
                  <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                )}
-               <span className="hidden sm:inline">
-                 {isGenerating ? 'GENERATING...' : 'DOWNLOAD PDF'}
+               <span className="hidden sm:inline text-xs md:text-base">
+                 {isGenerating ? 'GENERATING...' : 'DOWNLOAD'}
                </span>
              </button>
           </div>
@@ -174,6 +185,16 @@ const App: React.FC = () => {
              © 2026 Agri Record Management System • Digital India Initiative
            </p>
            <p className="mt-2 text-[10px] text-slate-300">Powered by Ajnabi Creation & Rajesh Yadav</p>
+           <div className="mt-6">
+             <a 
+              href="https://youtube.com/@ajnabihelps" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-red-500 hover:text-red-600 font-black text-[10px] uppercase tracking-widest border-b border-red-100 pb-1"
+             >
+               <Youtube className="w-3 h-3" /> Need Help? Visit Ajnabi Helps
+             </a>
+           </div>
         </div>
       </footer>
     </div>
