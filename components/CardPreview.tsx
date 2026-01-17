@@ -1,0 +1,183 @@
+
+import React from 'react';
+import { FarmerData } from '../types';
+import QRCodeGen from './QRCodeGen';
+import { ShieldCheck, Sprout, Leaf } from 'lucide-react';
+
+interface CardPreviewProps {
+  data: FarmerData;
+}
+
+const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
+  return (
+    <div className="flex flex-col gap-10 items-center py-6 card-preview-container">
+      {/* Front Side */}
+      <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
+        
+        {/* Top Accent Strip */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-[#8bc34a]"></div>
+
+        {/* Header Bar - More compact to give more space to content */}
+        <div className="bg-[#064e3b] text-white px-5 py-3 flex justify-between items-center h-[68px] shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="bg-white p-2 rounded-lg shadow-inner">
+                <Sprout className="w-8 h-8 text-[#064e3b]" />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-2xl font-black italic leading-none tracking-tight">
+                Agri<span className="text-[#cddc39]">record</span>
+              </h1>
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em] opacity-80 mt-0.5">Farmer Identity Card</span>
+            </div>
+          </div>
+          <div className="flex flex-col items-end">
+             <div className="bg-[#cddc39]/20 p-1.5 rounded-full">
+                <ShieldCheck className="w-6 h-6 text-[#cddc39]" />
+             </div>
+          </div>
+        </div>
+
+        {/* Main Content - Improved spacing */}
+        <div className="flex p-5 gap-6 h-[calc(100%-124px)]">
+          {/* Photo Section */}
+          <div className="flex flex-col gap-3 items-center">
+             <div className="w-[120px] h-[150px] border-[3px] border-[#064e3b] rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative">
+                {data.photoUrl ? (
+                    <img src={data.photoUrl} alt="Farmer" className="w-full h-full object-cover" />
+                ) : (
+                    <div className="text-gray-300 w-16 h-16 flex items-center justify-center">
+                        <Leaf className="w-12 h-12" />
+                    </div>
+                )}
+                <div className="absolute bottom-1 right-1 bg-[#8bc34a] text-white p-1 rounded-full shadow-sm">
+                   <ShieldCheck className="w-3.5 h-3.5" />
+                </div>
+             </div>
+             <div className="flex flex-col items-center">
+                 <img src="https://img.icons8.com/color/48/leaf.png" className="w-6 h-6 opacity-20 rotate-45" alt="leaf" />
+                 <span className="text-[9px] font-black text-emerald-900/40 uppercase tracking-tighter">Verified Member</span>
+             </div>
+          </div>
+
+          {/* Details Section - No more clipping */}
+          <div className="flex-1 flex flex-col justify-start pt-1">
+            <div className="mb-4">
+              <span className="text-[11px] font-extrabold text-[#064e3b] uppercase block tracking-widest">Name / नाम</span>
+              <div className="flex flex-col leading-tight mt-1">
+                <span className="text-2xl font-black text-slate-900">{data.nameHindi}</span>
+                <span className="text-base font-bold text-slate-500 uppercase tracking-wide">{data.nameEnglish}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Date of Birth / जन्म तिथि</span>
+                <span className="text-sm font-bold text-slate-800">{data.dob}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Gender / लिंग</span>
+                <span className="text-sm font-bold text-slate-800">{data.gender}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Aadhaar No. / आधार</span>
+                <span className="text-sm font-bold text-slate-800">{data.aadhaar.replace(/(\d{4})/g, '$1 ')}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Mobile / मोबाइल</span>
+                <span className="text-sm font-bold text-slate-800">+91 {data.mobile}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Side Info / QR */}
+          <div className="flex flex-col items-end justify-between py-1">
+            <div className="bg-white p-1.5 rounded-xl shadow-md border border-gray-100 mt-1">
+               <QRCodeGen value={`${data.farmerId}|${data.nameEnglish}|${data.aadhaar}`} size={85} />
+            </div>
+            <div className="flex items-center gap-1 -rotate-90 origin-right translate-x-3 pb-4">
+                 <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Issue Date: {data.downloadDate}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Bar - Stronger contrast and better spacing */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[#064e3b] text-white p-3 flex justify-center items-center shadow-[0_-4px_15px_rgba(0,0,0,0.15)]">
+           <div className="flex items-center gap-6">
+             <div className="flex flex-col items-center leading-none">
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#cddc39] mb-1">Digital Farmer ID</span>
+                <span className="text-2xl font-black tracking-[0.3em]">{data.farmerId}</span>
+             </div>
+           </div>
+        </div>
+
+        {/* Decorative elements */}
+        <div className="absolute top-[90px] left-[150px] opacity-[0.03] pointer-events-none">
+            <Leaf className="w-64 h-64 rotate-12" />
+        </div>
+      </div>
+
+      {/* Back Side - Increased readability */}
+      <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 p-6 flex flex-col relative card-pattern select-none">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-[#8bc34a]"></div>
+        
+        <div className="flex justify-between items-start mb-5 border-b pb-3 border-emerald-100">
+          <div className="flex-1 pr-12">
+            <h3 className="text-[#064e3b] font-black text-[10px] mb-1.5 uppercase tracking-widest">Permanent Address / स्थायी पता</h3>
+            <p className="text-[11px] text-slate-700 leading-relaxed font-medium">
+              {data.address}
+            </p>
+          </div>
+          <div className="flex flex-col items-end">
+             <img src="https://img.icons8.com/color/96/leaf.png" className="w-12 h-12 opacity-10" alt="leaf" />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-hidden">
+          <h3 className="text-[#064e3b] font-black text-[10px] mb-2 uppercase tracking-widest flex items-center gap-2">
+            <ShieldCheck className="w-3.5 h-3.5" /> Land Records / भूमि का विवरण
+          </h3>
+          <div className="rounded-xl overflow-hidden border border-emerald-100 shadow-sm">
+            <table className="w-full text-[10px] text-left border-collapse">
+              <thead>
+                <tr className="bg-emerald-50 text-[#064e3b] font-bold border-b border-emerald-100">
+                  <th className="px-3 py-2">District</th>
+                  <th className="px-3 py-2">Sub-District</th>
+                  <th className="px-3 py-2">Village</th>
+                  <th className="px-3 py-2">Khata</th>
+                  <th className="px-3 py-2">Khasra</th>
+                  <th className="px-3 py-2 text-right">Area</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-emerald-50">
+                {data.landDetails.map((land, idx) => (
+                  <tr key={land.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-emerald-50/30'}>
+                    <td className="px-3 py-2 text-slate-800 font-medium">{land.district}</td>
+                    <td className="px-3 py-2 text-slate-700">{land.subDistrict}</td>
+                    <td className="px-3 py-2 text-slate-700">{land.village}</td>
+                    <td className="px-3 py-2 text-slate-900 font-bold">{land.khata}</td>
+                    <td className="px-3 py-2 text-slate-900 font-bold">{land.khasra}</td>
+                    <td className="px-3 py-2 text-right font-black text-[#064e3b]">{land.area}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Disclaimer / Footer */}
+        <div className="mt-4 flex justify-between items-end">
+           <div className="flex flex-col gap-1">
+              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter">Digital card generated via Agri Record Management System. Verify using QR code.</span>
+              <span className="text-[8px] text-slate-400 font-medium uppercase tracking-tighter italic">यह डिजिटल कार्ड कृषि रिकॉर्ड प्रबंधन प्रणाली के माध्यम से तैयार किया गया है।</span>
+           </div>
+           <div className="flex gap-2 opacity-10 pb-1">
+              <Leaf className="w-4 h-4 text-[#064e3b]" />
+              <Leaf className="w-4 h-4 text-[#064e3b]" />
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CardPreview;
