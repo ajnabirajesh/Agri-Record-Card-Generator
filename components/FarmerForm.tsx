@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { FarmerData, LandDetail } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, MapPin, Database } from 'lucide-react';
+import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, MapPin, Database, Phone } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
 interface FarmerFormProps {
@@ -128,6 +128,19 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           </div>
 
           <div className="space-y-1">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mobile Number</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">+91</span>
+              <input name="mobile" value={data.mobile} onChange={handleInputChange} className="w-full p-3 pl-11 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" placeholder="10-digit number" />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date of Birth</label>
+            <input name="dob" value={data.dob} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
+          </div>
+
+          <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name (Hindi)</label>
             <input name="nameHindi" value={data.nameHindi} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
@@ -135,11 +148,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name (English)</label>
             <input name="nameEnglish" value={data.nameEnglish} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date of Birth</label>
-            <input name="dob" value={data.dob} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
@@ -181,6 +189,10 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                             <input value={land.district} onChange={(e) => updateLandDetail(land.id, 'district', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                         </div>
                         <div className="flex flex-col gap-1">
+                            <label className="text-[8px] font-black text-slate-400 uppercase">Sub-District</label>
+                            <input value={land.subDistrict} onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                        </div>
+                        <div className="flex flex-col gap-1">
                             <label className="text-[8px] font-black text-slate-400 uppercase">Village</label>
                             <input value={land.village} onChange={(e) => updateLandDetail(land.id, 'village', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                         </div>
@@ -192,7 +204,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                             <label className="text-[8px] font-black text-slate-400 uppercase">Khasra</label>
                             <input value={land.khasra} onChange={(e) => updateLandDetail(land.id, 'khasra', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                         </div>
-                        <div className="flex flex-col gap-1 col-span-1 lg:col-span-2">
+                        <div className="flex flex-col gap-1">
                             <label className="text-[8px] font-black text-slate-400 uppercase">Area (Acre)</label>
                             <input value={land.area} onChange={(e) => updateLandDetail(land.id, 'area', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 font-black text-emerald-700" />
                         </div>
