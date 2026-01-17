@@ -18,7 +18,7 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
             },
           },
           {
-            text: "Extract farmer information from this card image. Return the data in a structured JSON format following the schema provided. If a field is not found, leave it empty. Ensure nameHindi and nameEnglish are separated if possible.",
+            text: "Extract farmer information from this card image. Return the data in a structured JSON format following the schema provided. If a field is not found, leave it empty. Ensure nameHindi and nameEnglish are separated if possible. Note: 'mOwnerNo' corresponds to the 'Khata' number found on documents.",
           },
         ],
       },
@@ -43,7 +43,10 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
                   district: { type: Type.STRING },
                   subDistrict: { type: Type.STRING },
                   village: { type: Type.STRING },
-                  khata: { type: Type.STRING },
+                  mOwnerNo: { 
+                    type: Type.STRING,
+                    description: "The Khata number or Machine Owner Number."
+                  },
                   khasra: { type: Type.STRING },
                   area: { type: Type.STRING },
                 },

@@ -116,7 +116,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                       </div>
                   )}
                   <div className="absolute bottom-1 right-1 bg-[#8bc34a] text-white p-1 rounded-full shadow-sm">
-                     <img src={biharLogoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
+                     <img src={biharLogoUrl} crossOrigin="anonymous" className="w.3.5 h-3.5 brightness-0 invert" alt="seal" />
                   </div>
                </div>
                <div className="flex flex-col items-center">
@@ -209,7 +209,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                     <th className="px-3 py-2">District</th>
                     <th className="px-3 py-2">Sub-District</th>
                     <th className="px-3 py-2">Village</th>
-                    <th className="px-3 py-2">Khata</th>
+                    <th className="px-3 py-2">M. Owner No.</th>
                     <th className="px-3 py-2">Khasra</th>
                     <th className="px-3 py-2 text-right">Area</th>
                   </tr>
@@ -220,7 +220,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                       <td className="px-3 py-2 text-slate-800 font-medium">{land.district}</td>
                       <td className="px-3 py-2 text-slate-700">{land.subDistrict}</td>
                       <td className="px-3 py-2 text-slate-700">{land.village}</td>
-                      <td className="px-3 py-2 text-slate-900 font-bold">{land.khata}</td>
+                      <td className="px-3 py-2 text-slate-900 font-bold">{land.mOwnerNo}</td>
                       <td className="px-3 py-2 text-slate-900 font-bold">{land.khasra}</td>
                       <td className="px-3 py-2 text-right font-black text-[#064e3b]">{land.area}</td>
                     </tr>

@@ -66,7 +66,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       district: '',
       subDistrict: '',
       village: '',
-      khata: '',
+      mOwnerNo: '',
       khasra: '',
       area: '',
     };
@@ -220,8 +220,8 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                             <input value={land.village} onChange={(e) => updateLandDetail(land.id, 'village', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">Khata</label>
-                            <input value={land.khata} onChange={(e) => updateLandDetail(land.id, 'khata', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                            <label className="text-[8px] font-black text-slate-400 uppercase">M. Owner No.</label>
+                            <input value={land.mOwnerNo} onChange={(e) => updateLandDetail(land.id, 'mOwnerNo', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                         </div>
                         <div className="flex flex-col gap-1">
                             <label className="text-[8px] font-black text-slate-400 uppercase">Khasra</label>
