@@ -171,9 +171,9 @@ const App: React.FC = () => {
               <Leaf className="w-5 h-5" />
            </div>
            <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.3em]">
-             © 2024 Agri Record Management System • Digital India Initiative
+             © 2026 Agri Record Management System • Digital India Initiative
            </p>
-           <p className="mt-2 text-[10px] text-slate-300">Powered by Gemini Pro Vision & React 18</p>
+           <p className="mt-2 text-[10px] text-slate-300">Powered by Ajnabi Creation & Rajesh Yadav</p>
         </div>
       </footer>
     </div>
