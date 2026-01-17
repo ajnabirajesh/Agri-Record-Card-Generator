@@ -72,7 +72,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
           {/* Transparent Watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none z-0">
-              <img src={biharLogoUrl} alt="Bihar Watermark" className="w-[300px] h-[300px] object-contain grayscale" />
+              <img src={biharLogoUrl} alt="Bihar Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
           <div className="absolute top-0 left-0 right-0 h-1 bg-[#8bc34a]"></div>
@@ -96,7 +96,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                   <span className="text-[7px] text-white/60 uppercase">Govt. of Bihar</span>
                </div>
                <div className="bg-white p-1 rounded-full shadow-lg">
-                  <img src={biharLogoUrl} alt="Bihar Govt" className="w-10 h-10 object-contain" />
+                  <img src={biharLogoUrl} alt="Bihar Govt" crossOrigin="anonymous" className="w-10 h-10 object-contain" />
                </div>
             </div>
           </div>
@@ -105,14 +105,14 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             <div className="flex flex-col gap-3 items-center">
                <div className="w-[120px] h-[150px] border-[3px] border-[#064e3b] rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative">
                   {data.photoUrl ? (
-                      <img src={data.photoUrl} alt="Farmer" className="w-full h-full object-cover" />
+                      <img src={data.photoUrl} alt="Farmer" crossOrigin="anonymous" className="w-full h-full object-cover" />
                   ) : (
                       <div className="text-gray-300 w-16 h-16 flex items-center justify-center">
                           <Leaf className="w-12 h-12" />
                       </div>
                   )}
                   <div className="absolute bottom-1 right-1 bg-[#8bc34a] text-white p-1 rounded-full shadow-sm">
-                     <img src={biharLogoUrl} className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
+                     <img src={biharLogoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
                   </div>
                </div>
                <div className="flex flex-col items-center">
@@ -177,7 +177,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       <ScaledCard>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 p-6 flex flex-col relative card-pattern select-none">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
-              <img src={biharLogoUrl} alt="Bihar Watermark" className="w-[300px] h-[300px] object-contain grayscale" />
+              <img src={biharLogoUrl} alt="Bihar Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
           <div className="absolute top-0 left-0 right-0 h-1 bg-[#8bc34a]"></div>
@@ -190,13 +190,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
               </p>
             </div>
             <div className="flex flex-col items-end">
-               <img src={biharLogoUrl} className="w-12 h-12 opacity-20 grayscale" alt="Bihar seal" />
+               <img src={biharLogoUrl} crossOrigin="anonymous" className="w-12 h-12 opacity-20 grayscale" alt="Bihar seal" />
             </div>
           </div>
 
           <div className="flex-1 overflow-hidden relative z-10">
             <h3 className="text-[#064e3b] font-black text-[10px] mb-2 uppercase tracking-widest flex items-center gap-2">
-              <img src={biharLogoUrl} className="w-3.5 h-3.5" alt="seal" /> Land Records / भूमि का विवरण
+              <img src={biharLogoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5" alt="seal" /> Land Records / भूमि का विवरण
             </h3>
             <div className="rounded-xl overflow-hidden border border-emerald-100 shadow-sm bg-white/50">
               <table className="w-full text-[10px] text-left border-collapse">

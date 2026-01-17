@@ -42,17 +42,13 @@
         flex-shrink: 0;
       }
 
-      /* Helper for smooth transitions */
-      .card-container-transition {
-        transition: transform 0.3s ease-out, height 0.3s ease-out;
-      }
-
-      /* Hidden printable container that stays at 1:1 scale */
+      /* Hidden printable container - Refined to prevent blank PDF */
       .pdf-capture-area {
-        position: fixed;
-        left: -9999px;
-        top: 0;
-        width: 800px; /* Slightly wider than card for centering */
+        position: absolute;
+        top: -20000px;
+        left: 0;
+        width: 210mm; /* Fixed A4 width */
+        z-index: -999;
         background: white;
       }
 

@@ -12,7 +12,7 @@ const QRCodeGen: React.FC<QRCodeProps> = ({ value, size = 80 }) => {
 
   return (
     <div className="bg-white p-1 border border-gray-200 inline-block">
-      <img src={qrUrl} alt="QR Code" width={size} height={size} />
+      <img src={qrUrl} alt="QR Code" crossOrigin="anonymous" width={size} height={size} />
     </div>
   );
 };

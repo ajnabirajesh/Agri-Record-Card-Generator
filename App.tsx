@@ -13,9 +13,12 @@ const App: React.FC = () => {
     window.print();
   };
 
-  const handleSaveAsPDF = () => {
+  const handleSaveAsPDF = async () => {
     setIsGenerating(true);
     
+    // Tiny delay to ensure the DOM has updated with forceFullScale
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     const element = document.getElementById('pdf-download-area');
     if (!element) {
       setIsGenerating(false);
@@ -23,27 +26,29 @@ const App: React.FC = () => {
     }
 
     const opt = {
-      margin:       [0.5, 0.5],
-      filename:     `Farmer_Card_${farmerData.nameEnglish.replace(/\s+/g, '_')}_${farmerData.farmerId}.pdf`,
-      image:        { type: 'jpeg', quality: 1.0 },
+      margin:       [0.4, 0],
+      filename:     `AgriRecord_${farmerData.nameEnglish.replace(/\s+/g, '_')}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { 
-        scale: 3, 
+        scale: 2.5, 
         useCORS: true, 
+        logging: false,
         letterRendering: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        allowTaint: true
       },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
-    // Use html2pdf global from the script tag
-    // @ts-ignore
-    window.html2pdf().set(opt).from(element).save().then(() => {
-      setIsGenerating(false);
-    }).catch((err: any) => {
+    try {
+      // @ts-ignore
+      await window.html2pdf().set(opt).from(element).save();
+    } catch (err) {
       console.error("PDF generation failed:", err);
+      alert("Error saving PDF. Please try the Print button instead.");
+    } finally {
       setIsGenerating(false);
-      alert("Something went wrong while generating PDF. Please try again.");
-    });
+    }
   };
 
   return (
@@ -95,7 +100,7 @@ const App: React.FC = () => {
                  <Download className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                )}
                <span className="text-[9px] md:text-base uppercase tracking-tight md:tracking-normal font-black">
-                 {isGenerating ? 'SAVING...' : 'SAVE'}
+                 {isGenerating ? 'WAIT...' : 'SAVE'}
                </span>
              </button>
           </div>
@@ -178,8 +183,8 @@ const App: React.FC = () => {
 
       {/* Hidden High-Resolution PDF Capture Container (for html2pdf) */}
       <div id="pdf-download-area" className="pdf-capture-area">
-        <div className="flex flex-col items-center py-10 bg-white scale-100 origin-top">
-           {/* We pass a special scale override style manually for the PDF capture */}
+        <div className="flex flex-col items-center py-10 bg-white">
+           {/* Passing isGenerating as a hint to stay solid */}
            <CardPreview data={farmerData} forceFullScale={true} />
         </div>
       </div>
