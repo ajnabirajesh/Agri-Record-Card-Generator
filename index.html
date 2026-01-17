@@ -17,7 +17,6 @@
     <meta property="og:site_name" content="Agri Record Management" />
     <meta property="og:title" content="Agri Record - Farmer ID Card Generator" />
     <meta property="og:description" content="Official portal for generating digital Farmer Identity Cards. Verified QR & Land Records enabled." />
-    <!-- Updated to a professional Agri-Tech Dashboard image that mimics your app's UI -->
     <meta property="og:image" content="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1200&h=630&auto=format&fit=crop" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -40,7 +39,24 @@
         font-family: 'Inter', sans-serif;
         -webkit-tap-highlight-color: transparent;
       }
+      
+      /* Base Card Dimensions */
+      .card-ratio {
+        width: 600px; 
+        height: 380px;
+        flex-shrink: 0;
+      }
+
+      /* Helper for smooth transitions */
+      .card-container-transition {
+        transition: transform 0.3s ease-out, height 0.3s ease-out;
+      }
+
       @media print {
+        @page {
+          margin: 0.5cm;
+          size: A4 portrait;
+        }
         .no-print {
           display: none !important;
         }
@@ -52,22 +68,23 @@
           margin: 0;
           padding: 0;
         }
+        /* Crucial: Force scale to 1 during printing so card isn't "shrunk" */
+        .print-force-scale {
+          transform: scale(1) !important;
+          height: 380px !important;
+          width: 600px !important;
+          margin: 0 auto 1cm auto !important;
+        }
         .card-preview-container {
             box-shadow: none !important;
             border: none !important;
+            padding: 0 !important;
         }
-      }
-      
-      /* Base Card Dimensions - Internal Coordinate System */
-      .card-ratio {
-        width: 600px; 
-        height: 380px;
-        flex-shrink: 0;
-      }
-
-      /* Helper for smooth transitions */
-      .card-container-transition {
-        transition: transform 0.3s ease-out, height 0.3s ease-out;
+        .card-ratio {
+            box-shadow: none !important;
+            border: 1px solid #eee !important;
+            page-break-inside: avoid;
+        }
       }
 
       .card-pattern {

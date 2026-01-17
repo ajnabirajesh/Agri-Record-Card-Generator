@@ -15,13 +15,11 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
   // Bihar Government Logo URL (High Quality Seal)
   const biharLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Seal_of_Bihar.svg/1200px-Seal_of_Bihar.svg.png";
 
-  // Dynamic Scaling Logic
+  // Dynamic Scaling Logic for Preview
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
         const parentWidth = containerRef.current.offsetWidth;
-        // The card's internal coordinate system is based on 600px width
-        // We add some padding (32px total) to ensure it doesn't touch the edges
         const availableWidth = parentWidth - 32;
         if (availableWidth < 600) {
           const newScale = availableWidth / 600;
@@ -43,13 +41,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
 
   const qrValue = `Name: ${data.nameEnglish}\nDOB: ${data.dob}\nMobile: ${data.mobile}\nFarmer ID: ${data.farmerId}\nAddress: ${data.address}\nIssued: ${displayIssueDate}`;
 
-  // Helper to wrap the card with the dynamic scaler
+  // ScaledCard now includes 'print-force-scale' which is targeted in index.html @media print
   const ScaledCard = ({ children }: { children: React.ReactNode }) => (
     <div 
-      className="card-container-transition origin-top flex flex-col items-center"
+      className="card-container-transition origin-top flex flex-col items-center print-force-scale"
       style={{ 
         transform: `scale(${scale})`,
-        height: `${380 * scale}px`, // This is critical! It tells the browser how much vertical space the scaled card actually takes
+        height: `${380 * scale}px`,
         width: '100%',
         marginBottom: '2rem'
       }}

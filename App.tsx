@@ -11,6 +11,7 @@ const App: React.FC = () => {
 
   const handlePrint = () => {
     setIsGenerating(true);
+    // Short delay to ensure any UI state updates (like closing a modal) happen before the print dialog
     setTimeout(() => {
         setIsGenerating(false);
         window.print();
@@ -35,7 +36,6 @@ const App: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-1 md:gap-3">
-             {/* Support Button */}
              <a 
                 href="https://youtube.com/@ajnabihelps" 
                 target="_blank" 
@@ -47,7 +47,6 @@ const App: React.FC = () => {
                <span className="hidden lg:inline text-xs uppercase tracking-wider">Support</span>
              </a>
 
-             {/* Dedicated Print Button */}
              <button 
                 onClick={handlePrint}
                 disabled={isGenerating}
@@ -58,7 +57,6 @@ const App: React.FC = () => {
                <span className="hidden md:inline text-xs uppercase tracking-wider">Print</span>
              </button>
 
-             {/* Existing Download Button */}
              <button 
                 onClick={handlePrint}
                 disabled={isGenerating}
@@ -80,7 +78,7 @@ const App: React.FC = () => {
       {/* Main UI */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-4 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
         
-        {/* Live Preview - Critical Mobile Focus */}
+        {/* Live Preview */}
         <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col">
             <div className="no-print flex items-center justify-between mb-4 md:mb-8 bg-white/50 p-3 rounded-2xl border border-slate-100 md:bg-transparent md:p-0 md:border-none">
                 <h2 className="text-lg md:text-2xl font-black text-slate-800 flex items-center gap-2 md:gap-3">
@@ -92,8 +90,7 @@ const App: React.FC = () => {
                 </div>
             </div>
             
-            {/* Optimized Container for Responsive Scaling */}
-            <div id="print-area" className="flex-1 w-full min-h-0">
+            <div id="preview-area" className="flex-1 w-full min-h-0">
                 <CardPreview data={farmerData} />
             </div>
 
@@ -145,9 +142,9 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Print-Only Overlay */}
-      <div className="hidden print-only fixed inset-0 bg-white">
-        <div className="p-10 space-y-10 flex flex-col items-center justify-center min-h-screen">
+      {/* Optimized Print-Only Overlay */}
+      <div className="hidden print-only bg-white">
+        <div className="flex flex-col items-center py-4 bg-white">
           <CardPreview data={farmerData} />
         </div>
       </div>
