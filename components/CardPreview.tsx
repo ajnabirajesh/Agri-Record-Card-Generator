@@ -6,9 +6,10 @@ import { Sprout, Leaf } from 'lucide-react';
 
 interface CardPreviewProps {
   data: FarmerData;
+  forceFullScale?: boolean; // Prop to override responsive scaling
 }
 
-const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
+const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
@@ -17,6 +18,11 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
 
   // Dynamic Scaling Logic for Preview
   useEffect(() => {
+    if (forceFullScale) {
+      setScale(1);
+      return;
+    }
+
     const handleResize = () => {
       if (containerRef.current) {
         const parentWidth = containerRef.current.offsetWidth;
@@ -33,7 +39,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [forceFullScale]);
 
   const displayIssueDate = !data.downloadDate || data.downloadDate === '0' || data.downloadDate.trim() === ''
     ? new Date().toLocaleDateString('en-GB') 
@@ -41,15 +47,17 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
 
   const qrValue = `Name: ${data.nameEnglish}\nDOB: ${data.dob}\nMobile: ${data.mobile}\nFarmer ID: ${data.farmerId}\nAddress: ${data.address}\nIssued: ${displayIssueDate}`;
 
+  const currentScale = forceFullScale ? 1 : scale;
+
   // ScaledCard now includes 'print-force-scale' which is targeted in index.html @media print
   const ScaledCard = ({ children }: { children: React.ReactNode }) => (
     <div 
       className="card-container-transition origin-top flex flex-col items-center print-force-scale"
       style={{ 
-        transform: `scale(${scale})`,
-        height: `${380 * scale}px`,
-        width: '100%',
-        marginBottom: '2rem'
+        transform: `scale(${currentScale})`,
+        height: `${380 * currentScale}px`,
+        width: forceFullScale ? '600px' : '100%',
+        marginBottom: '2.5rem'
       }}
     >
       {children}

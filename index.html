@@ -22,17 +22,12 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/jpeg" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://agri-record.vercel.app/" />
-    <meta property="twitter:title" content="Agri Record Card Generator Pro" />
-    <meta property="twitter:description" content="Official tool to generate professional Farmer ID cards with QR codes and land details." />
-    <meta property="twitter:image" content="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=1200&h=630&auto=format&fit=crop" />
-
     <!-- Professional SVG Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23064e3b'%3E%3Cpath d='M21 16.5c0 .38-.21.71-.53.88l-7.97 4.13a1.07 1.07 0 0 1-.94 0l-7.97-4.13c-.32-.17-.53-.5-.53-.88V7.5c0-.38.21-.71.53-.88l7.97-4.13a1.07 1.07 0 0 1 .94 0l7.97 4.13c.32.17.53.5.53.88v9z' fill='%23cddc39'/%3E%3Cpath d='M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z' fill='%23064e3b' opacity='.2'/%3E%3Cpath d='M12 3L4 7v10l8 4 8-4V7l-8-4zm0 2.2L18.5 8.5 12 11.8 5.5 8.5 12 5.2z' fill='%23064e3b'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%238bc34a'/%3E%3C/svg%3E">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       body {
@@ -52,6 +47,15 @@
         transition: transform 0.3s ease-out, height 0.3s ease-out;
       }
 
+      /* Hidden printable container that stays at 1:1 scale */
+      .pdf-capture-area {
+        position: fixed;
+        left: -9999px;
+        top: 0;
+        width: 800px; /* Slightly wider than card for centering */
+        background: white;
+      }
+
       @media print {
         @page {
           margin: 0.5cm;
@@ -68,12 +72,11 @@
           margin: 0;
           padding: 0;
         }
-        /* Crucial: Force scale to 1 during printing so card isn't "shrunk" */
         .print-force-scale {
           transform: scale(1) !important;
           height: 380px !important;
           width: 600px !important;
-          margin: 0 auto 1cm auto !important;
+          margin: 0 auto 0.5cm auto !important;
         }
         .card-preview-container {
             box-shadow: none !important;
@@ -99,12 +102,7 @@
       }
     </style>
     <script>
-      // Browser environment fix for process.env
-      window.process = {
-        env: {
-          API_KEY: "" 
-        }
-      };
+      window.process = { env: { API_KEY: "" } };
     </script>
     <script type="importmap">
     {

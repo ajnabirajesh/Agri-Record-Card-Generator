@@ -10,17 +10,45 @@ const App: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handlePrint = () => {
+    window.print();
+  };
+
+  const handleSaveAsPDF = () => {
     setIsGenerating(true);
-    // Short delay to ensure any UI state updates (like closing a modal) happen before the print dialog
-    setTimeout(() => {
-        setIsGenerating(false);
-        window.print();
-    }, 1200);
+    
+    const element = document.getElementById('pdf-download-area');
+    if (!element) {
+      setIsGenerating(false);
+      return;
+    }
+
+    const opt = {
+      margin:       [0.5, 0.5],
+      filename:     `Farmer_Card_${farmerData.nameEnglish.replace(/\s+/g, '_')}_${farmerData.farmerId}.pdf`,
+      image:        { type: 'jpeg', quality: 1.0 },
+      html2canvas:  { 
+        scale: 3, 
+        useCORS: true, 
+        letterRendering: true,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Use html2pdf global from the script tag
+    // @ts-ignore
+    window.html2pdf().set(opt).from(element).save().then(() => {
+      setIsGenerating(false);
+    }).catch((err: any) => {
+      console.error("PDF generation failed:", err);
+      setIsGenerating(false);
+      alert("Something went wrong while generating PDF. Please try again.");
+    });
   };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      {/* Premium Header - Optimized for Mobile */}
+      {/* Premium Header */}
       <header className="no-print sticky top-0 z-50 bg-[#064e3b] text-white shadow-2xl border-b border-emerald-800">
         <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4 group cursor-default">
@@ -49,16 +77,15 @@ const App: React.FC = () => {
 
              <button 
                 onClick={handlePrint}
-                disabled={isGenerating}
                 title="Print"
-                className="group flex items-center gap-2 bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold p-1.5 md:px-4 md:py-3 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95 disabled:opacity-50"
+                className="group flex items-center gap-2 bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold p-1.5 md:px-4 md:py-3 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95"
              >
                <Printer className="w-3.5 h-3.5 md:w-4 h-4" />
                <span className="hidden md:inline text-xs uppercase tracking-wider">Print</span>
              </button>
 
              <button 
-                onClick={handlePrint}
+                onClick={handleSaveAsPDF}
                 disabled={isGenerating}
                 className="group flex items-center gap-2 bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-2.5 py-1.5 md:px-6 md:py-3 rounded-lg md:rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95 disabled:opacity-50"
              >
@@ -68,7 +95,7 @@ const App: React.FC = () => {
                  <Download className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                )}
                <span className="text-[9px] md:text-base uppercase tracking-tight md:tracking-normal font-black">
-                 {isGenerating ? '...' : 'SAVE'}
+                 {isGenerating ? 'SAVING...' : 'SAVE'}
                </span>
              </button>
           </div>
@@ -104,17 +131,17 @@ const App: React.FC = () => {
                     <div className="bg-white/10 p-3 md:p-5 rounded-2xl md:rounded-3xl backdrop-blur-md mb-4 md:mb-6 border border-white/20">
                         <Printer className="w-6 h-6 md:w-10 h-10 text-[#cddc39]" />
                     </div>
-                    <h3 className="text-lg md:text-2xl font-black text-white mb-2 tracking-tight">Generate Official PVC Card</h3>
+                    <h3 className="text-lg md:text-2xl font-black text-white mb-2 tracking-tight">Standard PVC Card Download</h3>
                     <p className="text-emerald-100/70 max-w-md text-[10px] md:text-sm leading-relaxed mb-6">
-                        Perfectly sized for PVC or standard paper. Verified QR ready.
+                        Ready-to-use high resolution PDF. Guaranteed 1:1 scale for official identification.
                     </p>
                     <button 
-                        onClick={handlePrint}
+                        onClick={handleSaveAsPDF}
                         disabled={isGenerating}
                         className="bg-[#cddc39] text-[#064e3b] px-8 py-3 md:px-12 md:py-4 rounded-xl md:rounded-2xl font-black text-sm md:text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
                     >
                         {isGenerating ? <Loader2 className="animate-spin" /> : <Download />}
-                        {isGenerating ? 'PREPARING...' : 'DOWNLOAD HIGH-RES PDF'}
+                        {isGenerating ? 'GENERATING PDF...' : 'DOWNLOAD NOW'}
                     </button>
                 </div>
             </div>
@@ -130,7 +157,7 @@ const App: React.FC = () => {
                 <div>
                     <h4 className="font-bold text-sm mb-1">Quick Instructions</h4>
                     <p className="text-xs leading-relaxed opacity-80">
-                        Update the farmer's details below. Changes reflect instantly on the card preview.
+                        Fill details below. Your card updates in real-time. Use the Save button for high-quality download.
                     </p>
                 </div>
             </div>
@@ -142,10 +169,18 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Optimized Print-Only Overlay */}
+      {/* Hidden Print-Only Container (for window.print) */}
       <div className="hidden print-only bg-white">
         <div className="flex flex-col items-center py-4 bg-white">
           <CardPreview data={farmerData} />
+        </div>
+      </div>
+
+      {/* Hidden High-Resolution PDF Capture Container (for html2pdf) */}
+      <div id="pdf-download-area" className="pdf-capture-area">
+        <div className="flex flex-col items-center py-10 bg-white scale-100 origin-top">
+           {/* We pass a special scale override style manually for the PDF capture */}
+           <CardPreview data={farmerData} forceFullScale={true} />
         </div>
       </div>
 
@@ -183,17 +218,6 @@ const App: React.FC = () => {
                       Rajesh Yadav
                     </a>
                   </div>
-              </div>
-
-              <div className="mt-2">
-                <a 
-                  href="https://youtube.com/@ajnabihelps" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-red-600/60 hover:text-red-600 font-black text-[10px] uppercase tracking-widest bg-red-50/30 hover:bg-red-50 px-5 py-2.5 rounded-xl transition-all border border-transparent hover:border-red-100"
-                >
-                  <Youtube className="w-4 h-4" /> Visit Ajnabi Helps YouTube
-                </a>
               </div>
            </div>
         </div>
