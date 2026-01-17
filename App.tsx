@@ -35,7 +35,18 @@ const App: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+             {/* Dedicated Print Button */}
+             <button 
+                onClick={handlePrint}
+                disabled={isGenerating}
+                className="group flex items-center gap-2 bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold px-4 py-3 rounded-xl transition-all border border-emerald-600 active:scale-95 disabled:opacity-50"
+             >
+               <Printer className="w-4 h-4" />
+               <span className="hidden md:inline text-xs uppercase tracking-wider">Print Card</span>
+             </button>
+
+             {/* Existing Download Button */}
              <button 
                 onClick={handlePrint}
                 disabled={isGenerating}
@@ -47,7 +58,7 @@ const App: React.FC = () => {
                  <Download className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
                )}
                <span className="hidden sm:inline">
-                 {isGenerating ? 'GENERATING DOCUMENT...' : 'DOWNLOAD PDF / PRINT'}
+                 {isGenerating ? 'GENERATING...' : 'DOWNLOAD PDF'}
                </span>
              </button>
           </div>

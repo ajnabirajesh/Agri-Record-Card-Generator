@@ -80,7 +80,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   return (
     <div className="bg-white/80 p-8 flex flex-col gap-10">
       
-      {/* AI Power Section */}
+      {/* AI Magic Section */}
       <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-6 rounded-2xl text-white shadow-lg relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-500">
             <Wand2 className="w-16 h-16" />
@@ -103,7 +103,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       <section className="space-y-6">
         <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
             <UserCircle className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Personal Profiles</h2>
+            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Personal Details</h2>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -119,7 +119,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Farmer ID</label>
-            <input name="farmerId" value={data.farmerId} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold transition-all" />
+            <input name="farmerId" value={data.farmerId} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
@@ -128,10 +128,17 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mobile Number</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mobile Number (Edit)</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">+91</span>
-              <input name="mobile" value={data.mobile} onChange={handleInputChange} className="w-full p-3 pl-11 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" placeholder="10-digit number" />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">+91</span>
+                <input 
+                    name="mobile" 
+                    value={data.mobile} 
+                    onChange={handleInputChange} 
+                    maxLength={10}
+                    placeholder="Enter 10 digits"
+                    className="w-full p-3 pl-12 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" 
+                />
             </div>
           </div>
 
@@ -170,10 +177,10 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
             <div className="flex items-center gap-3">
                 <Database className="w-5 h-5 text-emerald-600" />
-                <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Land Holdings</h2>
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Land Records</h2>
             </div>
-            <button onClick={addLandDetail} className="flex items-center gap-2 text-[10px] font-black uppercase bg-[#064e3b] text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-950/10">
-                <Plus className="w-3 h-3" /> New Plot
+            <button onClick={addLandDetail} className="flex items-center gap-2 text-[10px] font-black uppercase bg-[#064e3b] text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition-all shadow-lg">
+                <Plus className="w-3 h-3" /> Add Plot
             </button>
         </div>
         
@@ -211,12 +218,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                     </div>
                 </div>
             ))}
-            {data.landDetails.length === 0 && (
-                <div className="text-center py-10 border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center gap-3">
-                    <MapPin className="w-10 h-10 text-slate-200" />
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">No land records linked</p>
-                </div>
-            )}
         </div>
       </section>
     </div>

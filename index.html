@@ -28,7 +28,6 @@
             border: none !important;
         }
       }
-      /* Increased card size while maintaining 1.58:1 ratio */
       .card-ratio {
         width: 600px; 
         height: 380px;
@@ -44,6 +43,14 @@
         border: 1px solid rgba(255, 255, 255, 0.3);
       }
     </style>
+    <script>
+      // Browser environment fix for process.env
+      window.process = {
+        env: {
+          API_KEY: "" // Will be injected or handled by build tool
+        }
+      };
+    </script>
     <script type="importmap">
     {
       "imports": {
@@ -58,5 +65,7 @@
   </head>
   <body class="bg-[#f0f4f2] min-h-screen text-slate-800">
     <div id="root"></div>
+    <!-- CRITICAL: Entry point script -->
+    <script type="module" src="./index.tsx"></script>
   </body>
 </html>

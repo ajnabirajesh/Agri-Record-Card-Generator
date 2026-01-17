@@ -2,9 +2,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { FarmerData } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safety check for process.env
+const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
 
 export const extractFarmerDataFromImage = async (base64Image: string): Promise<Partial<FarmerData> | null> => {
+  if (!apiKey) {
+    console.error("API_KEY is missing. Please set it in Vercel Environment Variables.");
+    alert("API Key missing! Check console for instructions.");
+    return null;
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
