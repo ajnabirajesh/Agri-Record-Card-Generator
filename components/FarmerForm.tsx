@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { FarmerData, LandDetail } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, MapPin, Database, Phone } from 'lucide-react';
+import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, MapPin, Database, Phone, Calendar } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
 interface FarmerFormProps {
@@ -128,7 +128,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mobile Number (Edit)</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mobile Number</label>
             <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">+91</span>
                 <input 
@@ -164,6 +164,22 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
             </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Issue / Download Date</label>
+            <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <input 
+                  type="text"
+                  name="downloadDate" 
+                  value={data.downloadDate === '0' ? '' : data.downloadDate} 
+                  placeholder="DD/MM/YYYY"
+                  onChange={handleInputChange} 
+                  className="w-full p-3 pl-10 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" 
+                />
+            </div>
+            <p className="text-[9px] text-slate-400 mt-1 italic">Leave empty to use current date</p>
           </div>
 
           <div className="space-y-1 md:col-span-2">
