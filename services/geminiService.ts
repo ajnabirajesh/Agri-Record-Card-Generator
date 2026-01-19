@@ -1,9 +1,15 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { FarmerData } from "../types";
+import { FarmerData, BIHAR_DISTRICTS } from "../types";
+
+/**
+ * Utility to clean potential markdown formatting from AI response
+ */
+const cleanJsonResponse = (text: string): string => {
+  return text.replace(/```json/g, '').replace(/```/g, '').trim();
+};
 
 export const extractFarmerDataFromImage = async (base64Image: string): Promise<Partial<FarmerData> | null> => {
-  // Directly initialize using the environment variable as per guidelines
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
@@ -18,7 +24,18 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
             },
           },
           {
-            text: "Extract farmer information from this card image. Return the data in a structured JSON format following the schema provided. If a field is not found, leave it empty. Ensure nameHindi and nameEnglish are separated if possible. Note: 'mOwnerNo' corresponds to the 'Khata' number found on documents.",
+            text: `Extract farmer information from this card image. 
+            
+            RULES:
+            1. Return a valid JSON object.
+            2. For 'district', match one of these valid Bihar districts exactly: ${BIHAR_DISTRICTS.join(', ')}.
+            3. 'mOwnerNo' is often labeled as 'Khata' or 'खाता'.
+            4. 'khasra' is often labeled as 'Plot' or 'खेसरा'.
+            5. 'aadhaar' should be 12 digits (no spaces).
+            6. 'mobile' should be 10 digits.
+            7. If a field is not clearly visible, return an empty string "".
+            
+            Return data in this structure:`,
           },
         ],
       },
@@ -29,8 +46,8 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
           properties: {
             nameHindi: { type: Type.STRING },
             nameEnglish: { type: Type.STRING },
-            dob: { type: Type.STRING },
-            gender: { type: Type.STRING },
+            dob: { type: Type.STRING, description: "Format: DD/MM/YYYY" },
+            gender: { type: Type.STRING, enum: ["Male", "Female", "Other"] },
             mobile: { type: Type.STRING },
             aadhaar: { type: Type.STRING },
             farmerId: { type: Type.STRING },
@@ -41,12 +58,9 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
                 type: Type.OBJECT,
                 properties: {
                   district: { type: Type.STRING },
-                  subDistrict: { type: Type.STRING },
+                  subDistrict: { type: Type.STRING, description: "The Block/Tehsil" },
                   village: { type: Type.STRING },
-                  mOwnerNo: { 
-                    type: Type.STRING,
-                    description: "The Khata number or Machine Owner Number."
-                  },
+                  mOwnerNo: { type: Type.STRING },
                   khasra: { type: Type.STRING },
                   area: { type: Type.STRING },
                 },
@@ -60,7 +74,8 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
     const text = response.text;
     if (text) {
       try {
-        return JSON.parse(text);
+        const cleaned = cleanJsonResponse(text);
+        return JSON.parse(cleaned);
       } catch (parseError) {
         console.error("Failed to parse AI response:", text);
         return null;
@@ -69,7 +84,6 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
     return null;
   } catch (error) {
     console.error("Error extracting data from Gemini:", error);
-    // Silent fail in UI but logged for developers
     return null;
   }
 };

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
 interface FarmerFormProps {
@@ -12,14 +12,21 @@ interface FarmerFormProps {
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // Clear error after 5 seconds
   useEffect(() => {
     if (extractError) {
       const timer = setTimeout(() => setExtractError(null), 5000);
       return () => clearTimeout(timer);
     }
   }, [extractError]);
+
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => setShowSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,6 +49,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     if (!file) return;
 
     setExtractError(null);
+    setShowSuccess(false);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64 = reader.result as string;
@@ -50,43 +58,55 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         const extracted = await extractFarmerDataFromImage(base64);
         
         if (extracted) {
-          const hasData = Object.entries(extracted).some(([key, val]) => {
-            if (key === 'landDetails' && Array.isArray(val)) return val.length > 0;
-            return typeof val === 'string' && val.trim().length > 0;
-          });
+          // Verify if anything useful was actually extracted
+          const hasAnyValue = Object.values(extracted).some(v => 
+            Array.isArray(v) ? v.length > 0 : (typeof v === 'string' && v.trim() !== "")
+          );
 
-          if (!hasData) {
-            setExtractError("AI couldn't read clear text. Try a higher resolution photo.");
+          if (!hasAnyValue) {
+            setExtractError("The AI couldn't find readable data. Please ensure the card is well-lit and not blurry.");
             setIsExtracting(false);
             return;
           }
 
+          // Normalize District names to match our list
+          const normalizedLandDetails = (extracted.landDetails || []).map((l: any, idx: number) => {
+            let matchedDistrict = l.district || "";
+            if (matchedDistrict) {
+              const found = BIHAR_DISTRICTS.find(d => d.toLowerCase() === matchedDistrict.toLowerCase());
+              if (found) matchedDistrict = found;
+            }
+            return {
+              ...l,
+              district: matchedDistrict,
+              id: `ai-${Date.now()}-${idx}`
+            };
+          });
+
+          // Create the merged dataset
           const mergedData: FarmerData = {
             ...data,
             nameHindi: extracted.nameHindi || data.nameHindi,
             nameEnglish: extracted.nameEnglish || data.nameEnglish,
             dob: extracted.dob || data.dob,
             gender: extracted.gender || data.gender,
-            mobile: extracted.mobile ? extracted.mobile.replace(/\s/g, '') : data.mobile,
-            aadhaar: extracted.aadhaar ? extracted.aadhaar.replace(/\s/g, '') : data.aadhaar,
+            mobile: extracted.mobile ? extracted.mobile.replace(/\D/g, '').slice(-10) : data.mobile,
+            aadhaar: extracted.aadhaar ? extracted.aadhaar.replace(/\D/g, '').slice(-12) : data.aadhaar,
             farmerId: extracted.farmerId || data.farmerId,
             address: extracted.address || data.address,
-            landDetails: extracted.landDetails && extracted.landDetails.length > 0 
-              ? extracted.landDetails.map((l: any, idx: number) => ({
-                  ...l,
-                  id: `ai-${Date.now()}-${idx}`
-                }))
-              : data.landDetails
+            landDetails: normalizedLandDetails.length > 0 ? normalizedLandDetails : data.landDetails
           };
+
           onChange(mergedData);
+          setShowSuccess(true);
+        } else {
+          setExtractError("AI Processing failed. Please try again with a different image.");
         }
       } catch (err: any) {
-        console.error("Auto-fill extraction error:", err);
-        setExtractError(err.message || "An error occurred during AI scanning.");
+        setExtractError("Scanning error: " + (err.message || "Unknown error"));
       } finally {
         setIsExtracting(false);
-        // Reset file input
-        e.target.value = '';
+        e.target.value = ''; // Reset file input
       }
     };
     reader.readAsDataURL(file);
@@ -95,7 +115,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const updateLandDetail = (id: string, field: keyof LandDetail, value: string) => {
     const newDetails = data.landDetails.map((land) => {
       if (land.id === id) {
-        // If district changes, reset sub-district to prevent invalid combinations
         if (field === 'district') {
           return { ...land, [field]: value, subDistrict: '' };
         }
@@ -134,15 +153,15 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-lg font-black flex items-center gap-2 mb-1">
-              <Wand2 className={`w-5 h-5 text-[#cddc39] ${isExtracting ? 'animate-spin' : ''}`} /> Magic Auto-Fill
+              <Wand2 className={`w-5 h-5 text-[#cddc39] ${isExtracting ? 'animate-spin' : ''}`} /> AI Smart-Scan
             </h3>
-            <p className="text-xs text-emerald-100/80 font-medium">Extract details from photo instantly.</p>
+            <p className="text-xs text-emerald-100/80 font-medium">Extract text from your existing ID card photo.</p>
           </div>
           
           <div className="flex flex-col gap-2">
             <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed animate-pulse' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
                 {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                <span>{isExtracting ? 'AI IS SCANNING...' : 'SCAN OLD CARD'}</span>
+                <span>{isExtracting ? 'EXTRACTING...' : 'SCAN PHOTO'}</span>
                 {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
             </label>
           </div>
@@ -152,8 +171,18 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           <div className="mt-4 bg-red-500/90 border border-red-400 p-3 rounded-xl flex items-start gap-3 text-[10px] font-bold text-white relative z-10 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <div className="flex flex-col">
-              <span className="uppercase tracking-widest text-[8px] opacity-70 mb-0.5">Extraction Notice</span>
+              <span className="uppercase tracking-widest text-[8px] opacity-70 mb-0.5">Error</span>
               <p className="leading-tight">{extractError}</p>
+            </div>
+          </div>
+        )}
+
+        {showSuccess && (
+          <div className="mt-4 bg-white border border-[#cddc39] p-3 rounded-xl flex items-start gap-3 text-[10px] font-bold text-[#064e3b] relative z-10 shadow-lg animate-in zoom-in duration-300">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+            <div className="flex flex-col">
+              <span className="uppercase tracking-widest text-[8px] opacity-70 mb-0.5">Success</span>
+              <p className="leading-tight">Data extracted and synced with the form.</p>
             </div>
           </div>
         )}
@@ -178,12 +207,12 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Farmer ID</label>
-            <input name="farmerId" value={data.farmerId} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
+            <input name="farmerId" value={data.farmerId} onChange={handleInputChange} placeholder="Ex: 123-45-678-90" className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aadhaar Number</label>
-            <input name="aadhaar" value={data.aadhaar} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
+            <input name="aadhaar" value={data.aadhaar} onChange={handleInputChange} maxLength={12} placeholder="12 Digit Aadhaar" className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
@@ -195,7 +224,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                     value={data.mobile} 
                     onChange={handleInputChange} 
                     maxLength={10}
-                    placeholder="Enter 10 digits"
+                    placeholder="10 Digit Mobile"
                     className="w-full p-3 pl-12 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" 
                 />
             </div>
@@ -203,17 +232,17 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date of Birth</label>
-            <input name="dob" value={data.dob} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
+            <input name="dob" value={data.dob} onChange={handleInputChange} placeholder="DD/MM/YYYY" className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name (Hindi)</label>
-            <input name="nameHindi" value={data.nameHindi} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
+            <input name="nameHindi" value={data.nameHindi} onChange={handleInputChange} placeholder="नाम यहाँ लिखें" className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name (English)</label>
-            <input name="nameEnglish" value={data.nameEnglish} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
+            <input name="nameEnglish" value={data.nameEnglish} onChange={handleInputChange} placeholder="NAME IN ENGLISH" className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold" />
           </div>
 
           <div className="space-y-1">
@@ -243,7 +272,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
           <div className="space-y-1 md:col-span-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Address</label>
-            <textarea name="address" value={data.address} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold h-20 resize-none" />
+            <textarea name="address" value={data.address} onChange={handleInputChange} placeholder="VILL-..., PO-..., DIST-..., STATE-BIHAR" className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold h-20 resize-none" />
           </div>
         </div>
       </section>
@@ -298,19 +327,19 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-[8px] font-black text-slate-400 uppercase">Village</label>
-                                <input value={land.village} onChange={(e) => updateLandDetail(land.id, 'village', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                                <input value={land.village} onChange={(e) => updateLandDetail(land.id, 'village', e.target.value)} placeholder="Village Name" className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-[8px] font-black text-slate-400 uppercase">M. Owner No. (Khata)</label>
-                                <input value={land.mOwnerNo} onChange={(e) => updateLandDetail(land.id, 'mOwnerNo', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                                <input value={land.mOwnerNo} onChange={(e) => updateLandDetail(land.id, 'mOwnerNo', e.target.value)} placeholder="Khata No" className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-[8px] font-black text-slate-400 uppercase">Khasra</label>
-                                <input value={land.khasra} onChange={(e) => updateLandDetail(land.id, 'khasra', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                                <input value={land.khasra} onChange={(e) => updateLandDetail(land.id, 'khasra', e.target.value)} placeholder="Plot No" className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-[8px] font-black text-slate-400 uppercase">Area (Acre)</label>
-                                <input value={land.area} onChange={(e) => updateLandDetail(land.id, 'area', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 font-black text-emerald-700" />
+                                <input value={land.area} onChange={(e) => updateLandDetail(land.id, 'area', e.target.value)} placeholder="0.00" className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 font-black text-emerald-700" />
                             </div>
                         </div>
                     </div>

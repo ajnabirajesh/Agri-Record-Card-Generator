@@ -80,10 +80,10 @@ export const INITIAL_FARMER_DATA: FarmerData = {
   mobile: '7070200199',
   aadhaar: '000000000000',
   farmerId: '000-00-00-00-00',
-  address: 'Address',
+  address: '',
   photoUrl: 'https://picsum.photos/200/200',
   downloadDate: '0',
   landDetails: [
-    { id: '1', district: '', subDistrict: '', village: '', mOwnerNo: '0', khasra: '0', area: '0' },
+    { id: '1', district: '', subDistrict: '', village: '', mOwnerNo: '', khasra: '', area: '' },
   ],
 };
