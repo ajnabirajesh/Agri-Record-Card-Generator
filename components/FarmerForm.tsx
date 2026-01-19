@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FarmerData, LandDetail } from '../types';
 import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
@@ -12,6 +12,14 @@ interface FarmerFormProps {
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
+
+  // Clear error after 5 seconds
+  useEffect(() => {
+    if (extractError) {
+      const timer = setTimeout(() => setExtractError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [extractError]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -40,27 +48,30 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       setIsExtracting(true);
       try {
         const extracted = await extractFarmerDataFromImage(base64);
+        
         if (extracted) {
-          // Check if extracted data is mostly empty
-          const hasAnyData = Object.values(extracted).some(v => v && (typeof v === 'string' ? v.length > 0 : Array.isArray(v) && v.length > 0));
-          
-          if (!hasAnyData) {
-            setExtractError("AI could not find clear details in this image. Please try a clearer photo.");
+          // Validate if we actually got some data back
+          const hasData = Object.entries(extracted).some(([key, val]) => {
+            if (key === 'landDetails' && Array.isArray(val)) return val.length > 0;
+            return typeof val === 'string' && val.trim().length > 0;
+          });
+
+          if (!hasData) {
+            setExtractError("AI couldn't read clear text. Try a higher resolution photo.");
             setIsExtracting(false);
             return;
           }
 
-          // Merge logic: keep existing if extracted is empty, otherwise update
           const mergedData: FarmerData = {
             ...data,
-            nameHindi: (extracted.nameHindi && extracted.nameHindi.trim()) || data.nameHindi,
-            nameEnglish: (extracted.nameEnglish && extracted.nameEnglish.trim()) || data.nameEnglish,
-            dob: (extracted.dob && extracted.dob.trim()) || data.dob,
-            gender: (extracted.gender && extracted.gender.trim()) || data.gender,
-            mobile: (extracted.mobile && extracted.mobile.trim().replace(/\s/g, '')) || data.mobile,
-            aadhaar: (extracted.aadhaar && extracted.aadhaar.trim().replace(/\s/g, '')) || data.aadhaar,
-            farmerId: (extracted.farmerId && extracted.farmerId.trim()) || data.farmerId,
-            address: (extracted.address && extracted.address.trim()) || data.address,
+            nameHindi: extracted.nameHindi || data.nameHindi,
+            nameEnglish: extracted.nameEnglish || data.nameEnglish,
+            dob: extracted.dob || data.dob,
+            gender: extracted.gender || data.gender,
+            mobile: extracted.mobile ? extracted.mobile.replace(/\s/g, '') : data.mobile,
+            aadhaar: extracted.aadhaar ? extracted.aadhaar.replace(/\s/g, '') : data.aadhaar,
+            farmerId: extracted.farmerId || data.farmerId,
+            address: extracted.address || data.address,
             landDetails: extracted.landDetails && extracted.landDetails.length > 0 
               ? extracted.landDetails.map((l: any, idx: number) => ({
                   ...l,
@@ -69,15 +80,13 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
               : data.landDetails
           };
           onChange(mergedData);
-        } else {
-          setExtractError("Failed to extract data. Check your internet or image quality.");
         }
-      } catch (err) {
-        console.error("Auto-fill error:", err);
-        setExtractError("An error occurred during AI scanning.");
+      } catch (err: any) {
+        console.error("Auto-fill extraction error:", err);
+        setExtractError(err.message || "An error occurred during AI scanning.");
       } finally {
         setIsExtracting(false);
-        // Clear input so same file can be selected again
+        // Reset file input
         e.target.value = '';
       }
     };
@@ -121,19 +130,22 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
             <h3 className="text-lg font-black flex items-center gap-2 mb-1">
               <Wand2 className={`w-5 h-5 text-[#cddc39] ${isExtracting ? 'animate-spin' : ''}`} /> Magic Auto-Fill
             </h3>
-            <p className="text-xs text-emerald-100/80 font-medium">Extract farmer details from a photo instantly.</p>
+            <p className="text-xs text-emerald-100/80 font-medium">Extract details from photo instantly.</p>
           </div>
-          <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
+          <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed animate-pulse' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
             {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-            <span>{isExtracting ? 'SCANNING...' : 'SCAN OLD CARD'}</span>
+            <span>{isExtracting ? 'AI IS SCANNING...' : 'SCAN OLD CARD'}</span>
             {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
           </label>
         </div>
 
         {extractError && (
-          <div className="mt-4 bg-red-500/20 border border-red-400/30 p-2 rounded-lg flex items-center gap-2 text-[10px] font-bold text-red-100 relative z-10 animate-pulse">
-            <AlertCircle className="w-3 h-3" />
-            {extractError}
+          <div className="mt-4 bg-red-500/90 border border-red-400 p-3 rounded-xl flex items-start gap-3 text-[10px] font-bold text-white relative z-10 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="flex flex-col">
+              <span className="uppercase tracking-widest text-[8px] opacity-70 mb-0.5">Extraction Error</span>
+              <p className="leading-tight">{extractError}</p>
+            </div>
           </div>
         )}
       </div>
