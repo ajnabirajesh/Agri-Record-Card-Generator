@@ -84,7 +84,6 @@ export const INITIAL_FARMER_DATA: FarmerData = {
   photoUrl: 'https://picsum.photos/200/200',
   downloadDate: '0',
   landDetails: [
-    { id: '1', district: 'Patna', subDistrict: 'Patna Sadar', village: 'Moja', mOwnerNo: '0', khasra: '0', area: '0' },
-    { id: '2', district: 'Gaya', subDistrict: 'Gaya Sadar', village: 'Moja', mOwnerNo: '0', khasra: '0', area: '0' },
+    { id: '1', district: '', subDistrict: '', village: '', mOwnerNo: '0', khasra: '0', area: '0' },
   ],
 };
