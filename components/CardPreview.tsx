@@ -170,19 +170,21 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          {/* Full-width Bottom ID Bar (Pahle Jaisa) */}
+          {/* Full-width Bottom ID Bar with swapped ID and Label */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white pt-3 pb-5 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.15)] relative z-10 border-t border-[#cddc39]/30">
              <div className="absolute left-6 opacity-20">
                 <ShieldCheck className="w-8 h-8 text-[#cddc39]" />
              </div>
              <div className="flex flex-col items-center leading-none">
-                <div className="flex items-center gap-2 mb-1.5">
+                {/* Farmer ID Number moved to the top position */}
+                <span className="text-3xl font-black tracking-[0.3em] drop-shadow-xl text-white font-mono mb-1.5">{data.farmerId}</span>
+                
+                {/* Label moved to the bottom position */}
+                <div className="flex items-center gap-2">
                   <span className="w-6 h-[1px] bg-[#cddc39]/30"></span>
                   <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#cddc39]">Digital Farmer ID / डिजिटल किसान आईडी</span>
                   <span className="w-6 h-[1px] bg-[#cddc39]/30"></span>
                 </div>
-                {/* ID text pushed slightly up with negative margin-top or just via the padding-bottom of container */}
-                <span className="text-3xl font-black tracking-[0.3em] drop-shadow-xl text-white font-mono">{data.farmerId}</span>
              </div>
              <div className="absolute right-6 opacity-20 rotate-12">
                 <Sprout className="w-8 h-8 text-[#cddc39]" />
