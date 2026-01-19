@@ -201,8 +201,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
           
           <div className="flex justify-between items-start mb-5 border-b pb-3 border-emerald-100 relative z-10">
             <div className="flex-1 pr-12">
-              <h3 className="text-[#064e3b] font-black text-[10px] mb-1.5 uppercase tracking-widest">Permanent Address / स्थायी पता</h3>
-              <p className="text-[11px] text-slate-700 leading-relaxed font-medium">
+              <h3 className="text-[#064e3b] font-black text-[11px] mb-1.5 uppercase tracking-widest">Permanent Address / स्थायी पता</h3>
+              <p className="text-[12.5px] text-slate-800 leading-relaxed font-bold">
                 {data.address}
               </p>
             </div>
@@ -212,30 +212,30 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
           </div>
 
           <div className="flex-1 overflow-hidden relative z-10">
-            <h3 className="text-[#064e3b] font-black text-[10px] mb-2 uppercase tracking-widest flex items-center gap-2">
-              <img src={biharLogoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5" alt="seal" /> Land Records / भूमि का विवरण
+            <h3 className="text-[#064e3b] font-black text-[11px] mb-2.5 uppercase tracking-widest flex items-center gap-2">
+              <img src={biharLogoUrl} crossOrigin="anonymous" className="w-4 h-4" alt="seal" /> Land Records / भूमि का विवरण
             </h3>
             <div className="rounded-xl overflow-hidden border border-emerald-100 shadow-sm bg-white/50">
-              <table className="w-full text-[10px] text-left border-collapse">
+              <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="bg-emerald-50 text-[#064e3b] font-bold border-b border-emerald-100">
-                    <th className="px-3 py-2">District</th>
-                    <th className="px-3 py-2">Sub-District</th>
-                    <th className="px-3 py-2">Village</th>
-                    <th className="px-3 py-2">M. Owner No.</th>
-                    <th className="px-3 py-2">Khasra</th>
-                    <th className="px-3 py-2 text-right">Area</th>
+                  <tr className="bg-emerald-50 text-[#064e3b] font-black border-b border-emerald-100">
+                    <th className="px-3 py-2.5">District</th>
+                    <th className="px-3 py-2.5">Sub-District</th>
+                    <th className="px-3 py-2.5">Village</th>
+                    <th className="px-3 py-2.5">M. Owner No.</th>
+                    <th className="px-3 py-2.5">Khasra</th>
+                    <th className="px-3 py-2.5 text-right">Area</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-emerald-50">
                   {data.landDetails.map((land, idx) => (
                     <tr key={land.id} className={idx % 2 === 0 ? 'bg-white/70' : 'bg-emerald-50/30'}>
-                      <td className="px-3 py-2 text-slate-800 font-medium">{land.district}</td>
-                      <td className="px-3 py-2 text-slate-700">{land.subDistrict}</td>
-                      <td className="px-3 py-2 text-slate-700">{land.village}</td>
-                      <td className="px-3 py-2 text-slate-900 font-bold">{land.mOwnerNo}</td>
-                      <td className="px-3 py-2 text-slate-900 font-bold">{land.khasra}</td>
-                      <td className="px-3 py-2 text-right font-black text-[#064e3b]">{land.area}</td>
+                      <td className="px-3 py-2.5 text-slate-900 font-bold">{land.district}</td>
+                      <td className="px-3 py-2.5 text-slate-800 font-medium">{land.subDistrict}</td>
+                      <td className="px-3 py-2.5 text-slate-800 font-medium">{land.village}</td>
+                      <td className="px-3 py-2.5 text-slate-950 font-black">{land.mOwnerNo}</td>
+                      <td className="px-3 py-2.5 text-slate-950 font-black">{land.khasra}</td>
+                      <td className="px-3 py-2.5 text-right font-black text-emerald-900">{land.area}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -246,10 +246,10 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
           <div className="mt-4 flex justify-between items-end border-t pt-2 border-emerald-50 relative z-10">
              <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2 mb-1">
-                   <span className="text-[9px] font-black text-[#064e3b] uppercase tracking-tighter">Issued On: {displayIssueDate}</span>
+                   <span className="text-[10px] font-black text-[#064e3b] uppercase tracking-tighter">Issued On: {displayIssueDate}</span>
                 </div>
-                <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tighter">Digital card generated via Agri Record Management System. Verify using QR code.</span>
-                <span className="text-[8px] text-slate-400 font-medium uppercase tracking-tighter italic">यह डिजिटल कार्ड कृषि रिकॉर्ड प्रबंधन प्रणाली के माध्यम से तैयार किया गया है।</span>
+                <span className="text-[8px] text-slate-500 font-bold uppercase tracking-tighter">Digital card generated via Agri Record Management System. Verify using QR code.</span>
+                <span className="text-[8px] text-slate-500 font-medium uppercase tracking-tighter italic">यह डिजिटल कार्ड कृषि रिकॉर्ड प्रबंधन प्रणाली के माध्यम से तैयार किया गया है।</span>
              </div>
              <div className="flex gap-2 opacity-10 pb-1">
                 <Leaf className="w-4 h-4 text-[#064e3b]" />
