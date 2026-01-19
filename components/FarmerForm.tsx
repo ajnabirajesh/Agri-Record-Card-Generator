@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { FarmerData, LandDetail } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, MapPin, Database, Phone, Calendar } from 'lucide-react';
+import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
 interface FarmerFormProps {
@@ -36,18 +36,35 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     reader.onloadend = async () => {
       const base64 = reader.result as string;
       setIsExtracting(true);
-      const extractedData = await extractFarmerDataFromImage(base64);
-      setIsExtracting(false);
-
-      if (extractedData) {
-        onChange({
-          ...data,
-          ...extractedData,
-          landDetails: extractedData.landDetails?.map((l: any, idx: number) => ({
-            ...l,
-            id: Date.now().toString() + idx
-          })) || data.landDetails
-        });
+      try {
+        const extractedData = await extractFarmerDataFromImage(base64);
+        if (extractedData) {
+          // Merge logic: prioritize extracted data but fallback to existing if empty
+          const mergedData: FarmerData = {
+            ...data,
+            nameHindi: extractedData.nameHindi || data.nameHindi,
+            nameEnglish: extractedData.nameEnglish || data.nameEnglish,
+            dob: extractedData.dob || data.dob,
+            gender: extractedData.gender || data.gender,
+            mobile: extractedData.mobile || data.mobile,
+            aadhaar: extractedData.aadhaar || data.aadhaar,
+            farmerId: extractedData.farmerId || data.farmerId,
+            address: extractedData.address || data.address,
+            landDetails: extractedData.landDetails && extractedData.landDetails.length > 0 
+              ? extractedData.landDetails.map((l: any, idx: number) => ({
+                  ...l,
+                  id: `ai-${Date.now()}-${idx}`
+                }))
+              : data.landDetails
+          };
+          onChange(mergedData);
+        } else {
+          alert("Could not extract data from this image. Please ensure the text is clear.");
+        }
+      } catch (err) {
+        console.error("Auto-fill error:", err);
+      } finally {
+        setIsExtracting(false);
       }
     };
     reader.readAsDataURL(file);
@@ -88,14 +105,14 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-lg font-black flex items-center gap-2 mb-1">
-              <Wand2 className="w-5 h-5 text-[#cddc39]" /> Magic Auto-Fill
+              <Wand2 className={`w-5 h-5 text-[#cddc39] ${isExtracting ? 'animate-spin' : ''}`} /> Magic Auto-Fill
             </h3>
             <p className="text-xs text-emerald-100/80 font-medium">Extract farmer details from a photo instantly.</p>
           </div>
-          <label className="flex items-center gap-3 px-6 py-3 bg-[#cddc39] text-[#064e3b] rounded-xl cursor-pointer hover:bg-white transition-all font-black text-xs shadow-xl shadow-black/20">
+          <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
             {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-            <span>{isExtracting ? 'ANALYZING...' : 'SCAN OLD CARD'}</span>
-            <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} disabled={isExtracting} />
+            <span>{isExtracting ? 'SCANNING...' : 'SCAN OLD CARD'}</span>
+            {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
           </label>
         </div>
       </div>

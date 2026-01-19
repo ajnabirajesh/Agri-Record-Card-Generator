@@ -24,12 +24,12 @@ export interface FarmerData {
 }
 
 export const INITIAL_FARMER_DATA: FarmerData = {
-  nameHindi: 'Hindi Name',
-  nameEnglish: 'English Name',
+  nameHindi: 'किसान का नाम',
+  nameEnglish: 'Farmer Name',
   dob: '01/01/2026',
   gender: 'Male',
   mobile: '7070200199',
-  aadhaar: '0000-0000-0000',
+  aadhaar: '000000000000',
   farmerId: '000-00-00-00-00',
   address: 'Address',
   photoUrl: 'https://picsum.photos/200/200',

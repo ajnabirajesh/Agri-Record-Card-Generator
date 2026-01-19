@@ -2,9 +2,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { FarmerData } from "../types";
 
-export const extractFarmerDataFromImage = async (base64Image: string): Promise<Partial<FarmerData> | null> => {
-  // Directly initialize using the environment variable as per guidelines
+export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise<Partial<FarmerData> | null> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+  // Extract mimeType and base64 data from the Data URL
+  const mimeTypeMatch = base64DataUrl.match(/^data:(.*);base64,(.*)$/);
+  if (!mimeTypeMatch) {
+    console.error("Invalid base64 data format");
+    return null;
+  }
+
+  const mimeType = mimeTypeMatch[1];
+  const base64Data = mimeTypeMatch[2];
 
   try {
     const response = await ai.models.generateContent({
@@ -13,12 +22,24 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
         parts: [
           {
             inlineData: {
-              mimeType: 'image/jpeg',
-              data: base64Image.split(',')[1] || base64Image,
+              mimeType: mimeType,
+              data: base64Data,
             },
           },
           {
-            text: "Extract farmer information from this card image. Return the data in a structured JSON format following the schema provided. If a field is not found, leave it empty. Ensure nameHindi and nameEnglish are separated if possible. Note: 'mOwnerNo' corresponds to the 'Khata' number found on documents.",
+            text: `Extract all possible farmer information from this identity card or land document image. 
+            
+            Look specifically for:
+            - Name in Hindi and English.
+            - Date of Birth (DOB).
+            - Gender.
+            - 10-digit Mobile Number.
+            - 12-digit Aadhaar Number.
+            - Farmer ID / Registration Number.
+            - Full Address.
+            - Land Details: Look for "Khata Number" (Machine Owner No), "Khasra Number", and "Area/Rakba" in Acres or Decimals.
+            
+            Return the data in a clean JSON format. If a field is missing, return an empty string.`,
           },
         ],
       },
@@ -69,7 +90,6 @@ export const extractFarmerDataFromImage = async (base64Image: string): Promise<P
     return null;
   } catch (error) {
     console.error("Error extracting data from Gemini:", error);
-    // Silent fail in UI but logged for developers
     return null;
   }
 };
