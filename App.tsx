@@ -162,7 +162,7 @@ const App: React.FC = () => {
                       <span className="text-sm font-black text-[#064e3b] group-hover:text-white">Ajnabi Creation</span>
                     </a>
                     
-                    <span className="text-slate-300 font-black text-lg italic">&</span>
+                    <span className="text-slate-300 font-black text-lg italic"></span>
                     
                     <a 
                       href="https://instagram.com/ajnabirajesh" 
