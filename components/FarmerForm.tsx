@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { FarmerData, LandDetail } from '../types';
+import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS } from '../types';
 import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
@@ -93,9 +93,16 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   };
 
   const updateLandDetail = (id: string, field: keyof LandDetail, value: string) => {
-    const newDetails = data.landDetails.map((land) => 
-      land.id === id ? { ...land, [field]: value } : land
-    );
+    const newDetails = data.landDetails.map((land) => {
+      if (land.id === id) {
+        // If district changes, reset sub-district to prevent invalid combinations
+        if (field === 'district') {
+          return { ...land, [field]: value, subDistrict: '' };
+        }
+        return { ...land, [field]: value };
+      }
+      return land;
+    });
     onChange({ ...data, landDetails: newDetails });
   };
 
@@ -253,39 +260,62 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         </div>
         
         <div className="space-y-4">
-            {data.landDetails.map((land) => (
-                <div key={land.id} className="p-5 border border-slate-100 rounded-2xl bg-slate-50/50 relative group hover:bg-white hover:shadow-xl transition-all duration-300">
-                    <button onClick={() => removeLandDetail(land.id)} className="absolute -top-2 -right-2 bg-white text-red-500 hover:bg-red-500 hover:text-white transition-all p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 border border-red-100">
-                        <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">District</label>
-                            <input value={land.district} onChange={(e) => updateLandDetail(land.id, 'district', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">Sub-District</label>
-                            <input value={land.subDistrict} onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">Village</label>
-                            <input value={land.village} onChange={(e) => updateLandDetail(land.id, 'village', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">M. Owner No.</label>
-                            <input value={land.mOwnerNo} onChange={(e) => updateLandDetail(land.id, 'mOwnerNo', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">Khasra</label>
-                            <input value={land.khasra} onChange={(e) => updateLandDetail(land.id, 'khasra', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[8px] font-black text-slate-400 uppercase">Area (Acre)</label>
-                            <input value={land.area} onChange={(e) => updateLandDetail(land.id, 'area', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 font-black text-emerald-700" />
+            {data.landDetails.map((land) => {
+                const availableBlocks = land.district ? (BIHAR_SUB_DISTRICTS[land.district] || []) : [];
+                
+                return (
+                    <div key={land.id} className="p-5 border border-slate-100 rounded-2xl bg-slate-50/50 relative group hover:bg-white hover:shadow-xl transition-all duration-300">
+                        <button onClick={() => removeLandDetail(land.id)} className="absolute -top-2 -right-2 bg-white text-red-500 hover:bg-red-500 hover:text-white transition-all p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 border border-red-100">
+                            <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[8px] font-black text-slate-400 uppercase">District (Bihar)</label>
+                                <select 
+                                    value={land.district} 
+                                    onChange={(e) => updateLandDetail(land.id, 'district', e.target.value)} 
+                                    className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 bg-white"
+                                >
+                                    <option value="">Select District</option>
+                                    {BIHAR_DISTRICTS.map(dist => (
+                                        <option key={dist} value={dist}>{dist}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[8px] font-black text-slate-400 uppercase">Sub-District (Block)</label>
+                                <select 
+                                    value={land.subDistrict} 
+                                    disabled={!land.district}
+                                    onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} 
+                                    className={`text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 bg-white ${!land.district ? 'opacity-50 cursor-not-allowed italic' : ''}`}
+                                >
+                                    <option value="">{land.district ? "Select Block" : "Select District First"}</option>
+                                    {availableBlocks.map(block => (
+                                        <option key={block} value={block}>{block}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[8px] font-black text-slate-400 uppercase">Village</label>
+                                <input value={land.village} onChange={(e) => updateLandDetail(land.id, 'village', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[8px] font-black text-slate-400 uppercase">M. Owner No. (Khata)</label>
+                                <input value={land.mOwnerNo} onChange={(e) => updateLandDetail(land.id, 'mOwnerNo', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[8px] font-black text-slate-400 uppercase">Khasra</label>
+                                <input value={land.khasra} onChange={(e) => updateLandDetail(land.id, 'khasra', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[8px] font-black text-slate-400 uppercase">Area (Acre)</label>
+                                <input value={land.area} onChange={(e) => updateLandDetail(land.id, 'area', e.target.value)} className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 font-black text-emerald-700" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
       </section>
     </div>
