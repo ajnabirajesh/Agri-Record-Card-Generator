@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FarmerData } from '../types';
 import QRCodeGen from './QRCodeGen';
-import { Sprout, Leaf } from 'lucide-react';
+import { Sprout, Leaf, ShieldCheck } from 'lucide-react';
 
 interface CardPreviewProps {
   data: FarmerData;
@@ -109,7 +109,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          <div className="flex p-5 gap-6 h-[calc(100%-124px)] relative z-10">
+          <div className="flex p-5 gap-6 h-[calc(100%-128px)] relative z-10">
             <div className="flex flex-col gap-3 items-center">
                <div className="w-[120px] h-[150px] border-[3px] border-[#064e3b] rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative">
                   {data.photoUrl ? (
@@ -120,7 +120,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                       </div>
                   )}
                   <div className="absolute bottom-1 right-1 bg-[#8bc34a] text-white p-1 rounded-full shadow-sm">
-                     <img src={biharLogoUrl} crossOrigin="anonymous" className="w.3.5 h-3.5 brightness-0 invert" alt="seal" />
+                     <img src={biharLogoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
                   </div>
                </div>
                <div className="flex flex-col items-center">
@@ -170,12 +170,21 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 bg-[#064e3b] text-white p-3 flex justify-center items-center shadow-[0_-4px_15px_rgba(0,0,0,0.15)] relative z-10">
-             <div className="flex items-center gap-6">
-               <div className="flex flex-col items-center leading-none">
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-[#cddc39] mb-1">Digital Farmer ID</span>
-                  <span className="text-2xl font-black tracking-[0.3em]">{data.farmerId}</span>
-               </div>
+          {/* Redesigned Bottom ID Bar */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white p-4 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t border-[#cddc39]/30">
+             <div className="absolute left-4 opacity-20">
+                <ShieldCheck className="w-8 h-8 text-[#cddc39]" />
+             </div>
+             <div className="flex flex-col items-center leading-none">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-6 h-[1px] bg-[#cddc39]/40"></span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#cddc39]">Digital Farmer ID / डिजिटल किसान आईडी</span>
+                  <span className="w-6 h-[1px] bg-[#cddc39]/40"></span>
+                </div>
+                <span className="text-3xl font-black tracking-[0.25em] drop-shadow-lg text-white font-mono">{data.farmerId}</span>
+             </div>
+             <div className="absolute right-4 opacity-20 rotate-12">
+                <Sprout className="w-8 h-8 text-[#cddc39]" />
              </div>
           </div>
         </div>
