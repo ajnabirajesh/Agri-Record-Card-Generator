@@ -109,7 +109,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          <div className="flex p-5 gap-6 h-[calc(100%-128px)] relative z-10">
+          <div className="flex p-5 gap-6 h-[calc(100%-135px)] relative z-10">
             <div className="flex flex-col gap-3 items-center">
                <div className="w-[120px] h-[150px] border-[3px] border-[#064e3b] rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative">
                   {data.photoUrl ? (
@@ -170,20 +170,20 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          {/* Full-width Bottom ID Bar with swapped ID and Label */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white pt-3 pb-5 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.15)] relative z-10 border-t border-[#cddc39]/30">
+          {/* Full-width Bottom ID Bar with Swapped Positions and Adjusted Vertical Spacing */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white py-5 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t border-[#cddc39]/30">
              <div className="absolute left-6 opacity-20">
                 <ShieldCheck className="w-8 h-8 text-[#cddc39]" />
              </div>
-             <div className="flex flex-col items-center leading-none">
-                {/* Farmer ID Number moved to the top position */}
-                <span className="text-3xl font-black tracking-[0.3em] drop-shadow-xl text-white font-mono mb-1.5">{data.farmerId}</span>
+             <div className="flex flex-col items-center gap-1.5">
+                {/* Farmer ID Number on Top */}
+                <span className="text-3xl font-black tracking-[0.3em] drop-shadow-xl text-white font-mono leading-none">{data.farmerId}</span>
                 
-                {/* Label moved to the bottom position */}
-                <div className="flex items-center gap-2">
-                  <span className="w-6 h-[1px] bg-[#cddc39]/30"></span>
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#cddc39]">Digital Farmer ID / डिजिटल किसान आईडी</span>
-                  <span className="w-6 h-[1px] bg-[#cddc39]/30"></span>
+                {/* Label on Bottom with Line Accents */}
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-[1px] bg-[#cddc39]/20"></span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#cddc39] drop-shadow-sm whitespace-nowrap">Digital Farmer ID / डिजिटल किसान आईडी</span>
+                  <span className="w-8 h-[1px] bg-[#cddc39]/20"></span>
                 </div>
              </div>
              <div className="absolute right-6 opacity-20 rotate-12">
