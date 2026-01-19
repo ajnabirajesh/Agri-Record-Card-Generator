@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { FarmerData, LandDetail } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar } from 'lucide-react';
+import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
 interface FarmerFormProps {
@@ -11,6 +11,7 @@ interface FarmerFormProps {
 
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const [isExtracting, setIsExtracting] = useState(false);
+  const [extractError, setExtractError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -32,26 +33,36 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setExtractError(null);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64 = reader.result as string;
       setIsExtracting(true);
       try {
-        const extractedData = await extractFarmerDataFromImage(base64);
-        if (extractedData) {
-          // Merge logic: prioritize extracted data but fallback to existing if empty
+        const extracted = await extractFarmerDataFromImage(base64);
+        if (extracted) {
+          // Check if extracted data is mostly empty
+          const hasAnyData = Object.values(extracted).some(v => v && (typeof v === 'string' ? v.length > 0 : Array.isArray(v) && v.length > 0));
+          
+          if (!hasAnyData) {
+            setExtractError("AI could not find clear details in this image. Please try a clearer photo.");
+            setIsExtracting(false);
+            return;
+          }
+
+          // Merge logic: keep existing if extracted is empty, otherwise update
           const mergedData: FarmerData = {
             ...data,
-            nameHindi: extractedData.nameHindi || data.nameHindi,
-            nameEnglish: extractedData.nameEnglish || data.nameEnglish,
-            dob: extractedData.dob || data.dob,
-            gender: extractedData.gender || data.gender,
-            mobile: extractedData.mobile || data.mobile,
-            aadhaar: extractedData.aadhaar || data.aadhaar,
-            farmerId: extractedData.farmerId || data.farmerId,
-            address: extractedData.address || data.address,
-            landDetails: extractedData.landDetails && extractedData.landDetails.length > 0 
-              ? extractedData.landDetails.map((l: any, idx: number) => ({
+            nameHindi: (extracted.nameHindi && extracted.nameHindi.trim()) || data.nameHindi,
+            nameEnglish: (extracted.nameEnglish && extracted.nameEnglish.trim()) || data.nameEnglish,
+            dob: (extracted.dob && extracted.dob.trim()) || data.dob,
+            gender: (extracted.gender && extracted.gender.trim()) || data.gender,
+            mobile: (extracted.mobile && extracted.mobile.trim().replace(/\s/g, '')) || data.mobile,
+            aadhaar: (extracted.aadhaar && extracted.aadhaar.trim().replace(/\s/g, '')) || data.aadhaar,
+            farmerId: (extracted.farmerId && extracted.farmerId.trim()) || data.farmerId,
+            address: (extracted.address && extracted.address.trim()) || data.address,
+            landDetails: extracted.landDetails && extracted.landDetails.length > 0 
+              ? extracted.landDetails.map((l: any, idx: number) => ({
                   ...l,
                   id: `ai-${Date.now()}-${idx}`
                 }))
@@ -59,12 +70,15 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           };
           onChange(mergedData);
         } else {
-          alert("Could not extract data from this image. Please ensure the text is clear.");
+          setExtractError("Failed to extract data. Check your internet or image quality.");
         }
       } catch (err) {
         console.error("Auto-fill error:", err);
+        setExtractError("An error occurred during AI scanning.");
       } finally {
         setIsExtracting(false);
+        // Clear input so same file can be selected again
+        e.target.value = '';
       }
     };
     reader.readAsDataURL(file);
@@ -115,6 +129,13 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
             {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
           </label>
         </div>
+
+        {extractError && (
+          <div className="mt-4 bg-red-500/20 border border-red-400/30 p-2 rounded-lg flex items-center gap-2 text-[10px] font-bold text-red-100 relative z-10 animate-pulse">
+            <AlertCircle className="w-3 h-3" />
+            {extractError}
+          </div>
+        )}
       </div>
 
       <section className="space-y-6">

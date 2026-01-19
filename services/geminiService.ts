@@ -27,23 +27,28 @@ export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise
             },
           },
           {
-            text: `Extract all possible farmer information from this identity card or land document image. 
+            text: `You are an expert OCR and data extraction system for Indian Agricultural Documents (like Aadhar Card, Khatauni, Land Records, or Farmer ID).
             
-            Look specifically for:
-            - Name in Hindi and English.
-            - Date of Birth (DOB).
-            - Gender.
-            - 10-digit Mobile Number.
-            - 12-digit Aadhaar Number.
-            - Farmer ID / Registration Number.
-            - Full Address.
-            - Land Details: Look for "Khata Number" (Machine Owner No), "Khasra Number", and "Area/Rakba" in Acres or Decimals.
-            
-            Return the data in a clean JSON format. If a field is missing, return an empty string.`,
+            Extract the following details from the provided image:
+            1. Farmer's Name in Hindi (nameHindi) and English (nameEnglish).
+            2. Date of Birth (dob) in DD/MM/YYYY format.
+            3. Gender (gender) as "Male", "Female", or "Other".
+            4. 10-digit Mobile Number (mobile).
+            5. 12-digit Aadhaar Number (aadhaar).
+            6. Farmer ID / Registration ID (farmerId).
+            7. Full Permanent Address (address).
+            8. Land Details (landDetails): 
+               - Look for "District", "Block/Sub-District", "Village/Mauja".
+               - "Khata Number" or "Machine Owner Number" (mOwnerNo).
+               - "Khasra/Plot Number" (khasra).
+               - "Area/Rakba" (area) in Acres or Decimals.
+
+            Return the response in JSON format. Use empty strings for missing fields.`,
           },
         ],
       },
       config: {
+        thinkingConfig: { thinkingBudget: 1000 },
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -64,10 +69,7 @@ export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise
                   district: { type: Type.STRING },
                   subDistrict: { type: Type.STRING },
                   village: { type: Type.STRING },
-                  mOwnerNo: { 
-                    type: Type.STRING,
-                    description: "The Khata number or Machine Owner Number."
-                  },
+                  mOwnerNo: { type: Type.STRING },
                   khasra: { type: Type.STRING },
                   area: { type: Type.STRING },
                 },
@@ -90,6 +92,10 @@ export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise
     return null;
   } catch (error) {
     console.error("Error extracting data from Gemini:", error);
+    // If it's a 404 or missing entity, it might be an API Key issue in some environments
+    if (error instanceof Error && error.message.includes("Requested entity was not found")) {
+      alert("AI Service Error: Please check if the API is available or the image is too blurry.");
+    }
     return null;
   }
 };
