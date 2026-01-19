@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { extractFarmerDataFromImage } from '../services/geminiService';
+import { Plus, Trash2, Camera, UserCircle, Database, Calendar } from 'lucide-react';
 
 interface FarmerFormProps {
   data: FarmerData;
@@ -10,24 +9,6 @@ interface FarmerFormProps {
 }
 
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
-  const [isExtracting, setIsExtracting] = useState(false);
-  const [extractError, setExtractError] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  useEffect(() => {
-    if (extractError) {
-      const timer = setTimeout(() => setExtractError(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [extractError]);
-
-  useEffect(() => {
-    if (showSuccess) {
-      const timer = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccess]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onChange({ ...data, [name]: value });
@@ -42,74 +23,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const handleAutoFillFromImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setExtractError(null);
-    setShowSuccess(false);
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64 = reader.result as string;
-      setIsExtracting(true);
-      try {
-        const extracted = await extractFarmerDataFromImage(base64);
-        
-        if (extracted) {
-          // Verify if anything useful was actually extracted
-          const hasAnyValue = Object.values(extracted).some(v => 
-            Array.isArray(v) ? v.length > 0 : (typeof v === 'string' && v.trim() !== "")
-          );
-
-          if (!hasAnyValue) {
-            setExtractError("The AI couldn't find readable data. Please ensure the card is well-lit and not blurry.");
-            setIsExtracting(false);
-            return;
-          }
-
-          // Normalize District names to match our list
-          const normalizedLandDetails = (extracted.landDetails || []).map((l: any, idx: number) => {
-            let matchedDistrict = l.district || "";
-            if (matchedDistrict) {
-              const found = BIHAR_DISTRICTS.find(d => d.toLowerCase() === matchedDistrict.toLowerCase());
-              if (found) matchedDistrict = found;
-            }
-            return {
-              ...l,
-              district: matchedDistrict,
-              id: `ai-${Date.now()}-${idx}`
-            };
-          });
-
-          // Create the merged dataset
-          const mergedData: FarmerData = {
-            ...data,
-            nameHindi: extracted.nameHindi || data.nameHindi,
-            nameEnglish: extracted.nameEnglish || data.nameEnglish,
-            dob: extracted.dob || data.dob,
-            gender: extracted.gender || data.gender,
-            mobile: extracted.mobile ? extracted.mobile.replace(/\D/g, '').slice(-10) : data.mobile,
-            aadhaar: extracted.aadhaar ? extracted.aadhaar.replace(/\D/g, '').slice(-12) : data.aadhaar,
-            farmerId: extracted.farmerId || data.farmerId,
-            address: extracted.address || data.address,
-            landDetails: normalizedLandDetails.length > 0 ? normalizedLandDetails : data.landDetails
-          };
-
-          onChange(mergedData);
-          setShowSuccess(true);
-        } else {
-          setExtractError("AI Processing failed. Please try again with a different image.");
-        }
-      } catch (err: any) {
-        setExtractError("Scanning error: " + (err.message || "Unknown error"));
-      } finally {
-        setIsExtracting(false);
-        e.target.value = ''; // Reset file input
-      }
-    };
-    reader.readAsDataURL(file);
   };
 
   const updateLandDetail = (id: string, field: keyof LandDetail, value: string) => {
@@ -145,49 +58,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   return (
     <div className="bg-white/80 p-8 flex flex-col gap-10">
       
-      {/* AI Magic Section */}
-      <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-6 rounded-2xl text-white shadow-lg relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-500">
-            <Wand2 className="w-16 h-16" />
-        </div>
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-lg font-black flex items-center gap-2 mb-1">
-              <Wand2 className={`w-5 h-5 text-[#cddc39] ${isExtracting ? 'animate-spin' : ''}`} /> AI Smart-Scan
-            </h3>
-            <p className="text-xs text-emerald-100/80 font-medium">Extract text from your existing ID card photo.</p>
-          </div>
-          
-          <div className="flex flex-col gap-2">
-            <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed animate-pulse' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
-                {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                <span>{isExtracting ? 'EXTRACTING...' : 'SCAN PHOTO'}</span>
-                {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
-            </label>
-          </div>
-        </div>
-
-        {extractError && (
-          <div className="mt-4 bg-red-500/90 border border-red-400 p-3 rounded-xl flex items-start gap-3 text-[10px] font-bold text-white relative z-10 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <div className="flex flex-col">
-              <span className="uppercase tracking-widest text-[8px] opacity-70 mb-0.5">Error</span>
-              <p className="leading-tight">{extractError}</p>
-            </div>
-          </div>
-        )}
-
-        {showSuccess && (
-          <div className="mt-4 bg-white border border-[#cddc39] p-3 rounded-xl flex items-start gap-3 text-[10px] font-bold text-[#064e3b] relative z-10 shadow-lg animate-in zoom-in duration-300">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-            <div className="flex flex-col">
-              <span className="uppercase tracking-widest text-[8px] opacity-70 mb-0.5">Success</span>
-              <p className="leading-tight">Data extracted and synced with the form.</p>
-            </div>
-          </div>
-        )}
-      </div>
-
       <section className="space-y-6">
         <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
             <UserCircle className="w-5 h-5 text-emerald-600" />
