@@ -170,8 +170,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          {/* Full-width Bottom ID Bar with Swapped Positions and Adjusted Vertical Spacing */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white py-5 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t border-[#cddc39]/30">
+          {/* Full-width Bottom ID Bar with Swapped Positions and Increased Bottom Padding to Move Text UP */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white pt-4 pb-9 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t border-[#cddc39]/30">
              <div className="absolute left-6 opacity-20">
                 <ShieldCheck className="w-8 h-8 text-[#cddc39]" />
              </div>
@@ -179,7 +179,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                 {/* Farmer ID Number on Top */}
                 <span className="text-3xl font-black tracking-[0.3em] drop-shadow-xl text-white font-mono leading-none">{data.farmerId}</span>
                 
-                {/* Label on Bottom with Line Accents */}
+                {/* Label on Bottom with Line Accents - Now further from bottom edge */}
                 <div className="flex items-center gap-3">
                   <span className="w-8 h-[1px] bg-[#cddc39]/20"></span>
                   <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#cddc39] drop-shadow-sm whitespace-nowrap">Digital Farmer ID / डिजिटल किसान आईडी</span>
