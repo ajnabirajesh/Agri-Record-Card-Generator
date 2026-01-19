@@ -2,19 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { FarmerData } from "../types";
 
-export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise<Partial<FarmerData> | null> => {
-  // Always create a fresh instance to ensure the latest API key is used
+export const extractFarmerDataFromImage = async (base64Image: string): Promise<Partial<FarmerData> | null> => {
+  // Directly initialize using the environment variable as per guidelines
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-  // Extract mimeType and base64 data correctly
-  const mimeTypeMatch = base64DataUrl.match(/^data:(.*);base64,(.*)$/);
-  if (!mimeTypeMatch) {
-    console.error("Invalid base64 data format provided to service.");
-    return null;
-  }
-
-  const mimeType = mimeTypeMatch[1];
-  const base64Data = mimeTypeMatch[2];
 
   try {
     const response = await ai.models.generateContent({
@@ -23,25 +13,12 @@ export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise
         parts: [
           {
             inlineData: {
-              mimeType: mimeType,
-              data: base64Data,
+              mimeType: 'image/jpeg',
+              data: base64Image.split(',')[1] || base64Image,
             },
           },
           {
-            text: `Extract all farmer and land details from this image. This is a document for the Agri Record Management System.
-            
-            Return the following fields in JSON:
-            - nameHindi: Name in Hindi script.
-            - nameEnglish: Name in English (Capital Letters).
-            - dob: Date of Birth in DD/MM/YYYY.
-            - gender: "Male", "Female", or "Other".
-            - mobile: 10-digit mobile number.
-            - aadhaar: 12-digit Aadhaar number.
-            - farmerId: Farmer Registration ID if present.
-            - address: Full permanent address.
-            - landDetails: An array of objects with fields: district, subDistrict, village, mOwnerNo (Khata No), khasra (Plot No), area (in Acres).
-            
-            If a field is not found, leave it as an empty string. If no land records are found, return an empty array for landDetails.`,
+            text: "Extract farmer information from this card image. Return the data in a structured JSON format following the schema provided. If a field is not found, leave it empty. Ensure nameHindi and nameEnglish are separated if possible. Note: 'mOwnerNo' corresponds to the 'Khata' number found on documents.",
           },
         ],
       },
@@ -66,7 +43,10 @@ export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise
                   district: { type: Type.STRING },
                   subDistrict: { type: Type.STRING },
                   village: { type: Type.STRING },
-                  mOwnerNo: { type: Type.STRING },
+                  mOwnerNo: { 
+                    type: Type.STRING,
+                    description: "The Khata number or Machine Owner Number."
+                  },
                   khasra: { type: Type.STRING },
                   area: { type: Type.STRING },
                 },
@@ -79,12 +59,17 @@ export const extractFarmerDataFromImage = async (base64DataUrl: string): Promise
 
     const text = response.text;
     if (text) {
-      return JSON.parse(text);
+      try {
+        return JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", text);
+        return null;
+      }
     }
     return null;
-  } catch (error: any) {
-    console.error("Gemini Extraction Error Detail:", error);
-    // Bubble up the error message for the UI to display
-    throw new Error(error.message || "Failed to extract data from image");
+  } catch (error) {
+    console.error("Error extracting data from Gemini:", error);
+    // Silent fail in UI but logged for developers
+    return null;
   }
 };
