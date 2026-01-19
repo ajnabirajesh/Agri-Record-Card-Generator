@@ -60,7 +60,7 @@ export const BIHAR_SUB_DISTRICTS: Record<string, string[]> = {
   "Patna": ["Patna Sadar", "Anisabad", "Athmalgola", "Bakhtiyarpur", "Barh", "Belchhi", "Bihta", "Bikram", "Danapur", "Daniyawan", "Dulhin Bazar", "Fatwah", "Ghoswari", "Khagaul", "Khusrupur", "Masaurhi", "Mokama", "Naubatpur", "Paliganj", "Pandarak", "Phulwari Sharif", "Punpun", "Sampatchak"],
   "Purnia": ["Purnia", "Amour", "Baisi", "Banmankhi", "Bhawanipur", "Dagarua", "Dhamdaha", "Jalalgadh", "Kasba", "Krityanand Nagar", "Purnia East", "Rupauli", "Srinagar"],
   "Rohtas": ["Sasaram", "Akhorigola", "Banjari", "Chenari", "Dawath", "Dehri", "Dinara", "Karakat", "Kochas", "Nasriganj", "Nauhatta", "Nokha", "Rajpur", "Rohtas", "Sanjhauli", "Sheosagar", "Suryapura", "Tilouthu"],
-  "Saharsa": ["Saharsa", "Banma Itahari", "Kahara", "Mahishi", "Nauhatta", "Patarghat", "Salkhua", "Simri Bakhtiarpur", "Sonbarsa"],
+  "Saharsa": ["Banma Itahri", "Kahra", "Mahishi", "Nauhatta", "Patarghat", "Salkhua", "Satar Kataiya", "Saurbazar", "Simri Bakhtiarpur", "Sonbarsa"],
   "Samastipur": ["Samastipur", "Bibhutipur", "Bithan", "Dalsinghsarai", "Hasanpur", "Kalyanpur", "Khanpur", "Mohanpur", "Mohiuddin Nagar", "Morwa", "Patori", "Pusa", "Rosera", "Sarairanjan", "Shivaji Nagar", "Singhia", "Tajpur", "Ujiarpur", "Warisnagar"],
   "Saran": ["Chhapra", "Amnour", "Baniapur", "Dariapur", "Dighwara", "Ekma", "Garkha", "Isuapur", "Jalalpur", "Lahladpur", "Mashrakh", "Nagra", "Panapur", "Parsa", "Revelganj", "Sonepur", "Taraiya"],
   "Sheikhpura": ["Sheikhpura", "Ariari", "Barbigha", "Chewara", "Ghat Kusumbha", "Shekhopur Sarai"],
