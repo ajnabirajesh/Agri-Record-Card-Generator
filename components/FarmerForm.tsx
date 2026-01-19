@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FarmerData, LandDetail } from '../types';
-import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle, Key } from 'lucide-react';
+import { Plus, Trash2, Camera, Wand2, Loader2, UserCircle, Database, Calendar, AlertCircle } from 'lucide-react';
 import { extractFarmerDataFromImage } from '../services/geminiService';
 
 interface FarmerFormProps {
@@ -12,18 +12,6 @@ interface FarmerFormProps {
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
-  const [needsApiKey, setNeedsApiKey] = useState(false);
-
-  // Check if API Key is selected on mount
-  useEffect(() => {
-    const checkKey = async () => {
-      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
-        const hasKey = await window.aistudio.hasSelectedApiKey();
-        setNeedsApiKey(!hasKey);
-      }
-    };
-    checkKey();
-  }, []);
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -32,13 +20,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       return () => clearTimeout(timer);
     }
   }, [extractError]);
-
-  const handleSelectKey = async () => {
-    if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
-      await window.aistudio.openSelectKey();
-      setNeedsApiKey(false); // Proceed after triggering
-    }
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -59,12 +40,6 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const handleAutoFillFromImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // If we know a key is needed and not set, trigger dialog
-    if (needsApiKey) {
-        handleSelectKey();
-        return;
-    }
 
     setExtractError(null);
     const reader = new FileReader();
@@ -107,15 +82,10 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         }
       } catch (err: any) {
         console.error("Auto-fill extraction error:", err);
-        // Specifically check for API Key errors
-        if (err.message?.includes("API Key") || err.message?.includes("entity was not found")) {
-            setNeedsApiKey(true);
-            setExtractError("Please select a valid paid API Key to continue.");
-        } else {
-            setExtractError(err.message || "An error occurred during AI scanning.");
-        }
+        setExtractError(err.message || "An error occurred during AI scanning.");
       } finally {
         setIsExtracting(false);
+        // Reset file input
         e.target.value = '';
       }
     };
@@ -163,32 +133,11 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           </div>
           
           <div className="flex flex-col gap-2">
-            {needsApiKey ? (
-                <button 
-                    onClick={handleSelectKey}
-                    className="flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 bg-white text-emerald-800 hover:bg-[#cddc39] hover:text-[#064e3b]"
-                >
-                    <Key className="w-4 h-4" />
-                    <span>SELECT API KEY</span>
-                </button>
-            ) : (
-                <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed animate-pulse' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
-                    {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                    <span>{isExtracting ? 'AI IS SCANNING...' : 'SCAN OLD CARD'}</span>
-                    {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
-                </label>
-            )}
-            
-            {needsApiKey && (
-                <a 
-                    href="https://ai.google.dev/gemini-api/docs/billing" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-[9px] text-center font-bold text-emerald-200 hover:text-white underline"
-                >
-                    Billing Setup Guide
-                </a>
-            )}
+            <label className={`flex items-center gap-3 px-6 py-3 rounded-xl cursor-pointer transition-all font-black text-xs shadow-xl shadow-black/20 ${isExtracting ? 'bg-white/20 text-white cursor-not-allowed animate-pulse' : 'bg-[#cddc39] text-[#064e3b] hover:bg-white'}`}>
+                {isExtracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                <span>{isExtracting ? 'AI IS SCANNING...' : 'SCAN OLD CARD'}</span>
+                {!isExtracting && <input type="file" className="hidden" accept="image/*" onChange={handleAutoFillFromImage} />}
+            </label>
           </div>
         </div>
 
