@@ -87,29 +87,7 @@ const App: React.FC = () => {
             <div id="preview-area" className="flex-1 w-full min-h-0">
                 <CardPreview data={farmerData} />
             </div>
-
-            <div className="no-print mt-12 p-10 bg-[#064e3b] rounded-[40px] shadow-2xl relative overflow-hidden group text-center">
-                <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:rotate-45 transition-transform duration-1000">
-                    <Leaf className="w-64 h-64" />
-                </div>
-                
-                <div className="relative z-10 flex flex-col items-center">
-                    <div className="bg-white/10 p-5 rounded-3xl backdrop-blur-md mb-6 border border-white/20">
-                        <Printer className="w-10 h-10 text-[#cddc39]" />
-                    </div>
-                    <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Print / Save Farmer ID</h3>
-                    <p className="text-emerald-100/70 max-w-md text-sm leading-relaxed mb-8">
-                        Click Save to open the print dialog. Select <b>"Save as PDF"</b> to download your high-quality card.
-                    </p>
-                    <button 
-                        onClick={handleSaveAsPDF}
-                        className="bg-[#cddc39] text-[#064e3b] px-12 py-4 rounded-2xl font-black text-lg hover:bg-white transition-all shadow-2xl shadow-black/40 flex items-center gap-3 active:scale-95 w-full md:w-auto justify-center"
-                    >
-                        <Download className="w-5 h-5" />
-                        SAVE / DOWNLOAD
-                    </button>
-                </div>
-            </div>
+            
         </div>
 
         {/* Editor Sidebar */}
@@ -120,9 +98,9 @@ const App: React.FC = () => {
                     <Info className="w-6 h-6 text-emerald-700" />
                 </div>
                 <div>
-                    <h4 className="font-bold text-sm mb-1">How it works</h4>
+                    <h4 className="font-bold text-sm mb-1">Founder</h4>
                     <p className="text-xs leading-relaxed opacity-80">
-                        Fill in the details. Use the "Scan Old Card" feature to auto-fill details using AI.
+                        This Page Crated By ⪼ Raj Kumar Urf Rajesh Yadav, Supaul, Bihar. Company - "Ajnabi Creation"
                     </p>
                 </div>
             </div>
