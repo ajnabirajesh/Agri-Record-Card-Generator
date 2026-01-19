@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { FarmerData } from '../types';
 import QRCodeGen from './QRCodeGen';
@@ -8,6 +7,30 @@ interface CardPreviewProps {
   data: FarmerData;
   forceFullScale?: boolean; // Prop to override responsive scaling
 }
+
+interface ScaledCardProps {
+  children: React.ReactNode;
+  forceFullScale: boolean;
+  scale: number;
+}
+
+const ScaledCard: React.FC<ScaledCardProps> = ({ children, forceFullScale, scale }) => (
+  <div 
+    className={`card-container-transition origin-top flex flex-col items-center ${!forceFullScale ? 'print-force-scale' : ''}`}
+    style={forceFullScale ? {
+      width: '600px',
+      height: '380px',
+      marginBottom: '2rem'
+    } : { 
+      transform: `scale(${scale})`,
+      height: `${380 * scale}px`,
+      width: '100%',
+      marginBottom: '2.5rem'
+    }}
+  >
+    {children}
+  </div>
+);
 
 const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,30 +72,11 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
 
   const currentScale = forceFullScale ? 1 : scale;
 
-  // IMPORTANT: For PDF generation (forceFullScale), we avoid 'transform' entirely to prevent blank output.
-  const ScaledCard = ({ children }: { children: React.ReactNode }) => (
-    <div 
-      className={`card-container-transition origin-top flex flex-col items-center ${!forceFullScale ? 'print-force-scale' : ''}`}
-      style={forceFullScale ? {
-        width: '600px',
-        height: '380px',
-        marginBottom: '2rem'
-      } : { 
-        transform: `scale(${currentScale})`,
-        height: `${380 * currentScale}px`,
-        width: '100%',
-        marginBottom: '2.5rem'
-      }}
-    >
-      {children}
-    </div>
-  );
-
   return (
     <div ref={containerRef} className="w-full flex flex-col items-center card-preview-container">
       
       {/* Front Side */}
-      <ScaledCard>
+      <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
           {/* Transparent Watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none z-0">
@@ -178,7 +182,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       </ScaledCard>
 
       {/* Back Side */}
-      <ScaledCard>
+      <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 p-6 flex flex-col relative card-pattern select-none">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
               <img src={biharLogoUrl} alt="Bihar Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
