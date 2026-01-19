@@ -146,7 +146,7 @@ const App: React.FC = () => {
 
               <div className="flex flex-col items-center">
                   <div className="flex items-center justify-center gap-3 mb-6">
-                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400">CRAFTED WITH</span>
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400">Created</span>
                     <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />
                     <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400">BY</span>
                   </div>
@@ -162,7 +162,7 @@ const App: React.FC = () => {
                       <span className="text-sm font-black text-[#064e3b] group-hover:text-white">Ajnabi Creation</span>
                     </a>
                     
-                    <span className="text-slate-300 font-black text-lg italic"></span>
+                    
                     
                     <a 
                       href="https://instagram.com/ajnabirajesh" 
