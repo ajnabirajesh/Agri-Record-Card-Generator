@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { FarmerData } from '../types';
 import QRCodeGen from './QRCodeGen';
@@ -68,7 +69,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
     ? new Date().toLocaleDateString('en-GB') 
     : data.downloadDate;
 
-  const qrValue = `Name: ${data.nameEnglish}\nDOB: ${data.dob}\nMobile: ${data.mobile}\nFarmer ID: ${data.farmerId}\nAddress: ${data.address}\nIssued: ${displayIssueDate}`;
+  // Formatting Land Details for QR Code
+  const landInfo = data.landDetails
+    .filter(l => l.district || l.mOwnerNo || l.khasra) // Filter out empty entries
+    .map((l, i) => `P${i+1}: ${l.district}/${l.subDistrict}, V:${l.village}, Khata:${l.mOwnerNo}, Khasra:${l.khasra}, Area:${l.area}`)
+    .join(' | ');
+
+  const qrValue = `Name: ${data.nameEnglish}\nID: ${data.farmerId}\nDOB: ${data.dob}\nMob: ${data.mobile}\nAddr: ${data.address}\nLand: ${landInfo}\nIssued: ${displayIssueDate}`;
 
   const currentScale = forceFullScale ? 1 : scale;
 
