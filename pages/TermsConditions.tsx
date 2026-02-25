@@ -52,7 +52,7 @@ const TermsConditions: React.FC = () => {
 
           <h2 className="text-xl font-bold text-slate-800 mt-8 mb-4">8. Contact Information</h2>
           <p>
-            If you have any questions about these Terms & Conditions, please contact us at ajnabicreation@gamil.com.
+            If you have any questions about these Terms & Conditions, please contact us at ajnabicreation@gmail.com.
           </p>
         </div>
       </div>

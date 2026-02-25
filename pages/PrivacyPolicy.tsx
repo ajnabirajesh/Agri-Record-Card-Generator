@@ -42,7 +42,7 @@ const PrivacyPolicy: React.FC = () => {
 
           <h2 className="text-xl font-bold text-slate-800 mt-8 mb-4">6. Contact Us</h2>
           <p>
-            If you have any questions about this Privacy Policy, please contact us at ajnabicreation@gamil.com.
+            If you have any questions about this Privacy Policy, please contact us at ajnabicreation@gmail.com.
           </p>
         </div>
       </div>

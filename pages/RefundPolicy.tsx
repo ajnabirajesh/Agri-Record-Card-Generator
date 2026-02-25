@@ -39,7 +39,7 @@ const RefundPolicy: React.FC = () => {
             If you believe you are eligible for a refund based on the exceptions above, please contact our support team within 7 days of the transaction.
           </p>
           <p>
-            To request a refund, email us at <strong>ajnabicreation@gamil.com</strong> with the following details:
+            To request a refund, email us at <strong>ajnabicreation@gmail.com</strong> with the following details:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Your full name and contact number</li>
