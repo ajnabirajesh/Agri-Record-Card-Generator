@@ -80,6 +80,10 @@ const AdminCards: React.FC = () => {
     } catch (err: any) {
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
         setLoginError('Invalid User ID or Password. Please check your credentials.');
+      } else if (err.code === 'auth/email-already-in-use') {
+        setLoginError('This email is already registered with a different login method (e.g., Google). Please use the correct password or login method.');
+      } else if (err.code === 'auth/weak-password') {
+        setLoginError('Password is too weak. It must be at least 6 characters long.');
       } else if (err.code === 'auth/operation-not-allowed') {
         setLoginError('Email/Password login is not enabled in Firebase Console. Please enable it first.');
       } else {
@@ -130,6 +134,12 @@ const AdminCards: React.FC = () => {
             <p className="text-slate-500 mt-2 text-sm">Enter your Admin ID and Password to access the dashboard.</p>
           </div>
           
+          {user && !isAdmin && (
+            <div className="bg-amber-50 text-amber-700 p-3 rounded-lg text-sm mb-6 border border-amber-100 text-center">
+              You are currently logged in as <strong>{user.email}</strong>, but this account does not have admin privileges. Please log in with an admin account.
+            </div>
+          )}
+
           {loginError && (
             <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 border border-red-100">
               {loginError}

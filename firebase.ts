@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import firebaseConfig from './firebase-applet-config.json';
 
@@ -34,6 +34,29 @@ export const signInWithEmail = async (email: string, password: string) => {
     return result.user;
   } catch (error: any) {
     console.error("Error signing in with email", error);
+    
+    // In newer Firebase versions, both "user not found" and "wrong password" 
+    // return 'auth/invalid-credential' to prevent email enumeration.
+    // So if we get this error, we'll try to create the account.
+    // If the account already exists, creation will fail with 'auth/email-already-in-use',
+    // which means the user just typed the wrong password.
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+      try {
+        console.log("Account might not exist. Attempting to create it...");
+        const newResult = await createUserWithEmailAndPassword(auth, email, password);
+        console.log("Account created successfully!");
+        return newResult.user;
+      } catch (createError: any) {
+        if (createError.code === 'auth/email-already-in-use') {
+          // The account DOES exist, so the original error was indeed a wrong password.
+          console.error("Account exists. The password was incorrect.");
+          throw error; // Throw the original invalid-credential error
+        }
+        console.error("Failed to create account", createError);
+        throw createError;
+      }
+    }
+    
     throw error;
   }
 };

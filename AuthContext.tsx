@@ -46,13 +46,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             role = userSnap.data().role;
           }
           
+          const userEmail = currentUser.email?.toLowerCase() || '';
           const adminStatus = role === 'admin' || 
-                              currentUser.email === 'rajeshkumar1112000@gmail.com' || 
-                              currentUser.email === 'admin@agrirecord.com';
+                              userEmail === 'rajeshkumar1112000@gmail.com' || 
+                              userEmail === 'admin@agrirecord.com';
           setIsAdmin(adminStatus);
         } catch (error) {
           console.error("Error fetching user role:", error);
-          setIsAdmin(currentUser.email === 'rajeshkumar1112000@gmail.com' || currentUser.email === 'admin@agrirecord.com');
+          const userEmail = currentUser.email?.toLowerCase() || '';
+          setIsAdmin(userEmail === 'rajeshkumar1112000@gmail.com' || userEmail === 'admin@agrirecord.com');
         }
       } else {
         setIsAdmin(false);
