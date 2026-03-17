@@ -317,6 +317,10 @@ const Home: React.FC = () => {
                   </div>
               </div>
            </div>
+           <div className="mt-12 pt-8 border-t border-slate-200/20 text-center text-slate-400 text-sm flex flex-col items-center gap-2">
+             <p>© {new Date().getFullYear()} Agri Record. All rights reserved.</p>
+             <Link to="/admin" className="text-slate-500 hover:text-emerald-400 transition-colors font-medium">Admin Access</Link>
+           </div>
         </div>
       </footer>
 

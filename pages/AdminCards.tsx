@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../AuthContext';
-import { db } from '../firebase';
+import { db, signInWithEmail } from '../firebase';
 import { collection, query, getDocs, orderBy, deleteDoc, doc } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Trash2, Search } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock } from 'lucide-react';
 
 interface SavedCard {
   id: string;
@@ -22,20 +22,26 @@ const AdminCards: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [printingCardId, setPrintingCardId] = useState<string | null>(null);
+  
+  // Login State
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (authLoading) return;
-    
-    if (!user || !isAdmin) {
-      navigate('/');
-      return;
+    if (isAdmin) {
+      fetchCards();
+    } else {
+      setLoading(false);
     }
-
-    fetchCards();
-  }, [user, isAdmin, authLoading, navigate]);
+  }, [isAdmin, authLoading]);
 
   const fetchCards = async () => {
+    setLoading(true);
     try {
       const q = query(
         collection(db, 'cards'),
@@ -65,6 +71,25 @@ const AdminCards: React.FC = () => {
     }
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsLoggingIn(true);
+    try {
+      await signInWithEmail(email, password);
+    } catch (err: any) {
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        setLoginError('Invalid User ID or Password. Please check your credentials.');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setLoginError('Email/Password login is not enabled in Firebase Console. Please enable it first.');
+      } else {
+        setLoginError(err.message || 'Login failed. Please try again.');
+      }
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
   const handleDelete = async (cardId: string) => {
     if (window.confirm("Are you sure you want to delete this card?")) {
       try {
@@ -89,6 +114,66 @@ const AdminCards: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full border border-slate-100">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-purple-600" />
+            </div>
+            <h1 className="text-2xl font-black text-purple-900">Admin Login</h1>
+            <p className="text-slate-500 mt-2 text-sm">Enter your Admin ID and Password to access the dashboard.</p>
+          </div>
+          
+          {loginError && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 border border-red-100">
+              {loginError}
+            </div>
+          )}
+          
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">Admin ID (Email)</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+                placeholder="admin@agrirecord.com"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-all active:scale-95 disabled:opacity-70 flex justify-center items-center mt-2"
+            >
+              {isLoggingIn ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Login to Dashboard'}
+            </button>
+          </form>
+          
+          <div className="mt-8 text-center">
+            <Link to="/" className="text-sm text-purple-600 hover:text-purple-800 font-medium">
+              &larr; Back to Home
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
