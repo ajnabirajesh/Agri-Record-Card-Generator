@@ -6,19 +6,28 @@ export default async function handler(req, res) {
   }
 
   const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
+    key_id: process.env.VITE_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
   });
 
   try {
+    let body = req.body || {};
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {}
+    }
+    const amount = Number(body.amount) || 21;
+    
     const order = await razorpay.orders.create({
-      amount: 2100,
+      amount: amount * 100,
       currency: "INR",
-      receipt: "receipt_order_1",
+      receipt: `receipt_order_${Date.now()}`,
     });
 
     return res.status(200).json(order);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error("Razorpay Error:", error);
+    return res.status(500).json({ error: error.message || "Failed to create order", details: error });
   }
 }

@@ -15,7 +15,7 @@ async function startServer() {
   // API routes FIRST
   app.post("/api/create-order", async (req, res) => {
     try {
-      const { amount } = req.body; // amount in INR
+      const amount = Number(req.body.amount) || 21; // amount in INR
       
       const key_id = process.env.VITE_RAZORPAY_KEY_ID;
       const key_secret = process.env.RAZORPAY_KEY_SECRET;
@@ -37,9 +37,9 @@ async function startServer() {
 
       const order = await instance.orders.create(options);
       res.json(order);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating Razorpay order:", error);
-      res.status(500).json({ error: "Failed to create order" });
+      res.status(500).json({ error: error.message || "Failed to create order", details: error });
     }
   });
 
