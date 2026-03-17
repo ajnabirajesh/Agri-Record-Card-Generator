@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { FarmerData, INITIAL_FARMER_DATA } from '../types';
 import FarmerForm from '../components/FarmerForm';
 import CardPreview from '../components/CardPreview';
-import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock } from 'lucide-react';
+import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
   const [farmerData, setFarmerData] = useState<FarmerData>(INITIAL_FARMER_DATA);
   const [hasPaid, setHasPaid] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [showPrintConfirm, setShowPrintConfirm] = useState(false);
 
   const handlePayment = async (onSuccess: () => void) => {
     if (hasPaid) {
@@ -24,7 +25,7 @@ const Home: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ amount: 21 }), // 21 INR
+        body: JSON.stringify({ amount: 0 }), // 0 INR
       });
 
       const order = await response.json();
@@ -70,14 +71,21 @@ const Home: React.FC = () => {
 
   const handlePrint = () => {
     handlePayment(() => {
-      window.print();
+      setShowPrintConfirm(true);
     });
   };
 
   const handleSaveAsPDF = () => {
     handlePayment(() => {
-      window.print();
+      setShowPrintConfirm(true);
     });
+  };
+
+  const confirmPrint = () => {
+    setShowPrintConfirm(false);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 
   return (
@@ -237,6 +245,38 @@ const Home: React.FC = () => {
            </div>
         </div>
       </footer>
+
+      {/* Print Confirmation Modal */}
+      {showPrintConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-amber-50 p-6 flex flex-col items-center text-center border-b border-amber-100">
+              <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Confirm Print</h3>
+              <p className="text-slate-600 text-sm">
+                Are you sure you want to print or save the ID card now? Please ensure all details are correct.
+              </p>
+            </div>
+            <div className="p-6 flex gap-3">
+              <button
+                onClick={() => setShowPrintConfirm(false)}
+                className="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmPrint}
+                className="flex-1 py-3 px-4 bg-[#064e3b] hover:bg-emerald-800 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Yes, Print
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
