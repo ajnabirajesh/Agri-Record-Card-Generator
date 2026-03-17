@@ -18,6 +18,20 @@ const Home: React.FC = () => {
   const { user, isAdmin, signIn, signOut } = useAuth();
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        if (!hasPaid && !isAdmin) {
+          e.preventDefault();
+          alert("Please complete the payment of ₹21 to print or save the ID card.");
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [hasPaid, isAdmin]);
+
   const handlePayment = async (onSuccess: () => void) => {
     if (!user) {
       alert("Please log in first to generate and save your card permanently.");
@@ -138,8 +152,19 @@ const Home: React.FC = () => {
     }, 100);
   };
 
+  const isPrintBlocked = !hasPaid && !isAdmin;
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+    <div className={`min-h-screen bg-[#f8fafc] flex flex-col ${isPrintBlocked ? 'print-blocked' : ''}`}>
+      {/* Print Block Overlay */}
+      {isPrintBlocked && (
+        <div className="hidden print:flex fixed inset-0 z-[9999] bg-white items-center justify-center text-center p-10">
+          <h1 className="text-3xl font-black text-[#064e3b]">
+            Please complete the payment of ₹21 to print or save the ID card.
+          </h1>
+        </div>
+      )}
+
       {/* Header */}
       <header className="no-print sticky top-0 z-50 bg-[#064e3b] text-white shadow-2xl border-b border-emerald-800">
         <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
@@ -236,7 +261,7 @@ const Home: React.FC = () => {
                 </div>
             </div>
             
-            <div id="preview-area" className="flex-1 w-full min-h-0">
+            <div id="preview-area" className={`flex-1 w-full min-h-0 ${isPrintBlocked ? 'print:hidden' : ''}`}>
                 <CardPreview data={farmerData} />
             </div>
             
