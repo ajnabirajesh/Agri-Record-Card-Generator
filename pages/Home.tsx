@@ -25,7 +25,7 @@ const Home: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ amount: 0 }), // 0 INR
+        body: JSON.stringify({ amount: 21 }), // 21 INR
       });
 
       const order = await response.json();
