@@ -32,7 +32,7 @@ const TermsConditions: React.FC = () => {
 
           <h2 className="text-xl font-bold text-slate-800 mt-8 mb-4">4. Payment and Fees</h2>
           <p>
-            The generation of a Farmer ID card requires a non-refundable fee of ₹21 (INR). Payments are processed securely via Razorpay. By initiating a payment, you authorize us to charge the specified amount.
+            The generation of a Farmer ID card requires a non-refundable fee of ₹11 (INR). Payments are processed securely via Razorpay. By initiating a payment, you authorize us to charge the specified amount.
           </p>
 
           <h2 className="text-xl font-bold text-slate-800 mt-8 mb-4">5. Intellectual Property</h2>

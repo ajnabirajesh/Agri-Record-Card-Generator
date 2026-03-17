@@ -23,7 +23,7 @@ const Home: React.FC = () => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
         if (!hasPaid && !isAdmin) {
           e.preventDefault();
-          alert("Please complete the payment of ₹21 to print or save the ID card.");
+          alert("Please complete the payment of ₹11 to print or save the ID card.");
         }
       }
     };
@@ -72,7 +72,7 @@ const Home: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ amount: 21 }), // 21 INR
+        body: JSON.stringify({ amount: 11 }), // 11 INR
       });
 
       const order = await response.json();
@@ -160,7 +160,7 @@ const Home: React.FC = () => {
       {isPrintBlocked && (
         <div className="hidden print:flex fixed inset-0 z-[9999] bg-white items-center justify-center text-center p-10">
           <h1 className="text-3xl font-black text-[#064e3b]">
-            Please complete the payment of ₹21 to print or save the ID card.
+            Please complete the payment of ₹11 to print or save the ID card.
           </h1>
         </div>
       )}
@@ -226,7 +226,7 @@ const Home: React.FC = () => {
                  {isProcessingPayment ? <Loader2 className="w-3.5 h-3.5 md:w-4 h-4 animate-spin" /> : (hasPaid ? <Printer className="w-3.5 h-3.5 md:w-4 h-4" /> : <Lock className="w-3.5 h-3.5 md:w-4 h-4" />)}
                  <span className="hidden md:inline text-xs uppercase tracking-wider">{hasPaid ? 'Print' : 'Pay & Print'}</span>
                </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">₹21 Only</span>}
+               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">₹11 Only</span>}
              </button>
 
              <button 
@@ -240,7 +240,7 @@ const Home: React.FC = () => {
                    {hasPaid ? 'SAVE' : 'PAY & SAVE'}
                  </span>
                </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">₹21 Only</span>}
+               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">₹11 Only</span>}
              </button>
           </div>
         </div>

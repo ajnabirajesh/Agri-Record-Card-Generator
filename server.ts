@@ -15,7 +15,7 @@ async function startServer() {
   // API routes FIRST
   app.post("/api/create-order", async (req, res) => {
     try {
-      const amount = Number(req.body.amount) || 21; // amount in INR
+      const amount = Number(req.body.amount) || 11; // amount in INR
       
       const key_id = process.env.VITE_RAZORPAY_KEY_ID;
       const key_secret = process.env.RAZORPAY_KEY_SECRET;

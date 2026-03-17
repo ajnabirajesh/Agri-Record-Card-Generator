@@ -17,7 +17,7 @@ const RefundPolicy: React.FC = () => {
           
           <h2 className="text-xl font-bold text-slate-800 mt-8 mb-4">1. Digital Product Delivery</h2>
           <p>
-            The Agri Record Management System provides a digital service (Farmer ID Card Generation). Upon successful payment of ₹21, the digital card is immediately generated and made available for download and printing.
+            The Agri Record Management System provides a digital service (Farmer ID Card Generation). Upon successful payment of ₹11, the digital card is immediately generated and made available for download and printing.
           </p>
 
           <h2 className="text-xl font-bold text-slate-800 mt-8 mb-4">2. No Refund Policy</h2>
