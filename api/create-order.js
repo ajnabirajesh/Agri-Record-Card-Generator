@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
   try {
     const order = await razorpay.orders.create({
-      amount: 2100,
+      amount: 0000,
       currency: "INR",
       receipt: "receipt_order_1",
     });
