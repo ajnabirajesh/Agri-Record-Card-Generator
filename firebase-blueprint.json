@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user roles and metadata.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "User's email address."
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin"],
+          "description": "Role of the user."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["email", "role"]
+    },
+    "FarmerCard": {
+      "title": "Farmer Card",
+      "description": "A generated farmer card saved to the user's account.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The UID of the user who generated the card."
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "The email of the user who generated the card."
+        },
+        "farmerData": {
+          "type": "string",
+          "description": "JSON stringified representation of the FarmerData object."
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "The Razorpay transaction/order ID associated with this card generation."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the card was generated."
+        }
+      },
+      "required": ["userId", "farmerData", "transactionId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "Stores user profiles and roles."
+    },
+    "/cards/{cardId}": {
+      "schema": {
+        "$ref": "#/entities/FarmerCard"
+      },
+      "description": "Stores all generated farmer cards."
+    }
+  }
+}

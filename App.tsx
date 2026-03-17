@@ -6,19 +6,26 @@ import ContactUs from './pages/ContactUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsConditions from './pages/TermsConditions';
 import RefundPolicy from './pages/RefundPolicy';
+import MyCards from './pages/MyCards';
+import AdminCards from './pages/AdminCards';
+import { AuthProvider } from './AuthContext';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/contact" element={<ContactUs />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsConditions />} />
-        <Route path="/refund-policy" element={<RefundPolicy />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/my-cards" element={<MyCards />} />
+          <Route path="/admin" element={<AdminCards />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 

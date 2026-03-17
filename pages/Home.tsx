@@ -3,18 +3,51 @@ import React, { useState } from 'react';
 import { FarmerData, INITIAL_FARMER_DATA } from '../types';
 import FarmerForm from '../components/FarmerForm';
 import CardPreview from '../components/CardPreview';
-import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle, LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
+import { db } from '../firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const Home: React.FC = () => {
   const [farmerData, setFarmerData] = useState<FarmerData>(INITIAL_FARMER_DATA);
   const [hasPaid, setHasPaid] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
+  
+  const { user, isAdmin, signIn, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handlePayment = async (onSuccess: () => void) => {
+    if (!user) {
+      alert("Please log in first to generate and save your card permanently.");
+      try {
+        await signIn();
+      } catch (e) {
+        return;
+      }
+    }
+
     if (hasPaid) {
       onSuccess();
+      return;
+    }
+
+    if (isAdmin) {
+      try {
+        await addDoc(collection(db, 'cards'), {
+          userId: user.uid,
+          userEmail: user.email,
+          farmerData: JSON.stringify(farmerData),
+          transactionId: `admin_bypass_${Date.now()}`,
+          createdAt: serverTimestamp()
+        });
+        setHasPaid(true);
+        onSuccess();
+      } catch (err) {
+        console.error("Error saving card as admin:", err);
+        alert("Admin save failed.");
+      }
       return;
     }
 
@@ -43,13 +76,30 @@ const Home: React.FC = () => {
         name: "Agri Record",
         description: "Farmer Card Generation Fee",
         order_id: order.id,
-        handler: function (response: any) {
-          setHasPaid(true);
-          onSuccess();
+        handler: async function (response: any) {
+          try {
+            // Save to Firestore
+            if (user) {
+              await addDoc(collection(db, 'cards'), {
+                userId: user.uid,
+                userEmail: user.email,
+                farmerData: JSON.stringify(farmerData),
+                transactionId: response.razorpay_payment_id || order.id,
+                createdAt: serverTimestamp()
+              });
+            }
+            setHasPaid(true);
+            onSuccess();
+          } catch (err) {
+            console.error("Error saving card to database:", err);
+            alert("Payment was successful, but there was an error saving your card to the database. Please contact support.");
+            setHasPaid(true);
+            onSuccess();
+          }
         },
         prefill: {
-          name: farmerData.name || "Farmer",
-          contact: farmerData.phone || "9999999999",
+          name: farmerData.nameEnglish || farmerData.nameHindi || "Farmer",
+          contact: "9999999999",
         },
         theme: {
           color: "#064e3b"
@@ -106,16 +156,40 @@ const Home: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-1 md:gap-3">
-             <a 
-                href="https://youtube.com/@ajnabihelps" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                title="Support"
-                className="flex items-center gap-2 bg-red-600/10 hover:bg-red-600 text-white font-bold p-1.5 md:px-4 md:py-3 rounded-lg md:rounded-xl transition-all border border-red-600/30 active:scale-95"
-             >
-               <Youtube className="w-3.5 h-3.5 md:w-4 h-4" />
-               <span className="hidden lg:inline text-xs uppercase tracking-wider">Support</span>
-             </a>
+             {user ? (
+               <div className="flex items-center gap-2">
+                 {isAdmin && (
+                   <Link 
+                     to="/admin"
+                     className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-purple-500 active:scale-95"
+                   >
+                     <span className="hidden lg:inline text-xs uppercase tracking-wider">Admin</span>
+                   </Link>
+                 )}
+                 <Link 
+                   to="/my-cards"
+                   className="flex items-center gap-2 bg-emerald-800 hover:bg-emerald-700 text-white font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95"
+                 >
+                   <UserIcon className="w-3.5 h-3.5 md:w-4 h-4" />
+                   <span className="hidden lg:inline text-xs uppercase tracking-wider">My Cards</span>
+                 </Link>
+                 <button 
+                   onClick={signOut}
+                   className="flex items-center gap-2 bg-red-600/10 hover:bg-red-600 text-white font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-red-600/30 active:scale-95"
+                 >
+                   <LogOut className="w-3.5 h-3.5 md:w-4 h-4" />
+                   <span className="hidden lg:inline text-xs uppercase tracking-wider">Logout</span>
+                 </button>
+               </div>
+             ) : (
+               <button 
+                 onClick={signIn}
+                 className="flex items-center gap-2 bg-emerald-800 hover:bg-emerald-700 text-white font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95"
+               >
+                 <LogIn className="w-3.5 h-3.5 md:w-4 h-4" />
+                 <span className="hidden lg:inline text-xs uppercase tracking-wider">Login</span>
+               </button>
+             )}
 
              <button 
                 onClick={handlePrint}

@@ -71,6 +71,25 @@
           box-shadow: none !important;
           border: 1px solid #e2e8f0 !important;
         }
+
+        /* Styles for printing a specific card from MyCards */
+        body.printing-specific-card #root > * {
+          display: none !important;
+        }
+        body.printing-specific-card .print-this-card {
+          display: flex !important;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+        body.printing-specific-card .print-this-card > div {
+          margin: 0 auto !important;
+        }
       }
 
       .card-pattern {
