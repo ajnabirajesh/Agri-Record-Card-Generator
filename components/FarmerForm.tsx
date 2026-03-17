@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS } from '../types';
-import { Plus, Trash2, Camera, UserCircle, Database, Calendar } from 'lucide-react';
+import { Plus, Trash2, Camera, UserCircle, Database, Calendar, ScanText, Loader2 } from 'lucide-react';
 
 interface FarmerFormProps {
   data: FarmerData;
@@ -9,6 +9,8 @@ interface FarmerFormProps {
 }
 
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
+  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onChange({ ...data, [name]: value });
@@ -55,13 +57,101 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     onChange({ ...data, landDetails: data.landDetails.filter((l) => l.id !== id) });
   };
 
+  const handleOcrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsOcrProcessing(true);
+    try {
+      const Tesseract = (await import('tesseract.js')).default;
+      const result = await Tesseract.recognize(file, 'eng+hin');
+      const text = result.data.text;
+      
+      // Simple regex to extract some details (Aadhaar, DOB)
+      const aadhaarMatch = text.match(/\b\d{4}\s?\d{4}\s?\d{4}\b/);
+      const dobMatch = text.match(/\b\d{2}[/-]\d{2}[/-]\d{4}\b/);
+      
+      const updates: Partial<FarmerData> = {};
+      if (aadhaarMatch) updates.aadhaar = aadhaarMatch[0].replace(/\s/g, '');
+      if (dobMatch) updates.dob = dobMatch[0].replace(/-/g, '/');
+
+      // Name extraction heuristic (Aadhaar format)
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 2);
+      const hindiStopWords = ['भारत', 'सरकार', 'मेरा', 'आधार', 'पहचान', 'प्राधिकरण', 'जन्म', 'तिथि', 'पुरुष', 'महिला', 'पता', 'वर्ष', 'पिता', 'पति', 'निवासी', 'पुत्र', 'पुत्री', 'पत्नी', 'तथा', 'के', 'लिए', 'आम', 'आदमी', 'अधिकार', 'संगठन'];
+      const englishStopWords = ['GOVERNMENT', 'INDIA', 'DOB', 'YEAR', 'BIRTH', 'MALE', 'FEMALE', 'ADDRESS', 'FATHER', 'MOTHER', 'W/O', 'S/O', 'D/O', 'C/O', 'UNIQUE', 'IDENTIFICATION', 'AUTHORITY', 'MERA', 'AADHAAR', 'MERI', 'PEHCHAN', 'TO', 'ENROLLMENT', 'VID', 'UPDATE', 'HELP', 'WWW', 'NET', 'COM', 'GOV', 'STATE', 'DISTRICT'];
+
+      let extractedHindi = '';
+      let extractedEnglish = '';
+
+      for (let line of lines) {
+        // Remove numbers and common noise characters, keep letters and spaces
+        let cleanLine = line.replace(/[0-9!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|`~-]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanLine.length < 3) continue;
+
+        const hasHindi = /[\u0900-\u097F]/.test(cleanLine);
+        const hasEnglish = /[A-Za-z]/.test(cleanLine);
+        const upperLine = cleanLine.toUpperCase();
+
+        if (hasHindi) {
+          const isStopWord = hindiStopWords.some(word => cleanLine.includes(word));
+          if (!isStopWord && !extractedHindi && cleanLine.split(' ').length <= 5) {
+            // Remove any stray English characters from Hindi name
+            extractedHindi = cleanLine.replace(/[A-Za-z]/g, '').trim();
+          }
+        } else if (hasEnglish && !hasHindi) {
+          const isStopWord = englishStopWords.some(word => upperLine.includes(word));
+          if (!isStopWord && !extractedEnglish && cleanLine.split(' ').length <= 5) {
+            extractedEnglish = cleanLine;
+          }
+        }
+      }
+
+      if (extractedHindi) updates.nameHindi = extractedHindi;
+      if (extractedEnglish) updates.nameEnglish = extractedEnglish;
+
+      if (Object.keys(updates).length > 0) {
+        onChange({ ...data, ...updates });
+        alert("Successfully extracted some details from the document!");
+      } else {
+        alert("Could not find any recognizable details in the document.");
+      }
+    } catch (error) {
+      console.error("OCR Error:", error);
+      alert("Failed to process the image for OCR.");
+    } finally {
+      setIsOcrProcessing(false);
+      // Reset the file input so the same file can be selected again if needed
+      e.target.value = '';
+    }
+  };
+
   return (
     <div className="bg-white/80 p-8 flex flex-col gap-10">
       
       <section className="space-y-6">
-        <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-            <UserCircle className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Personal Details</h2>
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-3">
+                <UserCircle className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">Personal Details</h2>
+            </div>
+            
+            <div className="relative">
+                <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleOcrUpload} 
+                    disabled={isOcrProcessing}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
+                    title="Upload document for OCR auto-fill"
+                />
+                <button 
+                    disabled={isOcrProcessing}
+                    className="flex items-center gap-2 text-[10px] font-black uppercase bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full hover:bg-indigo-100 transition-all shadow-sm border border-indigo-200 disabled:opacity-50"
+                >
+                    {isOcrProcessing ? <Loader2 className="w-3 h-3 animate-spin" /> : <ScanText className="w-3 h-3" />}
+                    {isOcrProcessing ? 'Scanning...' : 'Auto-fill (OCR)'}
+                </button>
+            </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
