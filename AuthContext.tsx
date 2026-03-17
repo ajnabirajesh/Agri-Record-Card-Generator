@@ -62,7 +62,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async () => {
-    await signInWithGoogle();
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Sign in failed in context:", error);
+    }
   };
 
   const signOut = async () => {

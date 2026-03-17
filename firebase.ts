@@ -12,8 +12,18 @@ export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error signing in with Google", error);
+    if (error.code === 'auth/popup-blocked') {
+      alert("Login popup was blocked by your browser. Please allow popups for this site and try again.");
+    } else if (error.code === 'auth/unauthorized-domain') {
+      alert("This domain is not authorized for Firebase Auth. Please add it in the Firebase Console.");
+    } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+      // User closed the popup, no need to alert aggressively
+      console.log("Login cancelled by user.");
+    } else {
+      alert(`Login failed: ${error.message}`);
+    }
     throw error;
   }
 };
