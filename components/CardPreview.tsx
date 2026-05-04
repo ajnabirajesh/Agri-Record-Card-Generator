@@ -38,7 +38,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
   const [scale, setScale] = useState(1);
 
   // Bihar Government Logo URL (High Quality Seal)
-  const biharLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Seal_of_Bihar.svg/1200px-Seal_of_Bihar.svg.png";
+  const biharLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Seal_of_Bihar.svg/960px-Seal_of_Bihar.svg.png";
 
   // Dynamic Scaling Logic for Preview
   useEffect(() => {
