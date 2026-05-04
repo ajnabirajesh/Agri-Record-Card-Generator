@@ -8,6 +8,7 @@ import TermsConditions from './pages/TermsConditions';
 import RefundPolicy from './pages/RefundPolicy';
 import MyCards from './pages/MyCards';
 import AdminCards from './pages/AdminCards';
+import AdminUsers from './pages/AdminUsers';
 import { AuthProvider } from './AuthContext';
 
 const App: React.FC = () => {
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/my-cards" element={<MyCards />} />
           <Route path="/admin" element={<AdminCards />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
         </Routes>
       </Router>
     </AuthProvider>
