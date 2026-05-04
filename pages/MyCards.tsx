@@ -41,12 +41,14 @@ const MyCards: React.FC = () => {
         
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          fetchedCards.push({
-            id: doc.id,
-            farmerData: JSON.parse(data.farmerData),
-            createdAt: data.createdAt?.toDate() || new Date(),
-            transactionId: data.transactionId
-          });
+          if (!data.isDeleted) {
+            fetchedCards.push({
+              id: doc.id,
+              farmerData: JSON.parse(data.farmerData),
+              createdAt: data.createdAt?.toDate() || new Date(),
+              transactionId: data.transactionId
+            });
+          }
         });
         
         setCards(fetchedCards);

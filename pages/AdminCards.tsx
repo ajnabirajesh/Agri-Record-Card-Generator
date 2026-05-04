@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { db, signInWithEmail } from '../firebase';
-import { collection, query, getDocs, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, updateDoc, doc } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ interface SavedCard {
   farmerData: FarmerData;
   createdAt: Date;
   transactionId: string;
+  isDeleted?: boolean;
 }
 
 const AdminCards: React.FC = () => {
@@ -59,7 +60,8 @@ const AdminCards: React.FC = () => {
           userEmail: data.userEmail,
           farmerData: JSON.parse(data.farmerData),
           createdAt: data.createdAt?.toDate() || new Date(),
-          transactionId: data.transactionId
+          transactionId: data.transactionId,
+          isDeleted: data.isDeleted || false
         });
       });
       
@@ -95,10 +97,10 @@ const AdminCards: React.FC = () => {
   };
 
   const handleDelete = async (cardId: string) => {
-    if (window.confirm("Are you sure you want to delete this card?")) {
+    if (window.confirm("Are you sure you want to delete this card? It will be removed from view but payment logic will be retained.")) {
       try {
-        await deleteDoc(doc(db, 'cards', cardId));
-        setCards(cards.filter(c => c.id !== cardId));
+        await updateDoc(doc(db, 'cards', cardId), { isDeleted: true });
+        setCards(cards.map(c => c.id === cardId ? { ...c, isDeleted: true } : c));
       } catch (error) {
         console.error("Error deleting card:", error);
         alert("Failed to delete card.");
@@ -199,7 +201,7 @@ const AdminCards: React.FC = () => {
     }
   }
 
-  const filteredCards = cards.filter(card => 
+  const filteredCards = cards.filter(c => !c.isDeleted).filter(card => 
     card.farmerData.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()) ||
     card.farmerData.nameHindi.includes(searchTerm) ||
     card.farmerData.phone.includes(searchTerm) ||
@@ -235,7 +237,9 @@ const AdminCards: React.FC = () => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const cardsToday = cards.filter(c => c.createdAt >= today).length;
+  const activeCards = cards.filter(c => !c.isDeleted);
+  const cardsToday = activeCards.filter(c => c.createdAt >= today).length;
+  // Total Revenue tracks ALL cards ever generated, including deleted ones
   const totalRevenueCards = cards.filter(c => !c.transactionId.startsWith('admin_bypass')).length;
   const totalRevenue = totalRevenueCards * 11; // ₹11 per card
 
@@ -255,7 +259,7 @@ const AdminCards: React.FC = () => {
               <span className="sm:hidden">Users</span>
             </Link>
             <div className="hidden sm:block text-sm font-medium bg-purple-900 px-3 py-1 rounded-full">
-              Cards: {cards.length}
+              Active Cards: {activeCards.length}
             </div>
           </div>
         </div>
@@ -269,8 +273,8 @@ const AdminCards: React.FC = () => {
               <TrendingUp className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <div className="text-xs text-slate-500 font-medium">Total Cards</div>
-              <div className="text-xl font-black text-slate-800">{cards.length}</div>
+              <div className="text-xs text-slate-500 font-medium">Active Cards</div>
+              <div className="text-xl font-black text-slate-800">{activeCards.length}</div>
             </div>
           </div>
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
@@ -287,8 +291,9 @@ const AdminCards: React.FC = () => {
               <CreditCard className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <div className="text-xs text-slate-500 font-medium">Est. Revenue</div>
-              <div className="text-xl font-black text-slate-800">₹{totalRevenue}</div>
+              <div className="text-xs text-slate-500 font-medium">Total Paid Cards</div>
+              <div className="text-xl font-black text-slate-800">{totalRevenueCards}</div>
+              <div className="text-[10px] text-slate-400 font-medium">₹{totalRevenue} Revenue</div>
             </div>
           </div>
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center">

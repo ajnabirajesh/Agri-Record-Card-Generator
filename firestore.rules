@@ -81,7 +81,7 @@ service cloud.firestore {
     match /cards/{cardId} {
       allow read: if isDocOwner() || isAdmin();
       allow create: if isAuthenticated() && isValidCard();
-      allow update: if false; // Cards are immutable once generated
+      allow update: if (isDocOwner() || isAdmin()) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isDeleted']) && request.resource.data.isDeleted == true; // Cards are immutable except for soft deletion
       allow delete: if isDocOwner() || isAdmin(); // Allow users to delete their own cards, admins can delete any
     }
   }
