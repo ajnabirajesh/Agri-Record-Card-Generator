@@ -10,6 +10,7 @@ import MyCards from './pages/MyCards';
 import AdminCards from './pages/AdminCards';
 import AdminUsers from './pages/AdminUsers';
 import { AuthProvider } from './AuthContext';
+import WhatsAppButton from './components/WhatsAppButton';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <Route path="/admin" element={<AdminCards />} />
           <Route path="/admin/users" element={<AdminUsers />} />
         </Routes>
+        <WhatsAppButton />
       </Router>
     </AuthProvider>
   );
