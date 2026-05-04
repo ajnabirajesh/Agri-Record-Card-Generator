@@ -5,7 +5,7 @@ import { collection, query, getDocs, orderBy, deleteDoc, doc } from 'firebase/fi
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users } from 'lucide-react';
 
 interface SavedCard {
   id: string;
@@ -206,6 +206,39 @@ const AdminCards: React.FC = () => {
     (card.userEmail && card.userEmail.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const exportToCSV = () => {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Generated Date,User Email,Farmer Name (Eng),Farmer Name (Hi),Phone,Aadhaar,DOB,Transaction ID\n";
+
+    filteredCards.forEach(card => {
+      const date = card.createdAt.toLocaleString().replace(/,/g, '');
+      const email = card.userEmail || card.userId;
+      const nameEng = card.farmerData.nameEnglish || '';
+      const nameHi = card.farmerData.nameHindi || '';
+      const phone = card.farmerData.phone || '';
+      const aadhaar = card.farmerData.aadhaar || '';
+      const dob = card.farmerData.dob || '';
+      const txnInfo = card.transactionId || '';
+      
+      const row = `"${date}","${email}","${nameEng}","${nameHi}","${phone}","${aadhaar}","${dob}","${txnInfo}"`;
+      csvContent += row + "\r\n";
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `agri_record_cards_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const cardsToday = cards.filter(c => c.createdAt >= today).length;
+  const totalRevenueCards = cards.filter(c => !c.transactionId.startsWith('admin_bypass')).length;
+  const totalRevenue = totalRevenueCards * 11; // ₹11 per card
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
       <header className="no-print sticky top-0 z-50 bg-purple-800 text-white shadow-xl border-b border-purple-900">
@@ -229,7 +262,46 @@ const AdminCards: React.FC = () => {
       </header>
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
-        <div className="mb-8 no-print relative max-w-md mx-auto">
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 no-print">
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <div className="text-xs text-slate-500 font-medium">Total Cards</div>
+              <div className="text-xl font-black text-slate-800">{cards.length}</div>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+              <CalendarDays className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <div className="text-xs text-slate-500 font-medium">Generated Today</div>
+              <div className="text-xl font-black text-slate-800">{cardsToday}</div>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
+              <CreditCard className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <div className="text-xs text-slate-500 font-medium">Est. Revenue</div>
+              <div className="text-xl font-black text-slate-800">₹{totalRevenue}</div>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center">
+             <button 
+                onClick={exportToCSV}
+                className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95"
+             >
+                <Download className="w-4 h-4" /> Export CSV
+             </button>
+          </div>
+        </div>
+
+        <div className="mb-8 no-print relative w-full mx-auto">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-slate-400" />
           </div>
