@@ -96,7 +96,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
           {/* Transparent Watermark */}
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none z-0">
-              <img src={biharLogoUrl} alt="Bihar Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
+              <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
           <div className={`absolute top-0 left-0 right-0 h-1 ${isUP ? 'bg-[#d97706]' : 'bg-[#8bc34a]'}`}></div>
