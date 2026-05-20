@@ -39,7 +39,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
 
   // Government Logo URLs
   const biharLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Seal_of_Bihar.svg/960px-Seal_of_Bihar.svg.png";
-  const upLogoUrl = "https://upload.wikimedia.org/wikipedia/comhttps://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Seal_of_Uttar_Pradesh.svg/960px-Seal_of_Uttar_Pradesh.svg.png";
+  const upLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Seal_of_Uttar_Pradesh.svg/960px-Seal_of_Uttar_Pradesh.svg.png";
 
   const isUP = data.state === 'Uttar Pradesh';
   const logoUrl = isUP ? upLogoUrl : biharLogoUrl;
