@@ -5,7 +5,7 @@ import { collection, query, getDocs, orderBy, updateDoc, doc } from 'firebase/fi
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X } from 'lucide-react';
 
 interface SavedCard {
   id: string;
@@ -23,6 +23,7 @@ const AdminCards: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [printingCardId, setPrintingCardId] = useState<string | null>(null);
+  const [viewingCard, setViewingCard] = useState<SavedCard | null>(null);
   
   // Login State
   const [email, setEmail] = useState('');
@@ -101,6 +102,7 @@ const AdminCards: React.FC = () => {
       try {
         await updateDoc(doc(db, 'cards', cardId), { isDeleted: true });
         setCards(cards.map(c => c.id === cardId ? { ...c, isDeleted: true } : c));
+        if (viewingCard?.id === cardId) setViewingCard(null);
       } catch (error) {
         console.error("Error deleting card:", error);
         alert("Failed to delete card.");
@@ -204,25 +206,28 @@ const AdminCards: React.FC = () => {
   const filteredCards = cards.filter(c => !c.isDeleted).filter(card => 
     card.farmerData.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()) ||
     card.farmerData.nameHindi.includes(searchTerm) ||
-    card.farmerData.phone.includes(searchTerm) ||
+    card.farmerData.mobile?.includes(searchTerm) ||
+    card.farmerData.phone?.includes(searchTerm) ||
+    card.farmerData.aadhaar?.includes(searchTerm) ||
     (card.userEmail && card.userEmail.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const exportToCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Generated Date,User Email,Farmer Name (Eng),Farmer Name (Hi),Phone,Aadhaar,DOB,Transaction ID\n";
+    csvContent += "Generated Date,User Email,Farmer Name (Eng),Farmer Name (Hi),Phone,Aadhaar,DOB,State,Transaction ID\n";
 
     filteredCards.forEach(card => {
       const date = card.createdAt.toLocaleString().replace(/,/g, '');
       const email = card.userEmail || card.userId;
       const nameEng = card.farmerData.nameEnglish || '';
       const nameHi = card.farmerData.nameHindi || '';
-      const phone = card.farmerData.phone || '';
+      const phone = card.farmerData.mobile || card.farmerData.phone || '';
       const aadhaar = card.farmerData.aadhaar || '';
       const dob = card.farmerData.dob || '';
+      const state = card.farmerData.state || 'Bihar';
       const txnInfo = card.transactionId || '';
       
-      const row = `"${date}","${email}","${nameEng}","${nameHi}","${phone}","${aadhaar}","${dob}","${txnInfo}"`;
+      const row = `"${date}","${email}","${nameEng}","${nameHi}","${phone}","${aadhaar}","${dob}","${state}","${txnInfo}"`;
       csvContent += row + "\r\n";
     });
 
@@ -244,7 +249,7 @@ const AdminCards: React.FC = () => {
   const totalRevenue = totalRevenueCards * 11; // ₹11 per card
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
       <header className="no-print sticky top-0 z-50 bg-purple-800 text-white shadow-xl border-b border-purple-900">
         <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -265,7 +270,7 @@ const AdminCards: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8 relative">
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 no-print">
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
@@ -306,63 +311,130 @@ const AdminCards: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-8 no-print relative w-full mx-auto">
+        <div className="mb-6 no-print relative w-full mx-auto">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-slate-400" />
           </div>
           <input
             type="text"
-            placeholder="Search by name, phone, or user email..."
+            placeholder="Search by name, phone, aadhaar or user email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm shadow-sm"
           />
         </div>
 
+        {/* Card Viewing Modal */}
+        {viewingCard && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm no-print">
+            <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+               <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <Eye className="w-5 h-5 text-purple-600" /> Card Preview
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => handlePrint(viewingCard.id)}
+                      className="flex items-center gap-2 bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-2 rounded-lg font-bold transition-colors text-sm"
+                    >
+                      <Printer className="w-4 h-4" /> Print
+                    </button>
+                    <button 
+                      onClick={() => setViewingCard(null)}
+                      className="p-2 hover:bg-slate-200 text-slate-500 rounded-full transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+               </div>
+               <div className="flex-1 overflow-y-auto p-6 flex justify-center items-start bg-slate-50">
+                 <div className="scale-[0.95] md:scale-100 origin-top">
+                    <CardPreview data={viewingCard.farmerData} />
+                 </div>
+               </div>
+            </div>
+          </div>
+        )}
+
         {filteredCards.length === 0 ? (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold text-slate-600 mb-4">No cards found</h2>
+          <div className="bg-white text-center py-20 rounded-3xl border border-slate-100 shadow-sm">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+               <Search className="w-8 h-8 text-slate-300" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-600 mb-2">No cards found</h2>
+            <p className="text-slate-400">Try adjusting your search filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {filteredCards.map((card) => (
-              <div key={card.id} id={`card-container-${card.id}`} className="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 flex flex-col card-wrapper">
-                <div className="flex flex-col gap-2 mb-4 no-print border-b pb-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="text-xs text-slate-500 font-medium">
-                        Generated: {card.createdAt.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-purple-600 font-bold mt-1">
-                        By: {card.userEmail || card.userId}
-                      </div>
-                      <div className="text-[10px] text-slate-400 mt-1 font-mono">
-                        Txn: {card.transactionId}
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => handleDelete(card.id)}
-                        className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-100 transition-colors"
-                        title="Delete Card"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handlePrint(card.id)}
-                        className="flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-lg font-bold hover:bg-purple-200 transition-colors"
-                      >
-                        <Printer className="w-4 h-4" /> Print
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex-1 flex items-center justify-center bg-slate-50 p-4 rounded-2xl">
-                  <CardPreview data={card.farmerData} />
-                </div>
-              </div>
-            ))}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden no-print">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse whitespace-nowrap">
+                <thead>
+                  <tr className="bg-slate-50 border-b border-slate-100">
+                    <th className="p-4 font-semibold text-slate-600 text-sm">Date</th>
+                    <th className="p-4 font-semibold text-slate-600 text-sm">Farmer Name</th>
+                    <th className="p-4 font-semibold text-slate-600 text-sm">Mobile</th>
+                    <th className="p-4 font-semibold text-slate-600 text-sm">State</th>
+                    <th className="p-4 font-semibold text-slate-600 text-sm">Generated By</th>
+                    <th className="p-4 font-semibold text-slate-600 text-sm text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredCards.map((card) => (
+                    <tr key={card.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-4 text-sm text-slate-600">
+                        <div className="flex flex-col">
+                           <span className="font-bold text-slate-700">{card.createdAt.toLocaleDateString()}</span>
+                           <span className="text-[10px] text-slate-400">{card.createdAt.toLocaleTimeString()}</span>
+                        </div>
+                      </td>
+                      <td className="p-4 text-sm font-bold text-slate-900">
+                         {card.farmerData.nameEnglish}
+                         <span className="block text-xs font-normal text-slate-500">{card.farmerData.nameHindi}</span>
+                      </td>
+                      <td className="p-4 text-sm font-medium text-slate-700">
+                         {card.farmerData.mobile || card.farmerData.phone || 'N/A'}
+                      </td>
+                      <td className="p-4">
+                         <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-bold ${
+                           card.farmerData.state === 'Uttar Pradesh' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                         }`}>
+                           {card.farmerData.state || 'Bihar'}
+                         </span>
+                      </td>
+                      <td className="p-4 text-sm">
+                         <span className="truncate max-w-[150px] block text-slate-600">{card.userEmail || card.userId}</span>
+                         <span className="text-[10px] text-slate-400 font-mono" title={card.transactionId}>
+                            Txn: {card.transactionId.substring(0, 10)}...
+                         </span>
+                      </td>
+                      <td className="p-4 text-right flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => setViewingCard(card)}
+                          className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="View Card"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => handlePrint(card.id)}
+                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Print Card"
+                        >
+                          <Printer className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(card.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Record"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </main>
