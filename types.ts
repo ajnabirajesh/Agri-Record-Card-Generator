@@ -10,6 +10,7 @@ export interface LandDetail {
 }
 
 export interface FarmerData {
+  state?: string; // Add state to make it backwards compatible
   nameHindi: string;
   nameEnglish: string;
   dob: string;
@@ -29,6 +30,19 @@ export const BIHAR_DISTRICTS = [
   "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", 
   "Muzaffarpur", "Nalanda", "Nawada", "Patna", "Purnia", "Rohtas", "Saharsa", "Samastipur", 
   "Saran", "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali", "West Champaran"
+].sort();
+
+export const UP_DISTRICTS = [
+  "Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh",
+  "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti",
+  "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah",
+  "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur",
+  "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi",
+  "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi", "Kheri", "Kushinagar", "Lalitpur",
+  "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad",
+  "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Prayagraj", "Raebareli", "Rampur", "Saharanpur", "Sambhal",
+  "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra",
+  "Sultanpur", "Unnao", "Varanasi"
 ].sort();
 
 export const BIHAR_SUB_DISTRICTS: Record<string, string[]> = {
@@ -73,6 +87,7 @@ export const BIHAR_SUB_DISTRICTS: Record<string, string[]> = {
 };
 
 export const INITIAL_FARMER_DATA: FarmerData = {
+  state: 'Bihar',
   nameHindi: 'किसान का नाम',
   nameEnglish: 'Farmer Name',
   dob: '01/01/2026',

@@ -37,8 +37,17 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
-  // Bihar Government Logo URL (High Quality Seal)
+  // Government Logo URLs
   const biharLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Seal_of_Bihar.svg/960px-Seal_of_Bihar.svg.png";
+  const upLogoUrl = "https://upload.wikimedia.org/wikipedia/comhttps://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Seal_of_Uttar_Pradesh.svg/960px-Seal_of_Uttar_Pradesh.svg.png";
+
+  const isUP = data.state === 'Uttar Pradesh';
+  const logoUrl = isUP ? upLogoUrl : biharLogoUrl;
+  const stateNameHi = isUP ? 'उत्तर प्रदेश सरकार' : 'बिहार सरकार';
+  const stateNameEn = isUP ? 'Govt. of Uttar Pradesh' : 'Govt. of Bihar';
+  const bgTheme = isUP ? 'bg-gradient-to-r from-[#d97706] to-[#f59e0b]' : 'bg-gradient-to-r from-[#8bc34a] to-[#cddc39]';
+  const headerTheme = isUP ? 'bg-[#78350f]' : 'bg-[#064e3b]';
+  const textTheme = isUP ? 'text-[#78350f]' : 'text-[#064e3b]';
 
   // Dynamic Scaling Logic for Preview
   useEffect(() => {
@@ -90,16 +99,16 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
               <img src={biharLogoUrl} alt="Bihar Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[#8bc34a]"></div>
+          <div className={`absolute top-0 left-0 right-0 h-1 ${isUP ? 'bg-[#d97706]' : 'bg-[#8bc34a]'}`}></div>
 
-          <div className="bg-[#064e3b] text-white px-5 py-3 flex justify-between items-center h-[68px] shadow-md relative z-10">
+          <div className={`${headerTheme} text-white px-5 py-3 flex justify-between items-center h-[68px] shadow-md relative z-10`}>
             <div className="flex items-center gap-3">
               <div className="bg-white p-2 rounded-lg shadow-inner">
-                  <Sprout className="w-8 h-8 text-[#064e3b]" />
+                  <Sprout className={`w-8 h-8 ${textTheme}`} />
               </div>
               <div className="flex flex-col">
                 <h1 className="text-2xl font-black italic leading-none tracking-tight">
-                  Agri<span className="text-[#cddc39]">record</span>
+                  Agri<span className={isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'}>record</span>
                 </h1>
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] opacity-80 mt-0.5">Farmer Identity Card</span>
               </div>
@@ -107,18 +116,18 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             
             <div className="flex items-center gap-2">
                <div className="flex flex-col items-end leading-none mr-2">
-                  <span className="text-[9px] font-bold text-[#cddc39] uppercase tracking-tighter">Bihar Sarkar</span>
-                  <span className="text-[7px] text-white/60 uppercase">Govt. of Bihar</span>
+                  <span className={`text-[9px] font-bold ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'} uppercase tracking-tighter`}>{stateNameHi}</span>
+                  <span className="text-[7px] text-white/60 uppercase">{stateNameEn}</span>
                </div>
                <div className="bg-white p-1 rounded-full shadow-lg">
-                  <img src={biharLogoUrl} alt="Bihar Govt" crossOrigin="anonymous" className="w-10 h-10 object-contain" />
+                  <img src={logoUrl} alt="State Govt" crossOrigin="anonymous" className="w-10 h-10 object-contain" />
                </div>
             </div>
           </div>
 
           <div className="flex p-5 gap-6 h-[calc(100%-145px)] relative z-10">
             <div className="flex flex-col gap-3 items-center">
-               <div className="w-[120px] h-[150px] border-[3px] border-[#064e3b] rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative">
+               <div className={`w-[120px] h-[150px] border-[3px] ${isUP ? 'border-[#78350f]' : 'border-[#064e3b]'} rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative`}>
                   {data.photoUrl ? (
                       <img src={data.photoUrl} alt="Farmer" crossOrigin="anonymous" className="w-full h-full object-cover" />
                   ) : (
@@ -126,8 +135,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                           <Leaf className="w-12 h-12" />
                       </div>
                   )}
-                  <div className="absolute bottom-1 right-1 bg-[#8bc34a] text-white p-1 rounded-full shadow-sm">
-                     <img src={biharLogoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
+                  <div className={`absolute bottom-1 right-1 ${isUP ? 'bg-[#f59e0b]' : 'bg-[#8bc34a]'} text-white p-1 rounded-full shadow-sm`}>
+                     <img src={logoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
                   </div>
                </div>
                <div className="flex flex-col items-center">
@@ -138,7 +147,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
 
             <div className="flex-1 flex flex-col justify-start pt-1">
               <div className="mb-4">
-                <span className="text-[11px] font-extrabold text-[#064e3b] uppercase block tracking-widest">Name / नाम</span>
+                <span className={`text-[11px] font-extrabold ${textTheme} uppercase block tracking-widest`}>Name / नाम</span>
                 <div className="flex flex-col leading-tight mt-1">
                   <span className="text-2xl font-black text-slate-900">{data.nameHindi}</span>
                   <span className="text-base font-bold text-slate-500 uppercase tracking-wide">{data.nameEnglish}</span>
@@ -147,19 +156,19 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-4">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Date of Birth / जन्म तिथि</span>
+                  <span className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}>Date of Birth / जन्म तिथि</span>
                   <span className="text-sm font-bold text-slate-800">{data.dob}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Gender / लिंग</span>
+                  <span className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}>Gender / लिंग</span>
                   <span className="text-sm font-bold text-slate-800">{data.gender}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Aadhaar No. / आधार</span>
+                  <span className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}>Aadhaar No. / आधार</span>
                   <span className="text-sm font-bold text-slate-800">{data.aadhaar.replace(/(\d{4})/g, '$1 ')}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black text-[#064e3b] uppercase leading-tight">Mobile / मोबाइल</span>
+                  <span className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}>Mobile / मोबाइल</span>
                   <span className="text-sm font-bold text-slate-800">+91 {data.mobile}</span>
                 </div>
               </div>
@@ -178,9 +187,9 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
           </div>
 
           {/* Full-width Bottom ID Bar with Swapped Positions and Adjusted Vertical Spacing to shift text UP */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#064e3b] via-[#085a44] to-[#064e3b] text-white pt-3 pb-16 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t border-[#cddc39]/30">
+          <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-r ${isUP ? 'from-[#78350f] via-[#92400e] to-[#78350f]' : 'from-[#064e3b] via-[#085a44] to-[#064e3b]'} text-white pt-3 pb-16 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t ${isUP ? 'border-[#fcd34d]/30' : 'border-[#cddc39]/30'}`}>
              <div className="absolute left-6 opacity-20">
-                <ShieldCheck className="w-8 h-8 text-[#cddc39]" />
+                <ShieldCheck className={`w-8 h-8 ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'}`} />
              </div>
              <div className="flex flex-col items-center gap-1.5">
                 {/* Farmer ID Number on Top */}
@@ -188,13 +197,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                 
                 {/* Label on Bottom with Line Accents - Moved even further up by pb-16 */}
                 <div className="flex items-center gap-3">
-                  <span className="w-8 h-[1px] bg-[#cddc39]/20"></span>
-                  <span className="text-[8px] font-black uppercase tracking-[0.25em] text-[#cddc39] drop-shadow-sm whitespace-nowrap">Digital Farmer ID / डिजिटल किसान आईडी</span>
-                  <span className="w-8 h-[1px] bg-[#cddc39]/20"></span>
+                  <span className={`w-8 h-[1px] ${isUP ? 'bg-[#fcd34d]/20' : 'bg-[#cddc39]/20'}`}></span>
+                  <span className={`text-[8px] font-black uppercase tracking-[0.25em] ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'} drop-shadow-sm whitespace-nowrap`}>Digital Farmer ID / डिजिटल किसान आईडी</span>
+                  <span className={`w-8 h-[1px] ${isUP ? 'bg-[#fcd34d]/20' : 'bg-[#cddc39]/20'}`}></span>
                 </div>
              </div>
              <div className="absolute right-6 opacity-20 rotate-12">
-                <Sprout className="w-8 h-8 text-[#cddc39]" />
+                <Sprout className={`w-8 h-8 ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'}`} />
              </div>
           </div>
         </div>
@@ -204,31 +213,31 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 p-6 flex flex-col relative card-pattern select-none">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
-              <img src={biharLogoUrl} alt="Bihar Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
+              <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[#8bc34a]"></div>
+          <div className={`absolute top-0 left-0 right-0 h-1 ${isUP ? 'bg-[#d97706]' : 'bg-[#8bc34a]'}`}></div>
           
           <div className="flex justify-between items-start mb-5 border-b pb-3 border-emerald-100 relative z-10">
             <div className="flex-1 pr-12">
-              <h3 className="text-[#064e3b] font-black text-[11px] mb-1.5 uppercase tracking-widest">Permanent Address / स्थायी पता</h3>
+              <h3 className={`${textTheme} font-black text-[11px] mb-1.5 uppercase tracking-widest`}>Permanent Address / स्थायी पता</h3>
               <p className="text-[12.5px] text-slate-800 leading-relaxed font-bold">
                 {data.address}
               </p>
             </div>
             <div className="flex flex-col items-end">
-               <img src={biharLogoUrl} crossOrigin="anonymous" className="w-12 h-12 opacity-20 grayscale" alt="Bihar seal" />
+               <img src={logoUrl} crossOrigin="anonymous" className="w-12 h-12 opacity-20 grayscale" alt="State seal" />
             </div>
           </div>
 
           <div className="flex-1 overflow-hidden relative z-10">
-            <h3 className="text-[#064e3b] font-black text-[11px] mb-2.5 uppercase tracking-widest flex items-center gap-2">
-              <img src={biharLogoUrl} crossOrigin="anonymous" className="w-4 h-4" alt="seal" /> Land Records / भूमि का विवरण
+            <h3 className={`${textTheme} font-black text-[11px] mb-2.5 uppercase tracking-widest flex items-center gap-2`}>
+              <img src={logoUrl} crossOrigin="anonymous" className="w-4 h-4" alt="seal" /> Land Records / भूमि का विवरण
             </h3>
-            <div className="rounded-xl overflow-hidden border border-emerald-100 shadow-sm bg-white/50">
+            <div className={`rounded-xl overflow-hidden border ${isUP ? 'border-amber-100' : 'border-emerald-100'} shadow-sm bg-white/50`}>
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="bg-emerald-50 text-[#064e3b] font-black border-b border-emerald-100">
+                  <tr className={`${isUP ? 'bg-amber-50' : 'bg-emerald-50'} ${textTheme} font-black border-b ${isUP ? 'border-amber-100' : 'border-emerald-100'}`}>
                     <th className="px-3 py-2.5">District</th>
                     <th className="px-3 py-2.5">Sub-District</th>
                     <th className="px-3 py-2.5">Village</th>
@@ -237,15 +246,15 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                     <th className="px-3 py-2.5 text-right">Area</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-emerald-50">
+                <tbody className={`divide-y ${isUP ? 'divide-amber-50' : 'divide-emerald-50'}`}>
                   {data.landDetails.map((land, idx) => (
-                    <tr key={land.id} className={idx % 2 === 0 ? 'bg-white/70' : 'bg-emerald-50/30'}>
+                    <tr key={land.id} className={idx % 2 === 0 ? 'bg-white/70' : (isUP ? 'bg-amber-50/30' : 'bg-emerald-50/30')}>
                       <td className="px-3 py-2.5 text-slate-900 font-bold">{land.district}</td>
                       <td className="px-3 py-2.5 text-slate-800 font-medium">{land.subDistrict}</td>
                       <td className="px-3 py-2.5 text-slate-800 font-medium">{land.village}</td>
                       <td className="px-3 py-2.5 text-slate-950 font-black">{land.mOwnerNo}</td>
                       <td className="px-3 py-2.5 text-slate-950 font-black">{land.khasra}</td>
-                      <td className="px-3 py-2.5 text-right font-black text-emerald-900">{land.area}</td>
+                      <td className={`px-3 py-2.5 text-right font-black ${isUP ? 'text-amber-900' : 'text-emerald-900'}`}>{land.area}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -253,17 +262,17 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          <div className="mt-4 flex justify-between items-end border-t pt-2 border-emerald-50 relative z-10">
+          <div className={`mt-4 flex justify-between items-end border-t pt-2 ${isUP ? 'border-amber-50' : 'border-emerald-50'} relative z-10`}>
              <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2 mb-1">
-                   <span className="text-[10px] font-black text-[#064e3b] uppercase tracking-tighter">Issued On: {displayIssueDate}</span>
+                   <span className={`text-[10px] font-black ${textTheme} uppercase tracking-tighter`}>Issued On: {displayIssueDate}</span>
                 </div>
                 <span className="text-[8px] text-slate-500 font-bold uppercase tracking-tighter">Digital card generated via Agri Record Management System. Verify using QR code.</span>
                 <span className="text-[8px] text-slate-500 font-medium uppercase tracking-tighter italic">यह डिजिटल कार्ड कृषि रिकॉर्ड प्रबंधन प्रणाली के माध्यम से तैयार किया गया है।</span>
              </div>
              <div className="flex gap-2 opacity-10 pb-1">
-                <Leaf className="w-4 h-4 text-[#064e3b]" />
-                <Leaf className="w-4 h-4 text-[#064e3b]" />
+                <Leaf className={`w-4 h-4 ${textTheme}`} />
+                <Leaf className={`w-4 h-4 ${textTheme}`} />
              </div>
           </div>
         </div>

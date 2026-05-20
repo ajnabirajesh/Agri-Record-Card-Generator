@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS } from '../types';
+import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS, UP_DISTRICTS } from '../types';
 import { Plus, Trash2, Camera, UserCircle, Database, Calendar, ScanText, Loader2 } from 'lucide-react';
 
 interface FarmerFormProps {
@@ -186,6 +186,14 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-1 col-span-1 md:col-span-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">State</label>
+            <select name="state" value={data.state || 'Bihar'} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold bg-white">
+                <option value="Bihar">Bihar</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+            </select>
+          </div>
+
           <div className="space-y-2 col-span-1 md:col-span-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Profile Photo</label>
             <div className="flex items-center gap-4 p-3 border-2 border-dashed border-emerald-100 rounded-xl bg-emerald-50/30">
@@ -281,7 +289,9 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         
         <div className="space-y-4">
             {data.landDetails.map((land) => {
-                const availableBlocks = land.district ? (BIHAR_SUB_DISTRICTS[land.district] || []) : [];
+                const isUP = data.state === 'Uttar Pradesh';
+                const availableDistricts = isUP ? UP_DISTRICTS : BIHAR_DISTRICTS;
+                const availableBlocks = !isUP && land.district ? (BIHAR_SUB_DISTRICTS[land.district] || []) : [];
                 
                 return (
                     <div key={land.id} className="p-5 border border-slate-100 rounded-2xl bg-slate-50/50 relative group hover:bg-white hover:shadow-xl transition-all duration-300">
@@ -290,31 +300,40 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                         </button>
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                             <div className="flex flex-col gap-1">
-                                <label className="text-[8px] font-black text-slate-400 uppercase">District (Bihar)</label>
+                                <label className="text-[8px] font-black text-slate-400 uppercase">District</label>
                                 <select 
                                     value={land.district} 
                                     onChange={(e) => updateLandDetail(land.id, 'district', e.target.value)} 
                                     className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 bg-white"
                                 >
                                     <option value="">Select District</option>
-                                    {BIHAR_DISTRICTS.map(dist => (
+                                    {availableDistricts.map(dist => (
                                         <option key={dist} value={dist}>{dist}</option>
                                     ))}
                                 </select>
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className="text-[8px] font-black text-slate-400 uppercase">Sub-District (Block)</label>
-                                <select 
-                                    value={land.subDistrict} 
-                                    disabled={!land.district}
-                                    onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} 
-                                    className={`text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 bg-white ${!land.district ? 'opacity-50 cursor-not-allowed italic' : ''}`}
-                                >
-                                    <option value="">{land.district ? "Select Block" : "Select District First"}</option>
-                                    {availableBlocks.map(block => (
-                                        <option key={block} value={block}>{block}</option>
-                                    ))}
-                                </select>
+                                <label className="text-[8px] font-black text-slate-400 uppercase">Sub-District (Block/Tehsil)</label>
+                                {isUP ? (
+                                     <input 
+                                         value={land.subDistrict} 
+                                         onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} 
+                                         placeholder="Sub-District/Tehsil" 
+                                         className="text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500" 
+                                     />
+                                ) : (
+                                    <select 
+                                        value={land.subDistrict} 
+                                        disabled={!land.district}
+                                        onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} 
+                                        className={`text-xs p-2 border border-slate-200 rounded-lg outline-none focus:border-emerald-500 bg-white ${!land.district ? 'opacity-50 cursor-not-allowed italic' : ''}`}
+                                    >
+                                        <option value="">{land.district ? "Select Block" : "Select District First"}</option>
+                                        {availableBlocks.map(block => (
+                                            <option key={block} value={block}>{block}</option>
+                                        ))}
+                                    </select>
+                                )}
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-[8px] font-black text-slate-400 uppercase">Village</label>
