@@ -61,6 +61,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
   let footerGradient = 'from-[#064e3b] via-[#085a44] to-[#064e3b]';
   let footerBorderTheme = 'border-[#cddc39]/30';
   let footerDividerTheme = 'bg-[#cddc39]/20';
+  let watermarkOpacity = 'opacity-[0.04] grayscale';
 
   switch (data.state) {
     case 'Uttar Pradesh':
@@ -81,6 +82,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       footerGradient = 'from-[#78350f] via-[#92400e] to-[#78350f]';
       footerBorderTheme = 'border-[#fcd34d]/30';
       footerDividerTheme = 'bg-[#fcd34d]/20';
+      watermarkOpacity = 'opacity-[0.05] grayscale';
       break;
     case 'Maharashtra':
       logoUrl = maharashtraLogoUrl;
@@ -100,6 +102,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       footerGradient = 'from-[#9a3412] via-[#c2410c] to-[#9a3412]';
       footerBorderTheme = 'border-[#fdba74]/30';
       footerDividerTheme = 'bg-[#fdba74]/20';
+      watermarkOpacity = 'opacity-[0.08]'; // Removed grayscale and increased opacity for thin yellow log
       break;
     case 'Madhya Pradesh':
       logoUrl = mpLogoUrl;
@@ -119,6 +122,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       footerGradient = 'from-[#7f1d1d] via-[#991b1b] to-[#7f1d1d]';
       footerBorderTheme = 'border-[#fca5a5]/30';
       footerDividerTheme = 'bg-[#fca5a5]/20';
+      watermarkOpacity = 'opacity-[0.05] grayscale';
       break;
     case 'Rajasthan':
       logoUrl = rajasthanLogoUrl;
@@ -138,6 +142,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       footerGradient = 'from-[#0c4a6e] via-[#075985] to-[#0c4a6e]';
       footerBorderTheme = 'border-[#7dd3fc]/30';
       footerDividerTheme = 'bg-[#7dd3fc]/20';
+      watermarkOpacity = 'opacity-[0.04] grayscale';
       break;
   }
 
@@ -187,8 +192,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
           {/* Transparent Watermark */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none z-0">
-              <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+              <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className={`w-[300px] h-[300px] object-contain ${watermarkOpacity}`} />
           </div>
 
           <div className={`absolute top-0 left-0 right-0 h-1 ${highlightTopTheme}`}></div>
@@ -304,8 +309,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       {/* Back Side */}
       <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 p-6 flex flex-col relative card-pattern select-none">
-          <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
-              <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+              <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className={`w-[300px] h-[300px] object-contain ${watermarkOpacity}`} />
           </div>
 
           <div className={`absolute top-0 left-0 right-0 h-1 ${highlightTopTheme}`}></div>
