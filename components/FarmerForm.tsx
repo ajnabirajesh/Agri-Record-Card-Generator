@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS, UP_DISTRICTS } from '../types';
+import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS, UP_DISTRICTS, MAHARASHTRA_DISTRICTS, MP_DISTRICTS, RAJASTHAN_DISTRICTS } from '../types';
 import { Plus, Trash2, Camera, UserCircle, Database, Calendar, ScanText, Loader2 } from 'lucide-react';
 
 interface FarmerFormProps {
@@ -191,6 +191,9 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
             <select name="state" value={data.state || 'Bihar'} onChange={handleInputChange} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold bg-white">
                 <option value="Bihar">Bihar</option>
                 <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Rajasthan">Rajasthan</option>
             </select>
           </div>
 
@@ -289,9 +292,15 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         
         <div className="space-y-4">
             {data.landDetails.map((land) => {
-                const isUP = data.state === 'Uttar Pradesh';
-                const availableDistricts = isUP ? UP_DISTRICTS : BIHAR_DISTRICTS;
-                const availableBlocks = !isUP && land.district ? (BIHAR_SUB_DISTRICTS[land.district] || []) : [];
+                const state = data.state || 'Bihar';
+                let availableDistricts = BIHAR_DISTRICTS;
+                if (state === 'Uttar Pradesh') availableDistricts = UP_DISTRICTS;
+                if (state === 'Maharashtra') availableDistricts = MAHARASHTRA_DISTRICTS;
+                if (state === 'Madhya Pradesh') availableDistricts = MP_DISTRICTS;
+                if (state === 'Rajasthan') availableDistricts = RAJASTHAN_DISTRICTS;
+
+                const isBihar = state === 'Bihar';
+                const availableBlocks = isBihar && land.district ? (BIHAR_SUB_DISTRICTS[land.district] || []) : [];
                 
                 return (
                     <div key={land.id} className="p-5 border border-slate-100 rounded-2xl bg-slate-50/50 relative group hover:bg-white hover:shadow-xl transition-all duration-300">
@@ -314,7 +323,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                             </div>
                             <div className="flex flex-col gap-1">
                                 <label className="text-[8px] font-black text-slate-400 uppercase">Sub-District (Block/Tehsil)</label>
-                                {isUP ? (
+                                {!isBihar ? (
                                      <input 
                                          value={land.subDistrict} 
                                          onChange={(e) => updateLandDetail(land.id, 'subDistrict', e.target.value)} 

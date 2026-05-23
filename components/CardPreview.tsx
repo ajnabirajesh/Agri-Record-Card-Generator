@@ -40,14 +40,106 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
   // Government Logo URLs
   const biharLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Seal_of_Bihar.svg/960px-Seal_of_Bihar.svg.png";
   const upLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Seal_of_Uttar_Pradesh.svg/960px-Seal_of_Uttar_Pradesh.svg.png";
+  const maharashtraLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Seal_of_Maharashtra.svg/960px-Seal_of_Maharashtra.svg.png";
+  const mpLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Emblem_of_Madhya_Pradesh.svg/960px-Emblem_of_Madhya_Pradesh.svg.png";
+  const rajasthanLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png";
 
-  const isUP = data.state === 'Uttar Pradesh';
-  const logoUrl = isUP ? upLogoUrl : biharLogoUrl;
-  const stateNameHi = isUP ? 'उत्तर प्रदेश सरकार' : 'बिहार सरकार';
-  const stateNameEn = isUP ? 'Govt. of Uttar Pradesh' : 'Govt. of Bihar';
-  const bgTheme = isUP ? 'bg-gradient-to-r from-[#d97706] to-[#f59e0b]' : 'bg-gradient-to-r from-[#8bc34a] to-[#cddc39]';
-  const headerTheme = isUP ? 'bg-[#78350f]' : 'bg-[#064e3b]';
-  const textTheme = isUP ? 'text-[#78350f]' : 'text-[#064e3b]';
+  let logoUrl = biharLogoUrl;
+  let stateNameHi = 'बिहार सरकार';
+  let stateNameEn = 'Govt. of Bihar';
+  let bgTheme = 'bg-gradient-to-r from-[#8bc34a] to-[#cddc39]';
+  let headerTheme = 'bg-[#064e3b]';
+  let textTheme = 'text-[#064e3b]';
+  let borderColorTheme = 'border-[#064e3b]';
+  let highlightColorTheme = 'text-[#cddc39]';
+  let highlightTopTheme = 'bg-[#8bc34a]';
+  let lightBorderTheme = 'border-emerald-100';
+  let lightBgTheme = 'bg-emerald-50';
+  let lightBgHoverTheme = 'bg-emerald-50/30';
+  let lightDivideTheme = 'divide-emerald-50';
+  let lightTextTheme = 'text-emerald-900';
+  let footerGradient = 'from-[#064e3b] via-[#085a44] to-[#064e3b]';
+  let footerBorderTheme = 'border-[#cddc39]/30';
+  let footerDividerTheme = 'bg-[#cddc39]/20';
+
+  switch (data.state) {
+    case 'Uttar Pradesh':
+      logoUrl = upLogoUrl;
+      stateNameHi = 'उत्तर प्रदेश सरकार';
+      stateNameEn = 'Govt. of Uttar Pradesh';
+      bgTheme = 'bg-gradient-to-r from-[#d97706] to-[#f59e0b]';
+      headerTheme = 'bg-[#78350f]';
+      textTheme = 'text-[#78350f]';
+      borderColorTheme = 'border-[#78350f]';
+      highlightColorTheme = 'text-[#fcd34d]';
+      highlightTopTheme = 'bg-[#d97706]';
+      lightBorderTheme = 'border-amber-100';
+      lightBgTheme = 'bg-amber-50';
+      lightBgHoverTheme = 'bg-amber-50/30';
+      lightDivideTheme = 'divide-amber-50';
+      lightTextTheme = 'text-amber-900';
+      footerGradient = 'from-[#78350f] via-[#92400e] to-[#78350f]';
+      footerBorderTheme = 'border-[#fcd34d]/30';
+      footerDividerTheme = 'bg-[#fcd34d]/20';
+      break;
+    case 'Maharashtra':
+      logoUrl = maharashtraLogoUrl;
+      stateNameHi = 'महाराष्ट्र शासन';
+      stateNameEn = 'Govt. of Maharashtra';
+      bgTheme = 'bg-gradient-to-r from-[#ea580c] to-[#f97316]';
+      headerTheme = 'bg-[#9a3412]';
+      textTheme = 'text-[#9a3412]';
+      borderColorTheme = 'border-[#9a3412]';
+      highlightColorTheme = 'text-[#fdba74]';
+      highlightTopTheme = 'bg-[#ea580c]';
+      lightBorderTheme = 'border-orange-100';
+      lightBgTheme = 'bg-orange-50';
+      lightBgHoverTheme = 'bg-orange-50/30';
+      lightDivideTheme = 'divide-orange-50';
+      lightTextTheme = 'text-orange-900';
+      footerGradient = 'from-[#9a3412] via-[#c2410c] to-[#9a3412]';
+      footerBorderTheme = 'border-[#fdba74]/30';
+      footerDividerTheme = 'bg-[#fdba74]/20';
+      break;
+    case 'Madhya Pradesh':
+      logoUrl = mpLogoUrl;
+      stateNameHi = 'मध्य प्रदेश शासन';
+      stateNameEn = 'Govt. of Madhya Pradesh';
+      bgTheme = 'bg-gradient-to-r from-[#dc2626] to-[#ef4444]';
+      headerTheme = 'bg-[#7f1d1d]';
+      textTheme = 'text-[#7f1d1d]';
+      borderColorTheme = 'border-[#7f1d1d]';
+      highlightColorTheme = 'text-[#fca5a5]';
+      highlightTopTheme = 'bg-[#dc2626]';
+      lightBorderTheme = 'border-red-100';
+      lightBgTheme = 'bg-red-50';
+      lightBgHoverTheme = 'bg-red-50/30';
+      lightDivideTheme = 'divide-red-50';
+      lightTextTheme = 'text-red-900';
+      footerGradient = 'from-[#7f1d1d] via-[#991b1b] to-[#7f1d1d]';
+      footerBorderTheme = 'border-[#fca5a5]/30';
+      footerDividerTheme = 'bg-[#fca5a5]/20';
+      break;
+    case 'Rajasthan':
+      logoUrl = rajasthanLogoUrl;
+      stateNameHi = 'राजस्थान सरकार';
+      stateNameEn = 'Govt. of Rajasthan';
+      bgTheme = 'bg-gradient-to-r from-[#0ea5e9] to-[#38bdf8]';
+      headerTheme = 'bg-[#0c4a6e]';
+      textTheme = 'text-[#0c4a6e]';
+      borderColorTheme = 'border-[#0c4a6e]';
+      highlightColorTheme = 'text-[#7dd3fc]';
+      highlightTopTheme = 'bg-[#0ea5e9]';
+      lightBorderTheme = 'border-sky-100';
+      lightBgTheme = 'bg-sky-50';
+      lightBgHoverTheme = 'bg-sky-50/30';
+      lightDivideTheme = 'divide-sky-50';
+      lightTextTheme = 'text-sky-900';
+      footerGradient = 'from-[#0c4a6e] via-[#075985] to-[#0c4a6e]';
+      footerBorderTheme = 'border-[#7dd3fc]/30';
+      footerDividerTheme = 'bg-[#7dd3fc]/20';
+      break;
+  }
 
   // Dynamic Scaling Logic for Preview
   useEffect(() => {
@@ -99,7 +191,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
               <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
-          <div className={`absolute top-0 left-0 right-0 h-1 ${isUP ? 'bg-[#d97706]' : 'bg-[#8bc34a]'}`}></div>
+          <div className={`absolute top-0 left-0 right-0 h-1 ${highlightTopTheme}`}></div>
 
           <div className={`${headerTheme} text-white px-5 py-3 flex justify-between items-center h-[68px] shadow-md relative z-10`}>
             <div className="flex items-center gap-3">
@@ -108,7 +200,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
               </div>
               <div className="flex flex-col">
                 <h1 className="text-2xl font-black italic leading-none tracking-tight">
-                  Agri<span className={isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'}>record</span>
+                  Agri<span className={highlightColorTheme}>record</span>
                 </h1>
                 <span className="text-[10px] uppercase font-bold tracking-[0.2em] opacity-80 mt-0.5">Farmer Identity Card</span>
               </div>
@@ -116,7 +208,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             
             <div className="flex items-center gap-2">
                <div className="flex flex-col items-end leading-none mr-2">
-                  <span className={`text-[9px] font-bold ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'} uppercase tracking-tighter`}>{stateNameHi}</span>
+                  <span className={`text-[9px] font-bold ${highlightColorTheme} uppercase tracking-tighter`}>{stateNameHi}</span>
                   <span className="text-[7px] text-white/60 uppercase">{stateNameEn}</span>
                </div>
                <div className="bg-white p-1 rounded-full shadow-lg">
@@ -127,7 +219,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
 
           <div className="flex p-5 gap-6 h-[calc(100%-145px)] relative z-10">
             <div className="flex flex-col gap-3 items-center">
-               <div className={`w-[120px] h-[150px] border-[3px] ${isUP ? 'border-[#78350f]' : 'border-[#064e3b]'} rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative`}>
+               <div className={`w-[120px] h-[150px] border-[3px] ${borderColorTheme} rounded-md overflow-hidden bg-gray-50 flex items-center justify-center shadow-lg relative`}>
                   {data.photoUrl ? (
                       <img src={data.photoUrl} alt="Farmer" crossOrigin="anonymous" className="w-full h-full object-cover" />
                   ) : (
@@ -135,8 +227,8 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                           <Leaf className="w-12 h-12" />
                       </div>
                   )}
-                  <div className={`absolute bottom-1 right-1 ${isUP ? 'bg-[#f59e0b]' : 'bg-[#8bc34a]'} text-white p-1 rounded-full shadow-sm`}>
-                     <img src={logoUrl} crossOrigin="anonymous" className="w-3.5 h-3.5 brightness-0 invert" alt="seal" />
+                  <div className="absolute bottom-1 right-1 bg-white p-1 rounded-full shadow-sm">
+                     <img src={logoUrl} crossOrigin="anonymous" className="w-4 h-4 object-contain drop-shadow-sm" alt="seal" />
                   </div>
                </div>
                <div className="flex flex-col items-center">
@@ -187,9 +279,9 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
           </div>
 
           {/* Full-width Bottom ID Bar with Swapped Positions and Adjusted Vertical Spacing to shift text UP */}
-          <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-r ${isUP ? 'from-[#78350f] via-[#92400e] to-[#78350f]' : 'from-[#064e3b] via-[#085a44] to-[#064e3b]'} text-white pt-3 pb-16 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t ${isUP ? 'border-[#fcd34d]/30' : 'border-[#cddc39]/30'}`}>
+          <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-r ${footerGradient} text-white pt-3 pb-16 flex justify-center items-center shadow-[0_-8px_25px_rgba(0,0,0,0.2)] relative z-10 border-t ${footerBorderTheme}`}>
              <div className="absolute left-6 opacity-20">
-                <ShieldCheck className={`w-8 h-8 ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'}`} />
+                <ShieldCheck className={`w-8 h-8 ${highlightColorTheme}`} />
              </div>
              <div className="flex flex-col items-center gap-1.5">
                 {/* Farmer ID Number on Top */}
@@ -197,13 +289,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                 
                 {/* Label on Bottom with Line Accents - Moved even further up by pb-16 */}
                 <div className="flex items-center gap-3">
-                  <span className={`w-8 h-[1px] ${isUP ? 'bg-[#fcd34d]/20' : 'bg-[#cddc39]/20'}`}></span>
-                  <span className={`text-[8px] font-black uppercase tracking-[0.25em] ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'} drop-shadow-sm whitespace-nowrap`}>Digital Farmer ID / डिजिटल किसान आईडी</span>
-                  <span className={`w-8 h-[1px] ${isUP ? 'bg-[#fcd34d]/20' : 'bg-[#cddc39]/20'}`}></span>
+                  <span className={`w-8 h-[1px] ${footerDividerTheme}`}></span>
+                  <span className={`text-[8px] font-black uppercase tracking-[0.25em] ${highlightColorTheme} drop-shadow-sm whitespace-nowrap`}>Digital Farmer ID / डिजिटल किसान आईडी</span>
+                  <span className={`w-8 h-[1px] ${footerDividerTheme}`}></span>
                 </div>
              </div>
              <div className="absolute right-6 opacity-20 rotate-12">
-                <Sprout className={`w-8 h-8 ${isUP ? 'text-[#fcd34d]' : 'text-[#cddc39]'}`} />
+                <Sprout className={`w-8 h-8 ${highlightColorTheme}`} />
              </div>
           </div>
         </div>
@@ -216,7 +308,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
               <img src={logoUrl} alt="State Watermark" crossOrigin="anonymous" className="w-[300px] h-[300px] object-contain grayscale" />
           </div>
 
-          <div className={`absolute top-0 left-0 right-0 h-1 ${isUP ? 'bg-[#d97706]' : 'bg-[#8bc34a]'}`}></div>
+          <div className={`absolute top-0 left-0 right-0 h-1 ${highlightTopTheme}`}></div>
           
           <div className="flex justify-between items-start mb-5 border-b pb-3 border-emerald-100 relative z-10">
             <div className="flex-1 pr-12">
@@ -234,10 +326,10 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             <h3 className={`${textTheme} font-black text-[11px] mb-2.5 uppercase tracking-widest flex items-center gap-2`}>
               <img src={logoUrl} crossOrigin="anonymous" className="w-4 h-4" alt="seal" /> Land Records / भूमि का विवरण
             </h3>
-            <div className={`rounded-xl overflow-hidden border ${isUP ? 'border-amber-100' : 'border-emerald-100'} shadow-sm bg-white/50`}>
+            <div className={`rounded-xl overflow-hidden border ${lightBorderTheme} shadow-sm bg-white/50`}>
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className={`${isUP ? 'bg-amber-50' : 'bg-emerald-50'} ${textTheme} font-black border-b ${isUP ? 'border-amber-100' : 'border-emerald-100'}`}>
+                  <tr className={`${lightBgTheme} ${textTheme} font-black border-b ${lightBorderTheme}`}>
                     <th className="px-3 py-2.5">District</th>
                     <th className="px-3 py-2.5">Sub-District</th>
                     <th className="px-3 py-2.5">Village</th>
@@ -246,15 +338,15 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
                     <th className="px-3 py-2.5 text-right">Area</th>
                   </tr>
                 </thead>
-                <tbody className={`divide-y ${isUP ? 'divide-amber-50' : 'divide-emerald-50'}`}>
+                <tbody className={`divide-y ${lightDivideTheme}`}>
                   {data.landDetails.map((land, idx) => (
-                    <tr key={land.id} className={idx % 2 === 0 ? 'bg-white/70' : (isUP ? 'bg-amber-50/30' : 'bg-emerald-50/30')}>
+                    <tr key={land.id} className={idx % 2 === 0 ? 'bg-white/70' : lightBgHoverTheme}>
                       <td className="px-3 py-2.5 text-slate-900 font-bold">{land.district}</td>
                       <td className="px-3 py-2.5 text-slate-800 font-medium">{land.subDistrict}</td>
                       <td className="px-3 py-2.5 text-slate-800 font-medium">{land.village}</td>
                       <td className="px-3 py-2.5 text-slate-950 font-black">{land.mOwnerNo}</td>
                       <td className="px-3 py-2.5 text-slate-950 font-black">{land.khasra}</td>
-                      <td className={`px-3 py-2.5 text-right font-black ${isUP ? 'text-amber-900' : 'text-emerald-900'}`}>{land.area}</td>
+                      <td className={`px-3 py-2.5 text-right font-black ${lightTextTheme}`}>{land.area}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -262,7 +354,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
             </div>
           </div>
 
-          <div className={`mt-4 flex justify-between items-end border-t pt-2 ${isUP ? 'border-amber-50' : 'border-emerald-50'} relative z-10`}>
+          <div className={`mt-4 flex justify-between items-end border-t pt-2 ${lightBorderTheme} relative z-10`}>
              <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2 mb-1">
                    <span className={`text-[10px] font-black ${textTheme} uppercase tracking-tighter`}>Issued On: {displayIssueDate}</span>
