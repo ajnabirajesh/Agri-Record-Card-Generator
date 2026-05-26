@@ -43,6 +43,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
   const maharashtraLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Seal_of_Maharashtra.svg/960px-Seal_of_Maharashtra.svg.png";
   const mpLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Emblem_of_Madhya_Pradesh.svg/960px-Emblem_of_Madhya_Pradesh.svg.png";
   const rajasthanLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png";
+  const keralaLogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Government_of_Kerala_Logo.svg/1280px-Government_of_Kerala_Logo.svg.png";
 
   let logoUrl = biharLogoUrl;
   let stateNameHi = 'बिहार सरकार';
@@ -143,6 +144,26 @@ const CardPreview: React.FC<CardPreviewProps> = ({ data, forceFullScale = false 
       footerBorderTheme = 'border-[#7dd3fc]/30';
       footerDividerTheme = 'bg-[#7dd3fc]/20';
       watermarkOpacity = 'opacity-[0.04] grayscale';
+      break;
+    case 'Kerala':
+      logoUrl = keralaLogoUrl;
+      stateNameHi = 'കേരള സർക്കാർ';
+      stateNameEn = 'Govt. of Kerala';
+      bgTheme = 'bg-gradient-to-r from-[#d946ef] to-[#e879f9]';
+      headerTheme = 'bg-[#701a75]';
+      textTheme = 'text-[#701a75]';
+      borderColorTheme = 'border-[#701a75]';
+      highlightColorTheme = 'text-[#f0abfc]';
+      highlightTopTheme = 'bg-[#d946ef]';
+      lightBorderTheme = 'border-fuchsia-100';
+      lightBgTheme = 'bg-fuchsia-50';
+      lightBgHoverTheme = 'bg-fuchsia-50/30';
+      lightDivideTheme = 'divide-fuchsia-50';
+      lightTextTheme = 'text-fuchsia-900';
+      footerGradient = 'from-[#701a75] via-[#86198f] to-[#701a75]';
+      footerBorderTheme = 'border-[#f0abfc]/30';
+      footerDividerTheme = 'bg-[#f0abfc]/20';
+      watermarkOpacity = 'opacity-[0.05] grayscale';
       break;
   }
 

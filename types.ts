@@ -71,6 +71,11 @@ export const RAJASTHAN_DISTRICTS = [
   "Tonk", "Udaipur"
 ].sort();
 
+export const KERALA_DISTRICTS = [
+  "Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode",
+  "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"
+].sort();
+
 export const BIHAR_SUB_DISTRICTS: Record<string, string[]> = {
   "Araria": ["Araria", "Forbesganj", "Jokihat", "Kursakanta", "Palasi", "Raniganj", "Sikakti", "Bhargama", "Narpatganj"],
   "Arwal": ["Arwal", "Kaler", "Karpi", "Kurtha", "Sonbhadra Banshi Suryapur"],
