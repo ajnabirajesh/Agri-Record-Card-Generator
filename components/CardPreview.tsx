@@ -312,13 +312,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex flex-col items-end leading-none mr-2">
+              <div className="flex flex-col items-end justify-center mr-2 gap-0.5">
                 <span
-                  className={`text-[9px] font-bold ${highlightColorTheme} uppercase tracking-tighter`}
+                  className={`text-[9px] font-bold ${highlightColorTheme} uppercase tracking-tighter leading-snug`}
                 >
                   {stateNameHi}
                 </span>
-                <span className="text-[7px] text-white/60 uppercase">
+                <span className="text-[7px] text-white/60 uppercase leading-snug">
                   {stateNameEn}
                 </span>
               </div>
