@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS, UP_DISTRICTS, MAHARASHTRA_DISTRICTS, MP_DISTRICTS, RAJASTHAN_DISTRICTS, KERALA_DISTRICTS } from '../types';
+import { FarmerData, LandDetail, BIHAR_DISTRICTS, BIHAR_SUB_DISTRICTS, UP_DISTRICTS, MAHARASHTRA_DISTRICTS, MP_DISTRICTS, RAJASTHAN_DISTRICTS, KERALA_DISTRICTS, CHHATTISGARH_DISTRICTS, TAMIL_NADU_DISTRICTS } from '../types';
 import { Plus, Trash2, Camera, UserCircle, Database, Calendar, ScanText, Loader2 } from 'lucide-react';
 
 interface FarmerFormProps {
@@ -195,6 +195,8 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                 <option value="Madhya Pradesh">Madhya Pradesh</option>
                 <option value="Rajasthan">Rajasthan</option>
                 <option value="Kerala">Kerala</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
             </select>
           </div>
 
@@ -300,6 +302,8 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
                 if (state === 'Madhya Pradesh') availableDistricts = MP_DISTRICTS;
                 if (state === 'Rajasthan') availableDistricts = RAJASTHAN_DISTRICTS;
                 if (state === 'Kerala') availableDistricts = KERALA_DISTRICTS;
+                if (state === 'Chhattisgarh') availableDistricts = CHHATTISGARH_DISTRICTS;
+                if (state === 'Tamil Nadu') availableDistricts = TAMIL_NADU_DISTRICTS;
 
                 const isBihar = state === 'Bihar';
                 const availableBlocks = isBihar && land.district ? (BIHAR_SUB_DISTRICTS[land.district] || []) : [];
