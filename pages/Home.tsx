@@ -389,8 +389,6 @@ const Home: React.FC = () => {
                       <span className="text-sm font-black text-[#064e3b] group-hover:text-white">Ajnabi Creation</span>
                     </a>
                     
-                    
-                    
                     <a 
                       href="https://instagram.com/ajnabirajesh" 
                       target="_blank" 
@@ -401,6 +399,23 @@ const Home: React.FC = () => {
                       <span className="text-sm font-black text-slate-700 group-hover:text-white">Rajesh Yadav</span>
                     </a>
                   </div>
+                  
+                  {deferredPrompt && (
+                    <div className="mt-8 flex justify-center">
+                      <button
+                        onClick={handleInstallClick}
+                        className="group flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-[#064e3b] to-emerald-800 hover:from-emerald-800 hover:to-[#064e3b] text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 border border-emerald-700/50"
+                      >
+                        <div className="bg-white/20 p-1.5 rounded-lg">
+                          <Download className="w-5 h-5 text-[#cddc39]" />
+                        </div>
+                        <div className="flex flex-col items-start leading-none gap-1">
+                          <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">Download</span>
+                          <span className="text-sm font-black tracking-wide">Install App</span>
+                        </div>
+                      </button>
+                    </div>
+                  )}
               </div>
            </div>
            <div className="mt-12 pt-8 border-t border-slate-200/20 text-center text-slate-400 text-sm flex flex-col items-center gap-2">
