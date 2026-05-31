@@ -292,8 +292,8 @@ const Home: React.FC = () => {
             <p className="text-emerald-100/95 text-xs md:text-sm leading-relaxed max-w-3xl font-medium">
               🌾 Agri Record Card Generator Pro एक भरोसेमंद Digital Tool है, जहाँ Farmer Record Card और Agriculture ID Card कुछ ही मिनटों में तैयार किए जा सकते हैं। Fast, Secure और User-Friendly Platform।
             </p>
-            {deferredPrompt && (
-              <div className="pt-2">
+            <div className="pt-2 flex flex-wrap gap-3">
+              {deferredPrompt && (
                 <button
                   onClick={handleInstallClick}
                   className="inline-flex items-center gap-2 bg-[#cddc39] hover:bg-[#b8c634] text-emerald-950 font-black px-5 py-2.5 rounded-xl transition-all shadow-[0_0_20px_rgba(205,220,57,0.3)] active:scale-95"
@@ -301,8 +301,16 @@ const Home: React.FC = () => {
                   <Download className="w-5 h-5" />
                   Install App (PWA)
                 </button>
-              </div>
-            )}
+              )}
+              <a
+                href="/AgriRecord.apk"
+                download
+                className="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-700 text-white font-black px-5 py-2.5 rounded-xl transition-all active:scale-95 border border-emerald-600 shadow-sm"
+              >
+                <Download className="w-5 h-5" />
+                Download APK
+              </a>
+            </div>
           </div>
           <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-32 h-32 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
             <Leaf className="w-12 h-12 text-[#cddc39] mb-2" />
@@ -400,8 +408,8 @@ const Home: React.FC = () => {
                     </a>
                   </div>
                   
-                  {deferredPrompt && (
-                    <div className="mt-8 flex justify-center">
+                  <div className="mt-8 flex flex-wrap justify-center gap-4">
+                    {deferredPrompt && (
                       <button
                         onClick={handleInstallClick}
                         className="group flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-[#064e3b] to-emerald-800 hover:from-emerald-800 hover:to-[#064e3b] text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 border border-emerald-700/50"
@@ -411,11 +419,24 @@ const Home: React.FC = () => {
                         </div>
                         <div className="flex flex-col items-start leading-none gap-1">
                           <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">Download</span>
-                          <span className="text-sm font-black tracking-wide">Install App</span>
+                          <span className="text-sm font-black tracking-wide">Install App (PWA)</span>
                         </div>
                       </button>
-                    </div>
-                  )}
+                    )}
+                    <a
+                      href="/AgriRecord.apk"
+                      download
+                      className="group flex items-center gap-3 px-8 py-3.5 bg-white hover:bg-emerald-50 text-emerald-950 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 border border-slate-200"
+                    >
+                      <div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
+                        <Download className="w-5 h-5 text-emerald-700" />
+                      </div>
+                      <div className="flex flex-col items-start leading-none gap-1">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Direct</span>
+                        <span className="text-sm font-black tracking-wide">Download APK</span>
+                      </div>
+                    </a>
+                  </div>
               </div>
            </div>
            <div className="mt-12 pt-8 border-t border-slate-200/20 text-center text-slate-400 text-sm flex flex-col items-center gap-2">
