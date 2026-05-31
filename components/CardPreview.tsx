@@ -64,6 +64,22 @@ const CardPreview: React.FC<CardPreviewProps> = ({
     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Coat_of_arms_of_Chhattisgarh.svg/960px-Coat_of_arms_of_Chhattisgarh.svg.png";
   const tamilNaduLogoUrl =
     "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Seal_of_Tamil_Nadu.svg/500px-Seal_of_Tamil_Nadu.svg.png";
+  const gujaratLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Government_Of_Gujarat_Seal_In_All_Languages.svg/960px-Government_Of_Gujarat_Seal_In_All_Languages.svg.png";
+  const haryanaLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Emblem_of_Haryana.svg/500px-Emblem_of_Haryana.svg.png";
+  const punjabLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg/500px-Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg.png";
+  const andhraPradeshLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Emblem_of_Andhra_Pradesh.svg/500px-Emblem_of_Andhra_Pradesh.svg.png";
+  const assamLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Seal_of_Assam.svg/500px-Seal_of_Assam.svg.png";
+  const odishaLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Seal_of_Odisha.svg/330px-Seal_of_Odisha.svg.png";
+  const jharkhandLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Jharkhand_Rajakiya_Chihna.svg/500px-Jharkhand_Rajakiya_Chihna.svg.png";
+  const telanganaLogoUrl =
+    "https://upload.wikimedia.org/wikipedia/en/thumb/6/61/Emblem_of_Telangana.svg/500px-Emblem_of_Telangana.svg.png";
 
   let logoUrl = biharLogoUrl;
   let stateNameHi = "बिहार सरकार";
@@ -223,6 +239,166 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       footerGradient = "from-[#78350f] via-[#92400e] to-[#78350f]";
       footerBorderTheme = "border-[#fcd34d]/30";
       footerDividerTheme = "bg-[#fcd34d]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Gujarat":
+      logoUrl = gujaratLogoUrl;
+      stateNameHi = "ગુજરાત સરકાર";
+      stateNameEn = "Govt. of Gujarat";
+      bgTheme = "bg-gradient-to-r from-[#ea580c] to-[#f97316]";
+      headerTheme = "bg-[#7c2d12]";
+      textTheme = "text-[#7c2d12]";
+      borderColorTheme = "border-[#7c2d12]";
+      highlightColorTheme = "text-[#ffedd5]";
+      highlightTopTheme = "bg-[#ea580c]";
+      lightBorderTheme = "border-orange-100";
+      lightBgTheme = "bg-orange-50";
+      lightBgHoverTheme = "bg-orange-50/30";
+      lightDivideTheme = "divide-orange-50";
+      lightTextTheme = "text-orange-900";
+      footerGradient = "from-[#7c2d12] via-[#ea580c] to-[#7c2d12]";
+      footerBorderTheme = "border-[#ffedd5]/30";
+      footerDividerTheme = "bg-[#ffedd5]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Haryana":
+      logoUrl = haryanaLogoUrl;
+      stateNameHi = "हरियाणा सरकार";
+      stateNameEn = "Govt. of Haryana";
+      bgTheme = "bg-gradient-to-r from-[#059669] to-[#10b981]";
+      headerTheme = "bg-[#064e3b]";
+      textTheme = "text-[#064e3b]";
+      borderColorTheme = "border-[#064e3b]";
+      highlightColorTheme = "text-[#a7f3d0]";
+      highlightTopTheme = "bg-[#059669]";
+      lightBorderTheme = "border-emerald-100";
+      lightBgTheme = "bg-emerald-50";
+      lightBgHoverTheme = "bg-emerald-50/30";
+      lightDivideTheme = "divide-emerald-50";
+      lightTextTheme = "text-emerald-900";
+      footerGradient = "from-[#064e3b] via-[#047857] to-[#064e3b]";
+      footerBorderTheme = "border-[#a7f3d0]/30";
+      footerDividerTheme = "bg-[#a7f3d0]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Punjab":
+      logoUrl = punjabLogoUrl;
+      stateNameHi = "ਪੰਜਾਬ ਸਰਕਾਰ";
+      stateNameEn = "Govt. of Punjab";
+      bgTheme = "bg-gradient-to-r from-[#d97706] to-[#f59e0b]";
+      headerTheme = "bg-[#78350f]";
+      textTheme = "text-[#78350f]";
+      borderColorTheme = "border-[#78350f]";
+      highlightColorTheme = "text-[#fef3c7]";
+      highlightTopTheme = "bg-[#d97706]";
+      lightBorderTheme = "border-amber-100";
+      lightBgTheme = "bg-amber-50";
+      lightBgHoverTheme = "bg-amber-50/30";
+      lightDivideTheme = "divide-amber-50";
+      lightTextTheme = "text-amber-900";
+      footerGradient = "from-[#78350f] via-[#92400e] to-[#78350f]";
+      footerBorderTheme = "border-[#fef3c7]/30";
+      footerDividerTheme = "bg-[#fef3c7]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Andhra Pradesh":
+      logoUrl = andhraPradeshLogoUrl;
+      stateNameHi = "ఆంధ్రప్రదేశ్ ప్రభుత్వం";
+      stateNameEn = "Govt. of Andhra Pradesh";
+      bgTheme = "bg-gradient-to-r from-[#0d9488] to-[#14b8a6]";
+      headerTheme = "bg-[#115e59]";
+      textTheme = "text-[#115e59]";
+      borderColorTheme = "border-[#115e59]";
+      highlightColorTheme = "text-[#ccfbf1]";
+      highlightTopTheme = "bg-[#0d9488]";
+      lightBorderTheme = "border-teal-100";
+      lightBgTheme = "bg-teal-50";
+      lightBgHoverTheme = "bg-teal-50/30";
+      lightDivideTheme = "divide-teal-50";
+      lightTextTheme = "text-teal-900";
+      footerGradient = "from-[#115e59] via-[#0f766e] to-[#115e59]";
+      footerBorderTheme = "border-[#ccfbf1]/30";
+      footerDividerTheme = "bg-[#ccfbf1]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Assam":
+      logoUrl = assamLogoUrl;
+      stateNameHi = "অসম চৰকাৰ";
+      stateNameEn = "Govt. of Assam";
+      bgTheme = "bg-gradient-to-r from-[#e11d48] to-[#f43f5e]";
+      headerTheme = "bg-[#881337]";
+      textTheme = "text-[#881337]";
+      borderColorTheme = "border-[#881337]";
+      highlightColorTheme = "text-[#ffe4e6]";
+      highlightTopTheme = "bg-[#e11d48]";
+      lightBorderTheme = "border-rose-100";
+      lightBgTheme = "bg-rose-50";
+      lightBgHoverTheme = "bg-rose-50/30";
+      lightDivideTheme = "divide-rose-50";
+      lightTextTheme = "text-rose-900";
+      footerGradient = "from-[#881337] via-[#be123c] to-[#881337]";
+      footerBorderTheme = "border-[#ffe4e6]/30";
+      footerDividerTheme = "bg-[#ffe4e6]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Odisha":
+      logoUrl = odishaLogoUrl;
+      stateNameHi = "ଓଡ଼ିଶା ସରକାର";
+      stateNameEn = "Govt. of Odisha";
+      bgTheme = "bg-gradient-to-r from-[#4f46e5] to-[#6366f1]";
+      headerTheme = "bg-[#1e1b4b]";
+      textTheme = "text-[#1e1b4b]";
+      borderColorTheme = "border-[#1e1b4b]";
+      highlightColorTheme = "text-[#e0e7ff]";
+      highlightTopTheme = "bg-[#4f46e5]";
+      lightBorderTheme = "border-indigo-100";
+      lightBgTheme = "bg-indigo-50";
+      lightBgHoverTheme = "bg-indigo-50/30";
+      lightDivideTheme = "divide-indigo-50";
+      lightTextTheme = "text-indigo-900";
+      footerGradient = "from-[#1e1b4b] via-[#3730a3] to-[#1e1b4b]";
+      footerBorderTheme = "border-[#e0e7ff]/30";
+      footerDividerTheme = "bg-[#e0e7ff]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Jharkhand":
+      logoUrl = jharkhandLogoUrl;
+      stateNameHi = "झारखण्ड सरकार";
+      stateNameEn = "Govt. of Jharkhand";
+      bgTheme = "bg-gradient-to-r from-[#15803d] to-[#22c55e]";
+      headerTheme = "bg-[#14532d]";
+      textTheme = "text-[#14532d]";
+      borderColorTheme = "border-[#14532d]";
+      highlightColorTheme = "text-[#dcfce7]";
+      highlightTopTheme = "bg-[#15803d]";
+      lightBorderTheme = "border-green-100";
+      lightBgTheme = "bg-green-50";
+      lightBgHoverTheme = "bg-green-50/30";
+      lightDivideTheme = "divide-green-50";
+      lightTextTheme = "text-green-900";
+      footerGradient = "from-[#14532d] via-[#15803d] to-[#14532d]";
+      footerBorderTheme = "border-[#dcfce7]/30";
+      footerDividerTheme = "bg-[#dcfce7]/20";
+      watermarkOpacity = "opacity-[0.05] grayscale";
+      break;
+    case "Telangana":
+      logoUrl = telanganaLogoUrl;
+      stateNameHi = "తెలంగాణ ప్రభుత్వం";
+      stateNameEn = "Govt. of Telangana";
+      bgTheme = "bg-gradient-to-r from-[#ec4899] to-[#f472b6]";
+      headerTheme = "bg-[#831843]";
+      textTheme = "text-[#831843]";
+      borderColorTheme = "border-[#831843]";
+      highlightColorTheme = "text-[#fce7f3]";
+      highlightTopTheme = "bg-[#ec4899]";
+      lightBorderTheme = "border-pink-100";
+      lightBgTheme = "bg-pink-50";
+      lightBgHoverTheme = "bg-pink-50/30";
+      lightDivideTheme = "divide-pink-50";
+      lightTextTheme = "text-pink-900";
+      footerGradient = "from-[#831843] via-[#9d174d] to-[#831843]";
+      footerBorderTheme = "border-[#fce7f3]/30";
+      footerDividerTheme = "bg-[#fce7f3]/20";
       watermarkOpacity = "opacity-[0.05] grayscale";
       break;
   }
