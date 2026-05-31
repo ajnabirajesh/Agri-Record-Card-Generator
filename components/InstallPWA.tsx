@@ -17,9 +17,16 @@ export const InstallPWA: React.FC = () => {
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
+      (window as any).__DEFERRED_PROMPT__ = e;
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowPrompt(true);
     };
+
+    // If it already fired and was saved globally
+    if ((window as any).__DEFERRED_PROMPT__) {
+      setDeferredPrompt((window as any).__DEFERRED_PROMPT__);
+      setShowPrompt(true);
+    }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 

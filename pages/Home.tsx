@@ -14,9 +14,36 @@ const Home: React.FC = () => {
   const [hasPaid, setHasPaid] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const { user, isAdmin, signIn, signOut } = useAuth();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    // Check if the prompt was saved globally by the floating component
+    if ((window as any).__DEFERRED_PROMPT__) {
+      setDeferredPrompt((window as any).__DEFERRED_PROMPT__);
+    }
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      (window as any).__DEFERRED_PROMPT__ = e;
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      (window as any).__DEFERRED_PROMPT__ = null;
+    }
+  };
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -265,9 +292,21 @@ const Home: React.FC = () => {
             <p className="text-emerald-100/95 text-xs md:text-sm leading-relaxed max-w-3xl font-medium">
               🌾 Agri Record Card Generator Pro एक भरोसेमंद Digital Tool है, जहाँ Farmer Record Card और Agriculture ID Card कुछ ही मिनटों में तैयार किए जा सकते हैं। Fast, Secure और User-Friendly Platform।
             </p>
+            {deferredPrompt && (
+              <div className="pt-2">
+                <button
+                  onClick={handleInstallClick}
+                  className="inline-flex items-center gap-2 bg-[#cddc39] hover:bg-[#b8c634] text-emerald-950 font-black px-5 py-2.5 rounded-xl transition-all shadow-[0_0_20px_rgba(205,220,57,0.3)] active:scale-95"
+                >
+                  <Download className="w-5 h-5" />
+                  Install App (PWA)
+                </button>
+              </div>
+            )}
           </div>
-          <div className="hidden lg:flex items-center justify-center shrink-0 w-24 h-24 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
-            <Leaf className="w-12 h-12 text-[#cddc39]" />
+          <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-32 h-32 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
+            <Leaf className="w-12 h-12 text-[#cddc39] mb-2" />
+            <span className="text-xs font-bold text-emerald-100 uppercase tracking-widest">Verified</span>
           </div>
         </div>
         
