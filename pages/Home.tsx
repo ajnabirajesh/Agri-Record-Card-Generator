@@ -249,6 +249,28 @@ const Home: React.FC = () => {
       {/* Main UI */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-4 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
         
+        {/* Intro Banner with Tagline and Description */}
+        <div className="no-print col-span-1 lg:col-span-12 bg-gradient-to-r from-emerald-900 via-[#064e3b] to-emerald-950 text-white p-6 md:p-8 rounded-3xl border border-emerald-800 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="relative z-10 max-w-4xl space-y-3">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/40 border border-emerald-700/60 text-[10px] md:text-xs font-bold uppercase tracking-wider text-emerald-300 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#cddc39] animate-pulse"></span>
+              Digital Agriculture Platform
+            </div>
+            <h2 className="text-xl md:text-3xl font-black text-white tracking-tight leading-tight">
+              Agri Record Card Generator Pro
+            </h2>
+            <p className="text-xs md:text-sm font-bold text-[#cddc39] border-l-2 border-[#cddc39] pl-3 leading-relaxed">
+              "किसानों के डिजिटल रिकॉर्ड का भरोसेमंद समाधान – Fast, Secure & Professional." 🚜📱
+            </p>
+            <p className="text-emerald-100/95 text-xs md:text-sm leading-relaxed max-w-3xl font-medium">
+              🌾 Agri Record Card Generator Pro एक भरोसेमंद Digital Tool है, जहाँ Farmer Record Card और Agriculture ID Card कुछ ही मिनटों में तैयार किए जा सकते हैं। Fast, Secure और User-Friendly Platform।
+            </p>
+          </div>
+          <div className="hidden lg:flex items-center justify-center shrink-0 w-24 h-24 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
+            <Leaf className="w-12 h-12 text-[#cddc39]" />
+          </div>
+        </div>
+        
         {/* Live Preview */}
         <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col">
             <div className="no-print flex items-center justify-between mb-4 md:mb-8 bg-white/50 p-3 rounded-2xl border border-slate-100 md:bg-transparent md:p-0 md:border-none">

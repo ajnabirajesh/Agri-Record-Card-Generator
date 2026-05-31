@@ -1,5 +1,6 @@
 {
-  "name": "Agri Record Card Generator",
-  "description": "A professional tool to generate, preview, and print standardized Farmer ID cards (Agri Record) with QR codes and land details.",
-  "requestFramePermissions": []
+  "name": "Agri Record Card Generator Pro",
+  "description": "Agri Record Card Generator Pro एक Digital Agriculture Platform है, जहाँ Farmer Record Card, Agriculture ID Card और QR Code आधारित किसान पहचान पत्र आसानी से Generate किए जा सकते हैं। CSC, Panchayat और Agriculture Service Providers के लिए एक सरल, तेज़ और भरोसेमंद समाधान। 🌾",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
