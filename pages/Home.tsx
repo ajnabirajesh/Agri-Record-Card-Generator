@@ -14,36 +14,9 @@ const Home: React.FC = () => {
   const [hasPaid, setHasPaid] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const { user, isAdmin, signIn, signOut } = useAuth();
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    // Check if the prompt was saved globally by the floating component
-    if ((window as any).__DEFERRED_PROMPT__) {
-      setDeferredPrompt((window as any).__DEFERRED_PROMPT__);
-    }
-
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      (window as any).__DEFERRED_PROMPT__ = e;
-      setDeferredPrompt(e);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-      (window as any).__DEFERRED_PROMPT__ = null;
-    }
-  };
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -276,50 +249,6 @@ const Home: React.FC = () => {
       {/* Main UI */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-4 md:py-12 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
         
-        {/* Intro Banner with Tagline and Description */}
-        <div className="no-print col-span-1 lg:col-span-12 bg-gradient-to-r from-emerald-900 via-[#064e3b] to-emerald-950 text-white p-6 md:p-8 rounded-3xl border border-emerald-800 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="relative z-10 max-w-4xl space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/40 border border-emerald-700/60 text-[10px] md:text-xs font-bold uppercase tracking-wider text-emerald-300 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#cddc39] animate-pulse"></span>
-              Digital Agriculture Platform
-            </div>
-            <h2 className="text-xl md:text-3xl font-black text-white tracking-tight leading-tight">
-              Agri Record Card Generator Pro
-            </h2>
-            <p className="text-xs md:text-sm font-bold text-[#cddc39] border-l-2 border-[#cddc39] pl-3 leading-relaxed">
-              "किसानों के डिजिटल रिकॉर्ड का भरोसेमंद समाधान – Fast, Secure & Professional." 🚜📱
-            </p>
-            <p className="text-emerald-100/95 text-xs md:text-sm leading-relaxed max-w-3xl font-medium">
-              🌾 Agri Record Card Generator Pro एक भरोसेमंद Digital Tool है, जहाँ Farmer Record Card और Agriculture ID Card कुछ ही मिनटों में तैयार किए जा सकते हैं। Fast, Secure और User-Friendly Platform।
-            </p>
-            <div className="pt-2 flex flex-wrap gap-3">
-              {deferredPrompt && (
-                <button
-                  onClick={handleInstallClick}
-                  className="inline-flex items-center gap-2 bg-[#cddc39] hover:bg-[#b8c634] text-emerald-950 font-black px-5 py-2.5 rounded-xl transition-all shadow-[0_0_20px_rgba(205,220,57,0.3)] active:scale-95"
-                >
-                  <Download className="w-5 h-5" />
-                  Install App (PWA)
-                </button>
-              )}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert('APK version abhi uplabdh nahi hai. Kripya "Install App (PWA)" button ka upyog karein.');
-                }}
-                className="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-700 text-white font-black px-5 py-2.5 rounded-xl transition-all active:scale-95 border border-emerald-600 shadow-sm"
-              >
-                <Download className="w-5 h-5" />
-                Download APK
-              </button>
-            </div>
-          </div>
-          <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-32 h-32 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
-            <Leaf className="w-12 h-12 text-[#cddc39] mb-2" />
-            <span className="text-xs font-bold text-emerald-100 uppercase tracking-widest">Verified</span>
-          </div>
-        </div>
-        
         {/* Live Preview */}
         <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col">
             <div className="no-print flex items-center justify-between mb-4 md:mb-8 bg-white/50 p-3 rounded-2xl border border-slate-100 md:bg-transparent md:p-0 md:border-none">
@@ -408,38 +337,6 @@ const Home: React.FC = () => {
                       <div className="w-2 h-2 rounded-full bg-slate-400 group-hover:bg-[#cddc39]"></div>
                       <span className="text-sm font-black text-slate-700 group-hover:text-white">Rajesh Yadav</span>
                     </a>
-                  </div>
-                  
-                  <div className="mt-8 flex flex-wrap justify-center gap-4">
-                    {deferredPrompt && (
-                      <button
-                        onClick={handleInstallClick}
-                        className="group flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-[#064e3b] to-emerald-800 hover:from-emerald-800 hover:to-[#064e3b] text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 border border-emerald-700/50"
-                      >
-                        <div className="bg-white/20 p-1.5 rounded-lg">
-                          <Download className="w-5 h-5 text-[#cddc39]" />
-                        </div>
-                        <div className="flex flex-col items-start leading-none gap-1">
-                          <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">Download</span>
-                          <span className="text-sm font-black tracking-wide">Install App (PWA)</span>
-                        </div>
-                      </button>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        alert('APK version abhi uplabdh nahi hai. Kripya "Install App (PWA)" button ka upyog karein.');
-                      }}
-                      className="group flex items-center gap-3 px-8 py-3.5 bg-white hover:bg-emerald-50 text-emerald-950 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 border border-slate-200"
-                    >
-                      <div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
-                        <Download className="w-5 h-5 text-emerald-700" />
-                      </div>
-                      <div className="flex flex-col items-start leading-none gap-1">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Direct</span>
-                        <span className="text-sm font-black tracking-wide">Download APK</span>
-                      </div>
-                    </button>
                   </div>
               </div>
            </div>

@@ -11,7 +11,6 @@ import AdminCards from './pages/AdminCards';
 import AdminUsers from './pages/AdminUsers';
 import { AuthProvider } from './AuthContext';
 import WhatsAppButton from './components/WhatsAppButton';
-import InstallPWA from './components/InstallPWA';
 
 const App: React.FC = () => {
   return (
@@ -29,7 +28,6 @@ const App: React.FC = () => {
           <Route path="/admin/users" element={<AdminUsers />} />
         </Routes>
         <WhatsAppButton />
-        <InstallPWA />
       </Router>
     </AuthProvider>
   );
