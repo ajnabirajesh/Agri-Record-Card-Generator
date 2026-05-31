@@ -302,14 +302,16 @@ const Home: React.FC = () => {
                   Install App (PWA)
                 </button>
               )}
-              <a
-                href="/AgriRecord.apk"
-                download
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  alert('APK version abhi uplabdh nahi hai. Kripya "Install App (PWA)" button ka upyog karein.');
+                }}
                 className="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-700 text-white font-black px-5 py-2.5 rounded-xl transition-all active:scale-95 border border-emerald-600 shadow-sm"
               >
                 <Download className="w-5 h-5" />
                 Download APK
-              </a>
+              </button>
             </div>
           </div>
           <div className="hidden lg:flex flex-col items-center justify-center shrink-0 w-32 h-32 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md">
@@ -423,9 +425,11 @@ const Home: React.FC = () => {
                         </div>
                       </button>
                     )}
-                    <a
-                      href="/AgriRecord.apk"
-                      download
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        alert('APK version abhi uplabdh nahi hai. Kripya "Install App (PWA)" button ka upyog karein.');
+                      }}
                       className="group flex items-center gap-3 px-8 py-3.5 bg-white hover:bg-emerald-50 text-emerald-950 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-95 border border-slate-200"
                     >
                       <div className="bg-emerald-100 p-1.5 rounded-lg group-hover:bg-emerald-200 transition-colors">
@@ -435,7 +439,7 @@ const Home: React.FC = () => {
                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Direct</span>
                         <span className="text-sm font-black tracking-wide">Download APK</span>
                       </div>
-                    </a>
+                    </button>
                   </div>
               </div>
            </div>
