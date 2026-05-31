@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => {
         react(),
         VitePWA({
           registerType: 'autoUpdate',
+          devOptions: {
+            enabled: true
+          },
           includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'masked-icon.svg'],
           manifest: {
             name: 'Agri Record Card Generator Pro',
@@ -22,11 +25,18 @@ export default defineConfig(({ mode }) => {
             theme_color: '#064e3b',
             background_color: '#f8fafc',
             display: 'standalone',
+            start_url: '/',
             icons: [
+              {
+                src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Farmer_icon.svg/192px-Farmer_icon.svg.png',
+                sizes: '192x192',
+                type: 'image/png'
+              },
               {
                 src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Farmer_icon.svg/512px-Farmer_icon.svg.png',
                 sizes: '512x512',
-                type: 'image/png'
+                type: 'image/png',
+                purpose: 'any maskable'
               }
             ]
           }
