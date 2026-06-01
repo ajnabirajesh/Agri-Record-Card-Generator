@@ -16,11 +16,13 @@ const AdminPaymentLogs: React.FC = () => {
   const { isAdmin, loading: authLoading } = useAuth();
   const [logs, setLogs] = useState<PaymentLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
     if (isAdmin) {
       setLoading(true);
+      setErrorMsg(null);
       const q = query(collection(db, 'payment_logs'));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const fetchedLogs: PaymentLog[] = [];
@@ -37,7 +39,7 @@ const AdminPaymentLogs: React.FC = () => {
             id: doc.id,
             event: data.event,
             payload: parsedPayload,
-            createdAt: data.createdAt?.toDate() || new Date(),
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
           });
         });
         
@@ -46,8 +48,10 @@ const AdminPaymentLogs: React.FC = () => {
         
         setLogs(fetchedLogs);
         setLoading(false);
+        setErrorMsg(null);
       }, (error) => {
         console.error("Error real-time fetching logs:", error);
+        setErrorMsg(error.message);
         setLoading(false);
       });
 
@@ -120,6 +124,11 @@ const AdminPaymentLogs: React.FC = () => {
             {loading ? (
               <div className="p-12 flex justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+              </div>
+            ) : errorMsg ? (
+              <div className="p-12 text-center text-red-500">
+                <AlertCircle className="w-12 h-12 text-red-300 mx-auto mb-3" />
+                <p>Error: {errorMsg}</p>
               </div>
             ) : logs.length === 0 ? (
               <div className="p-12 text-center text-slate-500">
