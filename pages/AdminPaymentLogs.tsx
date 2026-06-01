@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { db } from '../firebase';
-import { collection, query, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, Timestamp, onSnapshot } from 'firebase/firestore';
 import { Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Loader2, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 
@@ -20,47 +20,47 @@ const AdminPaymentLogs: React.FC = () => {
   useEffect(() => {
     if (authLoading) return;
     if (isAdmin) {
-      fetchLogs();
+      setLoading(true);
+      const q = query(collection(db, 'payment_logs'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const fetchedLogs: PaymentLog[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          let parsedPayload = {};
+          try {
+            parsedPayload = typeof data.payload === 'string' ? JSON.parse(data.payload || '{}') : (data.payload || {});
+          } catch (e) {
+            console.error("Error parsing payload", e);
+          }
+
+          fetchedLogs.push({
+            id: doc.id,
+            event: data.event,
+            payload: parsedPayload,
+            createdAt: data.createdAt?.toDate() || new Date(),
+          });
+        });
+        
+        // Sort in descending order on the client to avoid Firestore index requirement
+        fetchedLogs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        
+        setLogs(fetchedLogs);
+        setLoading(false);
+      }, (error) => {
+        console.error("Error real-time fetching logs:", error);
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
     } else {
       setLoading(false);
     }
   }, [isAdmin, authLoading]);
 
-  const fetchLogs = async () => {
-    try {
-      const q = query(
-        collection(db, 'payment_logs')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const fetchedLogs: PaymentLog[] = [];
-      
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        let parsedPayload = {};
-        try {
-          parsedPayload = JSON.parse(data.payload || '{}');
-        } catch (e) {
-          console.error("Error parsing payload", e);
-        }
-
-        fetchedLogs.push({
-          id: doc.id,
-          event: data.event,
-          payload: parsedPayload,
-          createdAt: data.createdAt?.toDate() || new Date(),
-        });
-      });
-      
-      // Sort in descending order on the client to avoid Firestore index requirement
-      fetchedLogs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      
-      setLogs(fetchedLogs);
-    } catch (error) {
-      console.error("Error fetching payment logs:", error);
-    } finally {
-      setLoading(false);
-    }
+  // fetchLogs is no longer strictly needed but keeping it for the refresh button if desired.
+  // Although the refresh button might be unnecessary now.
+  const fetchLogs = () => {
+    // Already handled by onSnapshot
   };
 
   if (authLoading) {
