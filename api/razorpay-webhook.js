@@ -1,8 +1,17 @@
 import crypto from "crypto";
-import fs from "fs";
-import path from "path";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+const firebaseConfig = {
+  "projectId": "gen-lang-client-0255904469",
+  "appId": "1:826556475404:web:d2e81ce019ababab29a629",
+  "apiKey": "AIzaSyATaMgYpe-X-FTWLMNQrjT44xwCN6YtWec",
+  "authDomain": "gen-lang-client-0255904469.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-f7920d61-979b-41ea-9486-d3fb65d17aed",
+  "storageBucket": "gen-lang-client-0255904469.firebasestorage.app",
+  "messagingSenderId": "826556475404",
+  "measurementId": ""
+};
 
 let db;
 
@@ -14,15 +23,8 @@ export default async function handler(req, res) {
   try {
     // Initialize Firebase if not already initialized
     if (!db) {
-      const configPath = path.join(process.cwd(), "firebase-applet-config.json");
-      if (fs.existsSync(configPath)) {
-        const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-        const app = getApps().length === 0 ? initializeApp(config) : getApp();
-        db = getFirestore(app, config.firestoreDatabaseId);
-      } else {
-        console.error("Firebase config not found at", configPath);
-        return res.status(500).json({ error: "Firebase config not found" });
-      }
+      const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+      db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
     }
 
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
