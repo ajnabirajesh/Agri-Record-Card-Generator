@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
-  signIn: () => Promise<void>;
+  signIn: () => Promise<User | null>;
   signOut: () => Promise<void>;
 }
 
@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isAdmin: false,
   loading: true,
-  signIn: async () => {},
+  signIn: async () => null,
   signOut: async () => {},
 });
 
@@ -67,9 +67,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async () => {
     try {
-      await signInWithGoogle();
+      const loggedInUser = await signInWithGoogle();
+      return loggedInUser;
     } catch (error) {
       console.error("Sign in failed in context:", error);
+      throw error;
     }
   };
 

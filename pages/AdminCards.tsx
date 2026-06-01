@@ -22,6 +22,9 @@ const AdminCards: React.FC = () => {
   const [cards, setCards] = useState<SavedCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [stateFilter, setStateFilter] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [printingCardId, setPrintingCardId] = useState<string | null>(null);
   const [viewingCard, setViewingCard] = useState<SavedCard | null>(null);
   
@@ -203,14 +206,39 @@ const AdminCards: React.FC = () => {
     }
   }
 
-  const filteredCards = cards.filter(c => !c.isDeleted).filter(card => 
-    card.farmerData.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    card.farmerData.nameHindi.includes(searchTerm) ||
-    card.farmerData.mobile?.includes(searchTerm) ||
-    card.farmerData.phone?.includes(searchTerm) ||
-    card.farmerData.aadhaar?.includes(searchTerm) ||
-    (card.userEmail && card.userEmail.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredCards = cards.filter(c => !c.isDeleted).filter(card => {
+    // Search Term match
+    const matchesSearch = 
+      card.farmerData.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      card.farmerData.nameHindi.includes(searchTerm) ||
+      card.farmerData.mobile?.includes(searchTerm) ||
+      card.farmerData.phone?.includes(searchTerm) ||
+      card.farmerData.aadhaar?.includes(searchTerm) ||
+      (card.userEmail && card.userEmail.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+    // State Match
+    const cardState = card.farmerData.state || 'Bihar';
+    const matchesState = stateFilter === 'All' || cardState === stateFilter;
+    
+    // Date Match
+    let matchesDate = true;
+    const cardDate = new Date(card.createdAt);
+    cardDate.setHours(0, 0, 0, 0);
+    
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      if (cardDate < start) matchesDate = false;
+    }
+    
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(0, 0, 0, 0);
+      if (cardDate > end) matchesDate = false;
+    }
+
+    return matchesSearch && matchesState && matchesDate;
+  });
 
   const exportToCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
@@ -311,17 +339,74 @@ const AdminCards: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-6 no-print relative w-full mx-auto">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-slate-400" />
+        <div className="mb-6 space-y-4 no-print relative w-full mx-auto">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-slate-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search by name, phone, aadhaar or user email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm shadow-sm"
+              />
+            </div>
+            
+            <div className="flex bg-white border border-slate-200 rounded-xl items-center overflow-hidden shadow-sm">
+               <span className="px-3 text-sm text-slate-500 font-medium border-r border-slate-200 bg-slate-50 self-stretch flex items-center">State</span>
+               <select
+                 value={stateFilter}
+                 onChange={(e) => setStateFilter(e.target.value)}
+                 className="flex-1 py-3 px-3 bg-transparent outline-none text-sm text-slate-700 font-medium min-w-[120px] cursor-pointer"
+               >
+                 <option value="All">All States</option>
+                 <option value="Bihar">Bihar</option>
+                 <option value="Uttar Pradesh">Uttar Pradesh</option>
+                 <option value="Jharkhand">Jharkhand</option>
+                 <option value="Rajasthan">Rajasthan</option>
+                 <option value="Madhya Pradesh">Madhya Pradesh</option>
+                 <option value="West Bengal">West Bengal</option>
+                 <option value="Odisha">Odisha</option>
+                 <option value="Chhattisgarh">Chhattisgarh</option>
+               </select>
+            </div>
           </div>
-          <input
-            type="text"
-            placeholder="Search by name, phone, aadhaar or user email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm shadow-sm"
-          />
+          
+          <div className="flex flex-wrap gap-4 items-center bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+             <div className="flex items-center gap-2">
+               <span className="text-sm font-medium text-slate-600">From:</span>
+               <input 
+                 type="date" 
+                 value={startDate}
+                 onChange={(e) => setStartDate(e.target.value)}
+                 className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+               />
+             </div>
+             <div className="flex items-center gap-2">
+               <span className="text-sm font-medium text-slate-600">To:</span>
+               <input 
+                 type="date" 
+                 value={endDate}
+                 onChange={(e) => setEndDate(e.target.value)}
+                 className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+               />
+             </div>
+             {(startDate || endDate || stateFilter !== 'All' || searchTerm) && (
+               <button 
+                 onClick={() => {
+                   setStartDate('');
+                   setEndDate('');
+                   setStateFilter('All');
+                   setSearchTerm('');
+                 }}
+                 className="ml-auto flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+               >
+                 <X className="w-4 h-4" /> Clear Filters
+               </button>
+             )}
+          </div>
         </div>
 
         {/* Card Viewing Modal */}

@@ -6,7 +6,7 @@ import CardPreview from '../components/CardPreview';
 import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const Home: React.FC = () => {
@@ -33,10 +33,14 @@ const Home: React.FC = () => {
   }, [hasPaid, isAdmin]);
 
   const handlePayment = async (onSuccess: () => void) => {
-    if (!user) {
+    let currentUser = auth.currentUser;
+    
+    if (!currentUser) {
       alert("Please log in first to generate and save your card permanently.");
       try {
-        await signIn();
+        const loggedInUser = await signIn();
+        currentUser = loggedInUser || auth.currentUser;
+        if (!currentUser) return;
       } catch (e) {
         return;
       }
@@ -50,8 +54,8 @@ const Home: React.FC = () => {
     if (isAdmin) {
       try {
         await addDoc(collection(db, 'cards'), {
-          userId: user.uid,
-          userEmail: user.email,
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
           farmerData: JSON.stringify(farmerData),
           transactionId: `admin_bypass_${Date.now()}`,
           createdAt: serverTimestamp()
@@ -93,10 +97,11 @@ const Home: React.FC = () => {
         handler: async function (response: any) {
           try {
             // Save to Firestore
-            if (user) {
+            const activeUser = auth.currentUser;
+            if (activeUser) {
               await addDoc(collection(db, 'cards'), {
-                userId: user.uid,
-                userEmail: user.email,
+                userId: activeUser.uid,
+                userEmail: activeUser.email,
                 farmerData: JSON.stringify(farmerData),
                 transactionId: response.razorpay_payment_id || order.id,
                 createdAt: serverTimestamp()
