@@ -29,8 +29,7 @@ const AdminPaymentLogs: React.FC = () => {
   const fetchLogs = async () => {
     try {
       const q = query(
-        collection(db, 'payment_logs'),
-        orderBy('createdAt', 'desc')
+        collection(db, 'payment_logs')
       );
       
       const querySnapshot = await getDocs(q);
@@ -52,6 +51,9 @@ const AdminPaymentLogs: React.FC = () => {
           createdAt: data.createdAt?.toDate() || new Date(),
         });
       });
+      
+      // Sort in descending order on the client to avoid Firestore index requirement
+      fetchedLogs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       
       setLogs(fetchedLogs);
     } catch (error) {
