@@ -146,20 +146,25 @@ const AdminUsers: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <div className="max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
             <Link to="/admin" className="p-2 hover:bg-slate-200 rounded-full transition-colors">
               <ArrowLeft className="w-6 h-6 text-slate-600" />
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Manage Users</h1>
           </div>
-          <button 
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">{showAddForm ? 'Cancel' : 'Add User'}</span>
-          </button>
+          <div className="flex items-center gap-3">
+             <Link to="/admin/payment-logs" className="flex items-center gap-2 bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition font-medium">
+               Logs
+             </Link>
+             <button 
+               onClick={() => setShowAddForm(!showAddForm)}
+               className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium"
+             >
+               <Plus className="w-4 h-4" />
+               <span className="hidden sm:inline">{showAddForm ? 'Cancel' : 'Add User'}</span>
+             </button>
+          </div>
         </div>
 
         {error && (

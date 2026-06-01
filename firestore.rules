@@ -71,6 +71,11 @@ service cloud.firestore {
              (!('userEmail' in request.resource.data) || request.resource.data.userEmail == null || request.resource.data.userEmail is string);
     }
 
+    match /payment_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if true;
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && isValidUser() && (request.resource.data.role == 'user' || isAdmin());

@@ -9,6 +9,7 @@ import RefundPolicy from './pages/RefundPolicy';
 import MyCards from './pages/MyCards';
 import AdminCards from './pages/AdminCards';
 import AdminUsers from './pages/AdminUsers';
+import AdminPaymentLogs from './pages/AdminPaymentLogs';
 import { AuthProvider } from './AuthContext';
 import WhatsAppButton from './components/WhatsAppButton';
 
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <Route path="/my-cards" element={<MyCards />} />
           <Route path="/admin" element={<AdminCards />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/payment-logs" element={<AdminPaymentLogs />} />
         </Routes>
         <WhatsAppButton />
       </Router>

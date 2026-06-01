@@ -287,6 +287,10 @@ const AdminCards: React.FC = () => {
             <h1 className="text-lg md:text-xl font-black tracking-tight">Admin Dashboard</h1>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
+            <Link to="/admin/payment-logs" className="text-sm font-medium bg-purple-700 hover:bg-purple-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 md:px-4 md:py-2">
+              <span className="hidden sm:inline">Payment Logs</span>
+              <span className="sm:hidden">Logs</span>
+            </Link>
             <Link to="/admin/users" className="text-sm font-medium bg-purple-700 hover:bg-purple-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 md:px-4 md:py-2">
               <span className="hidden sm:inline">Manage Users</span>
               <span className="sm:hidden">Users</span>
