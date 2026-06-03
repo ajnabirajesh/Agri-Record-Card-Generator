@@ -5,7 +5,8 @@ import { collection, query, getDocs, orderBy, updateDoc, doc } from 'firebase/fi
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X, Edit3 } from 'lucide-react';
+import EditCardModal from '../components/EditCardModal';
 
 interface SavedCard {
   id: string;
@@ -27,6 +28,7 @@ const AdminCards: React.FC = () => {
   const [endDate, setEndDate] = useState('');
   const [printingCardId, setPrintingCardId] = useState<string | null>(null);
   const [viewingCard, setViewingCard] = useState<SavedCard | null>(null);
+  const [editingCard, setEditingCard] = useState<SavedCard | null>(null);
   
   // Login State
   const [email, setEmail] = useState('');
@@ -44,6 +46,19 @@ const AdminCards: React.FC = () => {
       setLoading(false);
     }
   }, [isAdmin, authLoading]);
+
+  const handleSaveEdit = async (id: string, newFarmerData: FarmerData) => {
+    try {
+      await updateDoc(doc(db, 'cards', id), {
+        farmerData: JSON.stringify(newFarmerData)
+      });
+      setCards(cards.map(card => card.id === id ? { ...card, farmerData: newFarmerData } : card));
+      setEditingCard(null);
+    } catch (err) {
+      console.error("Error saving card:", err);
+      alert("Failed to save changes. Please try again.");
+    }
+  };
 
   const fetchCards = async () => {
     setLoading(true);
@@ -445,6 +460,15 @@ const AdminCards: React.FC = () => {
           </div>
         )}
 
+        {editingCard && (
+          <EditCardModal
+            cardId={editingCard.id}
+            initialData={editingCard.farmerData}
+            onClose={() => setEditingCard(null)}
+            onSave={handleSaveEdit}
+          />
+        )}
+
         {filteredCards.length === 0 ? (
           <div className="bg-white text-center py-20 rounded-3xl border border-slate-100 shadow-sm">
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -503,6 +527,13 @@ const AdminCards: React.FC = () => {
                           title="View Card"
                         >
                           <Eye className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => setEditingCard(card)}
+                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                          title="Edit Card"
+                        >
+                          <Edit3 className="w-5 h-5" />
                         </button>
                         <button 
                           onClick={() => handlePrint(card.id)}
