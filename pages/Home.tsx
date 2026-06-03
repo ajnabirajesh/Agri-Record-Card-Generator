@@ -7,7 +7,7 @@ import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { auth, db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
 
 const Home: React.FC = () => {
   const [farmerData, setFarmerData] = useState<FarmerData>(INITIAL_FARMER_DATA);
@@ -15,7 +15,7 @@ const Home: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
   
-  const { user, isAdmin, signIn, signOut } = useAuth();
+  const { user, isAdmin, freeCredits, signIn, signOut } = useAuth();
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -67,6 +67,33 @@ const Home: React.FC = () => {
         alert("Admin save failed.");
       }
       return;
+    }
+
+    if (freeCredits > 0) {
+      if (window.confirm(`You have ${freeCredits} free credit(s) available. Do you want to use 1 credit to generate this card for free?`)) {
+        setIsProcessingPayment(true);
+        try {
+          // Decrement by exactly 1 as required by security rules
+          const userRef = doc(db, 'users', currentUser.uid);
+          await updateDoc(userRef, { freeCredits: freeCredits - 1 });
+          
+          await addDoc(collection(db, 'cards'), {
+            userId: currentUser.uid,
+            userEmail: currentUser.email,
+            farmerData: JSON.stringify(farmerData),
+            transactionId: `free_credit_${Date.now()}`,
+            createdAt: serverTimestamp()
+          });
+          setHasPaid(true);
+          onSuccess();
+        } catch (err) {
+          console.error("Error using free credit:", err);
+          alert("Failed to use free credit. Please try again.");
+        } finally {
+          setIsProcessingPayment(false);
+        }
+        return;
+      }
     }
 
     setIsProcessingPayment(true);
@@ -229,9 +256,9 @@ const Home: React.FC = () => {
              >
                <div className="flex items-center gap-2">
                  {isProcessingPayment ? <Loader2 className="w-3.5 h-3.5 md:w-4 h-4 animate-spin" /> : (hasPaid ? <Printer className="w-3.5 h-3.5 md:w-4 h-4" /> : <Lock className="w-3.5 h-3.5 md:w-4 h-4" />)}
-                 <span className="hidden md:inline text-xs uppercase tracking-wider">{hasPaid ? 'Print' : 'Pay & Print'}</span>
+                 <span className="hidden md:inline text-xs uppercase tracking-wider">{hasPaid ? 'Print' : (freeCredits > 0 ? 'Use Credit' : 'Pay & Print')}</span>
                </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">₹11 Only</span>}
+               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free` : '₹11 Only'}</span>}
              </button>
 
              <button 
@@ -242,10 +269,10 @@ const Home: React.FC = () => {
                <div className="flex items-center gap-2">
                  {isProcessingPayment ? <Loader2 className="w-3.5 h-3.5 md:w-5 h-5 animate-spin" /> : (hasPaid ? <Download className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" /> : <Lock className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" />)}
                  <span className="text-[9px] md:text-base uppercase tracking-tight md:tracking-normal font-black">
-                   {hasPaid ? 'SAVE' : 'PAY & SAVE'}
+                   {hasPaid ? 'SAVE' : (freeCredits > 0 ? 'USE CREDIT' : 'PAY & SAVE')}
                  </span>
                </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">₹11 Only</span>}
+               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free Available` : '₹11 Only'}</span>}
              </button>
           </div>
         </div>

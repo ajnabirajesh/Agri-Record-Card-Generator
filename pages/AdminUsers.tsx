@@ -12,6 +12,7 @@ interface UserData {
   id: string;
   email: string;
   role: 'admin' | 'user';
+  freeCredits?: number;
   createdAt?: any;
 }
 
@@ -83,6 +84,17 @@ const AdminUsers: React.FC = () => {
     } catch (err: any) {
       console.error("Error updating role:", err);
       alert("Failed to update role: " + err.message);
+    }
+  };
+
+  const handleCreditsChange = async (userId: string, credits: number) => {
+    if (credits < 0) return;
+    try {
+      await updateDoc(doc(db, 'users', userId), { freeCredits: credits });
+      setUsers(users.map(u => u.id === userId ? { ...u, freeCredits: credits } : u));
+    } catch (err: any) {
+      console.error("Error updating credits:", err);
+      alert("Failed to update credits: " + err.message);
     }
   };
 
@@ -238,6 +250,7 @@ const AdminUsers: React.FC = () => {
                 <tr className="bg-slate-50 border-b border-slate-100 text-sm md:text-base">
                   <th className="p-4 font-semibold text-slate-600">Email</th>
                   <th className="p-4 font-semibold text-slate-600">Role</th>
+                  <th className="p-4 font-semibold text-slate-600">Free Credits</th>
                   <th className="p-4 font-semibold text-slate-600 text-right">Actions</th>
                 </tr>
               </thead>
@@ -273,6 +286,17 @@ const AdminUsers: React.FC = () => {
                           <option value="user">User</option>
                           <option value="admin">Admin</option>
                         </select>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            value={u.freeCredits || 0}
+                            onChange={(e) => handleCreditsChange(u.id, parseInt(e.target.value) || 0)}
+                            className="w-16 px-2 py-1 border border-slate-300 rounded outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm"
+                          />
+                        </div>
                       </td>
                       <td className="p-4 text-right">
                         <button 

@@ -76,10 +76,18 @@ service cloud.firestore {
       allow create: if true;
     }
 
+    function isOwnerUpdatingFreeCredits() {
+      // Must be owner, can only change freeCredits, must decrement by exactly 1, and current val > 0
+      return isOwner(userId) && 
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['freeCredits']) &&
+             request.resource.data.freeCredits == resource.data.freeCredits - 1 &&
+             resource.data.freeCredits > 0;
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId) && isValidUser() && (request.resource.data.role == 'user' || isAdmin());
-      allow update: if isAdmin() && isValidUser();
+      allow update: if (isAdmin() && isValidUser()) || isOwnerUpdatingFreeCredits();
       allow delete: if isAdmin();
     }
 
