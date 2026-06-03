@@ -14,8 +14,10 @@ interface UserData {
   name?: string;
   role: 'admin' | 'user';
   freeCredits?: number;
+  cardCount?: number;
   createdAt?: any;
 }
+
 
 const AdminUsers: React.FC = () => {
   const { user, isAdmin } = useAuth();
@@ -59,7 +61,23 @@ const AdminUsers: React.FC = () => {
         ...doc.data()
       } as UserData));
       
-      setUsers(userList);
+      // Fetch cards to aggregate counts
+      const cardsCol = collection(db, 'cards');
+      const cardSnapshot = await getDocs(cardsCol);
+      const cardCounts: Record<string, number> = {};
+      cardSnapshot.forEach(doc => {
+        const userId = doc.data().userId;
+        if (userId) {
+           cardCounts[userId] = (cardCounts[userId] || 0) + 1;
+        }
+      });
+      
+      const usersWithCounts = userList.map(u => ({
+        ...u,
+        cardCount: cardCounts[u.id] || 0
+      }));
+
+      setUsers(usersWithCounts);
     } catch (err: any) {
       console.error("Error fetching users:", err);
       setError("Failed to load users. Please check your permissions.");
@@ -274,6 +292,7 @@ const AdminUsers: React.FC = () => {
                   <th className="p-4 font-semibold text-slate-600">Name</th>
                   <th className="p-4 font-semibold text-slate-600">Email</th>
                   <th className="p-4 font-semibold text-slate-600">Role</th>
+                  <th className="p-4 font-semibold text-slate-600">Cards</th>
                   <th className="p-4 font-semibold text-slate-600">Free Credits</th>
                   <th className="p-4 font-semibold text-slate-600 text-right">Actions</th>
                 </tr>
@@ -281,7 +300,7 @@ const AdminUsers: React.FC = () => {
               <tbody>
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
                       No users found.
                     </td>
                   </tr>
@@ -332,6 +351,11 @@ const AdminUsers: React.FC = () => {
                           <option value="user">User</option>
                           <option value="admin">Admin</option>
                         </select>
+                      </td>
+                      <td className="p-4">
+                        <span className="inline-flex items-center justify-center bg-slate-100 text-slate-700 w-8 h-8 rounded-full font-medium text-sm">
+                          {u.cardCount || 0}
+                        </span>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
