@@ -75,7 +75,11 @@ const AdminUsers: React.FC = () => {
       const usersWithCounts = userList.map(u => ({
         ...u,
         cardCount: cardCounts[u.id] || 0
-      }));
+      })).sort((a, b) => {
+        const timeA = a.createdAt?.seconds || (a.createdAt ? Date.now() / 1000 : 0);
+        const timeB = b.createdAt?.seconds || (b.createdAt ? Date.now() / 1000 : 0);
+        return timeB - timeA;
+      });
 
       setUsers(usersWithCounts);
     } catch (err: any) {

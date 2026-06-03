@@ -15,7 +15,7 @@ interface SavedCard {
 }
 
 const MyCards: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, freeCredits } = useAuth();
   const [cards, setCards] = useState<SavedCard[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -105,6 +105,33 @@ const MyCards: React.FC = () => {
       </header>
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+        {!loading && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+              <span className="text-slate-500 text-sm font-medium mb-1">Total Cards</span>
+              <span className="text-2xl font-black text-slate-800">{cards.length}</span>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+              <span className="text-slate-500 text-sm font-medium mb-1">Paid Cards</span>
+              <span className="text-2xl font-black text-emerald-600">
+                {cards.filter(c => !c.transactionId?.startsWith('free_credit_') && !c.transactionId?.startsWith('admin_bypass_')).length}
+              </span>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+              <span className="text-slate-500 text-sm font-medium mb-1">Free Credits</span>
+              <span className="text-2xl font-black text-purple-600">{freeCredits || 0}</span>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
+              <span className="text-slate-500 text-sm font-medium mb-1">Last Generated</span>
+              <span className="text-lg font-bold text-slate-700">
+                {cards.length > 0 
+                  ? (new Date(cards[0].createdAt).toDateString() === new Date().toDateString() ? 'Today' : cards[0].createdAt.toLocaleDateString())
+                  : 'N/A'}
+              </span>
+            </div>
+          </div>
+        )}
+
         {cards.length === 0 ? (
           <div className="text-center py-20">
             <h2 className="text-2xl font-bold text-slate-600 mb-4">No cards found</h2>
