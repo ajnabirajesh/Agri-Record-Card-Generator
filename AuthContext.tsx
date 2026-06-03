@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (!userSnap.exists()) {
             await setDoc(userRef, {
               email: currentUser.email,
+              name: currentUser.displayName || '',
               role: 'user',
               freeCredits: 0,
               createdAt: serverTimestamp()

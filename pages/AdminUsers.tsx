@@ -11,6 +11,7 @@ import firebaseConfig from '../firebase-applet-config.json';
 interface UserData {
   id: string;
   email: string;
+  name?: string;
   role: 'admin' | 'user';
   freeCredits?: number;
   createdAt?: any;
@@ -20,12 +21,14 @@ const AdminUsers: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserData[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
   // New User Form State
   const [showAddForm, setShowAddForm] = useState(false);
   const [newEmail, setNewEmail] = useState('');
+  const [newName, setNewName] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newRole, setNewRole] = useState<'admin' | 'user'>('user');
   const [addingUser, setAddingUser] = useState(false);
@@ -118,7 +121,9 @@ const AdminUsers: React.FC = () => {
       // Create user document in Firestore
       await setDoc(doc(db, 'users', result.user.uid), {
         email: result.user.email,
+        name: newName,
         role: newRole,
+        freeCredits: 0,
         createdAt: serverTimestamp()
       });
 
@@ -127,6 +132,7 @@ const AdminUsers: React.FC = () => {
 
       // Reset form
       setNewEmail('');
+      setNewName('');
       setNewPassword('');
       setNewRole('user');
       setShowAddForm(false);
@@ -165,13 +171,20 @@ const AdminUsers: React.FC = () => {
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Manage Users</h1>
           </div>
-          <div className="flex items-center gap-3">
-             <Link to="/admin/payment-logs" className="flex items-center gap-2 bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition font-medium">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+             <input
+               type="text"
+               placeholder="Search by name or email..."
+               value={searchQuery}
+               onChange={(e) => setSearchQuery(e.target.value)}
+               className="w-full sm:w-64 border border-slate-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+             />
+             <Link to="/admin/payment-logs" className="w-full sm:w-auto text-center flex justify-center items-center gap-2 bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition font-medium">
                Logs
              </Link>
              <button 
                onClick={() => setShowAddForm(!showAddForm)}
-               className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium"
+               className="w-full sm:w-auto justify-center flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium"
              >
                <Plus className="w-4 h-4" />
                <span className="hidden sm:inline">{showAddForm ? 'Cancel' : 'Add User'}</span>
@@ -195,7 +208,17 @@ const AdminUsers: React.FC = () => {
                  {addError}
               </div>
             )}
-            <form onSubmit={handleAddUser} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <form onSubmit={handleAddUser} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <input 
+                  type="text" 
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                  placeholder="User Name"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
                 <input 
@@ -248,6 +271,7 @@ const AdminUsers: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100 text-sm md:text-base">
+                  <th className="p-4 font-semibold text-slate-600">Name</th>
                   <th className="p-4 font-semibold text-slate-600">Email</th>
                   <th className="p-4 font-semibold text-slate-600">Role</th>
                   <th className="p-4 font-semibold text-slate-600">Free Credits</th>
@@ -257,19 +281,25 @@ const AdminUsers: React.FC = () => {
               <tbody>
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="p-8 text-center text-slate-500">
+                    <td colSpan={5} className="p-8 text-center text-slate-500">
                       No users found.
                     </td>
                   </tr>
                 ) : (
-                  users.map((u) => (
+                  users.filter(u => {
+                    const s = searchQuery.toLowerCase();
+                    return (u.name?.toLowerCase() || '').includes(s) || (u.email?.toLowerCase() || '').includes(s);
+                  }).map((u) => (
                     <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition">
+                      <td className="p-4 text-slate-800 font-medium whitespace-nowrap">
+                        {u.name || '-'}
+                      </td>
                       <td className="p-4 text-slate-800">
                         <div className="flex items-center gap-2">
-                           <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
-                             {u.email.charAt(0).toUpperCase()}
+                           <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold uppercase shrink-0">
+                             {u.name ? u.name[0] : u.email.charAt(0)}
                            </div>
-                           <span className="font-medium">{u.email}</span>
+                           <span className="font-medium truncate">{u.email}</span>
                         </div>
                       </td>
                       <td className="p-4">
