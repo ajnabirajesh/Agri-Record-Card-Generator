@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Download } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Download, CreditCard, IndianRupee, Gift, Clock } from 'lucide-react';
 
 interface SavedCard {
   id: string;
@@ -106,28 +106,36 @@ const MyCards: React.FC = () => {
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
         {!loading && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
-              <span className="text-slate-500 text-sm font-medium mb-1">Total Cards</span>
-              <span className="text-2xl font-black text-slate-800">{cards.length}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-50/50 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 ease-out"></div>
+              <CreditCard className="w-8 h-8 text-blue-500 mb-3 relative z-10" strokeWidth={1.5} />
+              <span className="text-3xl font-black text-slate-800 relative z-10">{cards.length}</span>
+              <span className="text-slate-500 text-sm font-medium mt-1 relative z-10">Total Cards</span>
             </div>
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
-              <span className="text-slate-500 text-sm font-medium mb-1">Paid Cards</span>
-              <span className="text-2xl font-black text-emerald-600">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-emerald-50/50 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 ease-out"></div>
+              <IndianRupee className="w-8 h-8 text-emerald-500 mb-3 relative z-10" strokeWidth={1.5} />
+              <span className="text-3xl font-black text-slate-800 relative z-10">
                 {cards.filter(c => !c.transactionId?.startsWith('free_credit_') && !c.transactionId?.startsWith('admin_bypass_')).length}
               </span>
+              <span className="text-slate-500 text-sm font-medium mt-1 relative z-10">Paid Cards</span>
             </div>
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
-              <span className="text-slate-500 text-sm font-medium mb-1">Free Credits</span>
-              <span className="text-2xl font-black text-purple-600">{freeCredits || 0}</span>
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-purple-50/50 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 ease-out"></div>
+              <Gift className="w-8 h-8 text-purple-500 mb-3 relative z-10" strokeWidth={1.5} />
+              <span className="text-3xl font-black text-slate-800 relative z-10">{freeCredits || 0}</span>
+              <span className="text-slate-500 text-sm font-medium mt-1 relative z-10">Free Credits</span>
             </div>
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center">
-              <span className="text-slate-500 text-sm font-medium mb-1">Last Generated</span>
-              <span className="text-lg font-bold text-slate-700">
+            <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-amber-50/50 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-500 ease-out"></div>
+              <Clock className="w-8 h-8 text-amber-500 mb-3 relative z-10" strokeWidth={1.5} />
+              <span className="text-xl md:text-2xl font-black text-slate-800 relative z-10">
                 {cards.length > 0 
                   ? (new Date(cards[0].createdAt).toDateString() === new Date().toDateString() ? 'Today' : cards[0].createdAt.toLocaleDateString())
                   : 'N/A'}
               </span>
+              <span className="text-slate-500 text-sm font-medium mt-1 relative z-10">Last Generated</span>
             </div>
           </div>
         )}
@@ -156,8 +164,10 @@ const MyCards: React.FC = () => {
                   </button>
                 </div>
                 
-                <div id={`card-${card.id}`} className="flex-1 flex items-center justify-center bg-slate-50 p-4 rounded-2xl">
-                  <CardPreview data={card.farmerData} />
+                <div id={`card-${card.id}`} className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-4 md:p-8 rounded-2xl border border-slate-100 overflow-x-auto w-full">
+                  <div className="w-full max-w-[450px] mx-auto scale-95 md:scale-100 origin-top">
+                    <CardPreview data={card.farmerData} />
+                  </div>
                 </div>
               </div>
             ))}
