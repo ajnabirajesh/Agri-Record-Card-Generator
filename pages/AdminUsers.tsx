@@ -292,7 +292,23 @@ const AdminUsers: React.FC = () => {
                   }).map((u) => (
                     <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition">
                       <td className="p-4 text-slate-800 font-medium whitespace-nowrap">
-                        {u.name || '-'}
+                        <input
+                          type="text"
+                          value={u.name || ''}
+                          placeholder="No Name"
+                          onChange={(e) => {
+                            const newName = e.target.value;
+                            setUsers(users.map(user => user.id === u.id ? { ...user, name: newName } : user));
+                          }}
+                          onBlur={async () => {
+                            try {
+                              await updateDoc(doc(db, 'users', u.id), { name: u.name || '' });
+                            } catch (err) {
+                              console.error("Error updating name:", err);
+                            }
+                          }}
+                          className="w-32 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded outline-none focus:ring-1 focus:ring-emerald-500 text-sm bg-transparent transition-colors"
+                        />
                       </td>
                       <td className="p-4 text-slate-800">
                         <div className="flex items-center gap-2">
