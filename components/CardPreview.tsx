@@ -534,6 +534,10 @@ const CardPreview: React.FC<CardPreviewProps> = ({
 
   const currentScale = forceFullScale ? 1 : scale;
 
+  const landCount = data.landDetails ? data.landDetails.length : 0;
+  const tableTextSize = landCount <= 2 ? "text-[12px]" : landCount <= 4 ? "text-[11px]" : "text-[10px]";
+  const cellPadding = landCount <= 2 ? "px-3 py-2.5" : landCount <= 4 ? "px-2 py-1.5" : "px-1.5 py-1";
+
   return (
     <div
       ref={containerRef}
@@ -793,17 +797,17 @@ const CardPreview: React.FC<CardPreviewProps> = ({
             <div
               className={`rounded-xl overflow-hidden border ${lightBorderTheme} shadow-sm bg-white/50`}
             >
-              <table className="w-full text-[10px] text-left border-collapse">
+              <table className={`w-full ${tableTextSize} text-left border-collapse`}>
                 <thead>
                   <tr
                     className={`${lightBgTheme} ${textTheme} font-black border-b ${lightBorderTheme}`}
                   >
-                    <th className="px-1.5 py-1">District</th>
-                    <th className="px-1.5 py-1">Sub-District</th>
-                    <th className="px-1.5 py-1">Village</th>
-                    <th className="px-1.5 py-1">M. Owner No.</th>
-                    <th className="px-1.5 py-1">Khasra</th>
-                    <th className="px-1.5 py-1 text-right">Area</th>
+                    <th className={cellPadding}>District</th>
+                    <th className={cellPadding}>Sub-District</th>
+                    <th className={cellPadding}>Village</th>
+                    <th className={cellPadding}>M. Owner No.</th>
+                    <th className={cellPadding}>Khasra</th>
+                    <th className={`${cellPadding} text-right`}>Area</th>
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${lightDivideTheme}`}>
@@ -814,23 +818,23 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                         idx % 2 === 0 ? "bg-white/70" : lightBgHoverTheme
                       }
                     >
-                      <td className="px-1.5 py-1 text-slate-900 font-bold">
+                      <td className={`${cellPadding} text-slate-900 font-bold`}>
                         {land.district}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-800 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]">
+                      <td className={`${cellPadding} text-slate-800 font-medium`}>
                         {land.subDistrict}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-800 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]">
+                      <td className={`${cellPadding} text-slate-800 font-medium`}>
                         {land.village}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-950 font-black">
+                      <td className={`${cellPadding} text-slate-950 font-black`}>
                         {land.mOwnerNo}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-950 font-black">
+                      <td className={`${cellPadding} text-slate-950 font-black`}>
                         {land.khasra}
                       </td>
                       <td
-                        className={`px-1.5 py-1 text-right font-black ${lightTextTheme}`}
+                        className={`${cellPadding} text-right font-black ${lightTextTheme}`}
                       >
                         {land.area}
                       </td>
