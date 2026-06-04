@@ -793,44 +793,44 @@ const CardPreview: React.FC<CardPreviewProps> = ({
             <div
               className={`rounded-xl overflow-hidden border ${lightBorderTheme} shadow-sm bg-white/50`}
             >
-              <table className="w-full text-xs text-left border-collapse">
+              <table className="w-full text-[10px] text-left border-collapse">
                 <thead>
                   <tr
                     className={`${lightBgTheme} ${textTheme} font-black border-b ${lightBorderTheme}`}
                   >
-                    <th className="px-3 py-2.5">District</th>
-                    <th className="px-3 py-2.5">Sub-District</th>
-                    <th className="px-3 py-2.5">Village</th>
-                    <th className="px-3 py-2.5">M. Owner No.</th>
-                    <th className="px-3 py-2.5">Khasra</th>
-                    <th className="px-3 py-2.5 text-right">Area</th>
+                    <th className="px-2 py-1.5">District</th>
+                    <th className="px-2 py-1.5">Sub-District</th>
+                    <th className="px-2 py-1.5">Village</th>
+                    <th className="px-2 py-1.5">M. Owner No.</th>
+                    <th className="px-2 py-1.5">Khasra</th>
+                    <th className="px-2 py-1.5 text-right">Area</th>
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${lightDivideTheme}`}>
-                  {data.landDetails.map((land, idx) => (
+                  {data.landDetails.slice(0, 5).map((land, idx) => (
                     <tr
                       key={land.id}
                       className={
                         idx % 2 === 0 ? "bg-white/70" : lightBgHoverTheme
                       }
                     >
-                      <td className="px-3 py-2.5 text-slate-900 font-bold">
+                      <td className="px-2 py-1.5 text-slate-900 font-bold">
                         {land.district}
                       </td>
-                      <td className="px-3 py-2.5 text-slate-800 font-medium">
+                      <td className="px-2 py-1.5 text-slate-800 font-medium whitespace-nowrap">
                         {land.subDistrict}
                       </td>
-                      <td className="px-3 py-2.5 text-slate-800 font-medium">
+                      <td className="px-2 py-1.5 text-slate-800 font-medium">
                         {land.village}
                       </td>
-                      <td className="px-3 py-2.5 text-slate-950 font-black">
+                      <td className="px-2 py-1.5 text-slate-950 font-black">
                         {land.mOwnerNo}
                       </td>
-                      <td className="px-3 py-2.5 text-slate-950 font-black">
+                      <td className="px-2 py-1.5 text-slate-950 font-black">
                         {land.khasra}
                       </td>
                       <td
-                        className={`px-3 py-2.5 text-right font-black ${lightTextTheme}`}
+                        className={`px-2 py-1.5 text-right font-black ${lightTextTheme}`}
                       >
                         {land.area}
                       </td>
