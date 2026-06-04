@@ -270,6 +270,45 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     }
   };
 
+  let localLangLabel = "Hindi";
+  let localNamePlaceholder = "नाम यहाँ लिखें";
+
+  switch (data.state) {
+    case "Tamil Nadu":
+      localLangLabel = "Tamil";
+      localNamePlaceholder = "பெயரை இங்கே எழுதவும்";
+      break;
+    case "Telangana":
+    case "Andhra Pradesh":
+      localLangLabel = "Telugu";
+      localNamePlaceholder = "పేరు ఇక్కడ రాయండి";
+      break;
+    case "Gujarat":
+      localLangLabel = "Gujarati";
+      localNamePlaceholder = "નામ અહીં લખો";
+      break;
+    case "Maharashtra":
+      localLangLabel = "Marathi";
+      localNamePlaceholder = "नाव येथे लिहा";
+      break;
+    case "Punjab":
+      localLangLabel = "Punjabi";
+      localNamePlaceholder = "ਨਾਮ ਇੱਥੇ ਲਿਖੋ";
+      break;
+    case "Kerala":
+      localLangLabel = "Malayalam";
+      localNamePlaceholder = "പേര് ഇവിടെ എഴുതുക";
+      break;
+    case "Odisha":
+      localLangLabel = "Odia";
+      localNamePlaceholder = "ନାମ ଏଠାରେ ଲେଖନ୍ତୁ";
+      break;
+    case "Assam":
+      localLangLabel = "Assamese";
+      localNamePlaceholder = "নাম ইয়াত লিখক";
+      break;
+  }
+
   return (
     <div className="bg-white/80 p-8 flex flex-col gap-10">
       <section className="space-y-6">
@@ -451,13 +490,13 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
           <div className="space-y-1">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              Name (Hindi)
+              Name ({localLangLabel})
             </label>
             <input
               name="nameHindi"
               value={data.nameHindi}
               onChange={handleInputChange}
-              placeholder="नाम यहाँ लिखें"
+              placeholder={localNamePlaceholder}
               className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold"
             />
           </div>

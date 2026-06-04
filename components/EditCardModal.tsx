@@ -45,6 +45,19 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ cardId, initialData, onSa
     }
   };
 
+  let localLangLabel = "Hindi";
+  switch (formData.state) {
+    case "Tamil Nadu": localLangLabel = "Tamil"; break;
+    case "Telangana":
+    case "Andhra Pradesh": localLangLabel = "Telugu"; break;
+    case "Gujarat": localLangLabel = "Gujarati"; break;
+    case "Maharashtra": localLangLabel = "Marathi"; break;
+    case "Punjab": localLangLabel = "Punjabi"; break;
+    case "Kerala": localLangLabel = "Malayalam"; break;
+    case "Odisha": localLangLabel = "Odia"; break;
+    case "Assam": localLangLabel = "Assamese"; break;
+  }
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm no-print">
       <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[95vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -68,7 +81,7 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ cardId, initialData, onSa
                 <input required type="text" name="nameEnglish" value={formData.nameEnglish} onChange={handleChange} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Name (Hindi)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">Name ({localLangLabel})</label>
                 <input required type="text" name="nameHindi" value={formData.nameHindi} onChange={handleChange} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" />
               </div>
               <div>

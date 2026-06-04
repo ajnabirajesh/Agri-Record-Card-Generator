@@ -100,6 +100,16 @@ const CardPreview: React.FC<CardPreviewProps> = ({
   let footerDividerTheme = "bg-[#cddc39]/20";
   let watermarkOpacity = "opacity-[0.04] grayscale";
 
+  let addressLocale = "स्थायी पता";
+  let landLocale = "भूमि का विवरण";
+  let disclaimerLocale = "यह डिजिटल कार्ड कृषि रिकॉर्ड प्रबंधन प्रणाली के माध्यम से तैयार किया गया है।";
+  let nameLocale = "नाम";
+  let dobLocale = "जन्म तिथि";
+  let genderLocale = "लिंग";
+  let aadhaarLocale = "आधार";
+  let mobileLocale = "मोबाइल";
+  let farmerIdLocale = "डिजिटल किसान आईडी";
+
   switch (data.state) {
     case "Uttar Pradesh":
       logoUrl = upLogoUrl;
@@ -240,6 +250,15 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       footerBorderTheme = "border-[#fcd34d]/30";
       footerDividerTheme = "bg-[#fcd34d]/20";
       watermarkOpacity = "opacity-[0.05] grayscale";
+      addressLocale = "நிரந்தர முகவரி";
+      landLocale = "நிலப் பதிவேடுகள்";
+      disclaimerLocale = "இந்த டிஜிட்டல் கார்டு வேளாண் பதிவு மேலாண்மை அமைப்பின் மூலம் உருவாக்கப்பட்டது.";
+      nameLocale = "பெயர்";
+      dobLocale = "பிறந்த தேதி";
+      genderLocale = "பாலினம்";
+      aadhaarLocale = "ஆதார்";
+      mobileLocale = "மொபைல்";
+      farmerIdLocale = "டிஜிட்டல் உழவர் ஐடி";
       break;
     case "Gujarat":
       logoUrl = gujaratLogoUrl;
@@ -400,6 +419,15 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       footerBorderTheme = "border-[#fce7f3]/30";
       footerDividerTheme = "bg-[#fce7f3]/20";
       watermarkOpacity = "opacity-[0.05] grayscale";
+      addressLocale = "శాశ్వత చిరునామా";
+      landLocale = "భూస్థితి వివరాలు";
+      disclaimerLocale = "ఈ డిజిటల్ కార్డు వ్యవసాయ రికార్డు నిర్వహణ వ్యవస్థ ద్వారా రూపొందించబడింది.";
+      nameLocale = "పేరు";
+      dobLocale = "పుట్టిన తేదీ";
+      genderLocale = "లింగం";
+      aadhaarLocale = "ఆధార్";
+      mobileLocale = "మొబైల్";
+      farmerIdLocale = "డిజిటల్ రైతు ఐడీ";
       break;
   }
 
@@ -642,7 +670,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                 <span
                   className={`text-[11px] font-extrabold ${textTheme} uppercase block tracking-widest`}
                 >
-                  Name / नाम
+                  Name / {nameLocale}
                 </span>
                 <div className="flex flex-col leading-tight mt-1">
                   <span className="text-2xl font-black text-slate-900">
@@ -659,7 +687,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                   <span
                     className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}
                   >
-                    Date of Birth / जन्म तिथि
+                    Date of Birth / {dobLocale}
                   </span>
                   <span className="text-sm font-bold text-slate-800">
                     {data.dob}
@@ -669,7 +697,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                   <span
                     className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}
                   >
-                    Gender / लिंग
+                    Gender / {genderLocale}
                   </span>
                   <span className="text-sm font-bold text-slate-800">
                     {data.gender}
@@ -679,7 +707,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                   <span
                     className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}
                   >
-                    Aadhaar No. / आधार
+                    Aadhaar No. / {aadhaarLocale}
                   </span>
                   <span className="text-sm font-bold text-slate-800">
                     {data.aadhaar.replace(/(\d{4})/g, "$1 ")}
@@ -689,7 +717,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                   <span
                     className={`text-[9px] font-black ${textTheme} uppercase leading-tight`}
                   >
-                    Mobile / मोबाइल
+                    Mobile / {mobileLocale}
                   </span>
                   <span className="text-sm font-bold text-slate-800">
                     +91 {data.mobile}
@@ -733,7 +761,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                 <span
                   className={`text-[8px] font-black uppercase tracking-[0.25em] ${highlightColorTheme} drop-shadow-sm whitespace-nowrap`}
                 >
-                  Digital Farmer ID / डिजिटल किसान आईडी
+                  Digital Farmer ID / {farmerIdLocale}
                 </span>
                 <span className={`w-8 h-[1px] ${footerDividerTheme}`}></span>
               </div>
@@ -766,7 +794,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
               <h3
                 className={`${textTheme} font-black text-[11px] mb-1 uppercase tracking-widest`}
               >
-                Permanent Address / स्थायी पता
+                Permanent Address / {addressLocale}
               </h3>
               <p className="text-[12.5px] text-slate-800 leading-relaxed font-bold">
                 {data.address}
@@ -792,7 +820,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                 className="w-4 h-4"
                 alt="seal"
               />{" "}
-              Land Records / भूमि का विवरण
+              Land Records / {landLocale}
             </h3>
             <div
               className={`rounded-xl overflow-hidden border ${lightBorderTheme} shadow-sm bg-white/50`}
@@ -861,8 +889,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                 using QR code.
               </span>
               <span className="text-[8px] text-slate-500 font-medium uppercase tracking-tighter italic">
-                यह डिजिटल कार्ड कृषि रिकॉर्ड प्रबंधन प्रणाली के माध्यम से तैयार
-                किया गया है।
+                {disclaimerLocale}
               </span>
             </div>
             <div className="flex gap-2 opacity-10 pb-1">
