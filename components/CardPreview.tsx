@@ -807,7 +807,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${lightDivideTheme}`}>
-                  {data.landDetails.slice(0, 5).map((land, idx) => (
+                  {data.landDetails.map((land, idx) => (
                     <tr
                       key={land.id}
                       className={
@@ -842,7 +842,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
           </div>
 
           <div
-            className={`mt-4 flex justify-between items-end border-t pt-2 ${lightBorderTheme} relative z-10`}
+            className={`mt-auto flex justify-between items-end border-t pt-2 ${lightBorderTheme} relative z-10`}
           >
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2 mb-1">
