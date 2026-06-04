@@ -757,10 +757,10 @@ const CardPreview: React.FC<CardPreviewProps> = ({
             className={`absolute top-0 left-0 right-0 h-1 ${highlightTopTheme}`}
           ></div>
 
-          <div className="flex justify-between items-start mb-5 border-b pb-3 border-emerald-100 relative z-10">
+          <div className={`flex justify-between items-start mb-2 border-b pb-2 ${lightBorderTheme} relative z-10`}>
             <div className="flex-1 pr-12">
               <h3
-                className={`${textTheme} font-black text-[11px] mb-1.5 uppercase tracking-widest`}
+                className={`${textTheme} font-black text-[11px] mb-1 uppercase tracking-widest`}
               >
                 Permanent Address / स्थायी पता
               </h3>
@@ -780,7 +780,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
 
           <div className="flex-1 overflow-hidden relative z-10">
             <h3
-              className={`${textTheme} font-black text-[11px] mb-2.5 uppercase tracking-widest flex items-center gap-2`}
+              className={`${textTheme} font-black text-[11px] mb-1.5 uppercase tracking-widest flex items-center gap-2`}
             >
               <img
                 src={logoUrl}
@@ -798,12 +798,12 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                   <tr
                     className={`${lightBgTheme} ${textTheme} font-black border-b ${lightBorderTheme}`}
                   >
-                    <th className="px-2 py-1.5">District</th>
-                    <th className="px-2 py-1.5">Sub-District</th>
-                    <th className="px-2 py-1.5">Village</th>
-                    <th className="px-2 py-1.5">M. Owner No.</th>
-                    <th className="px-2 py-1.5">Khasra</th>
-                    <th className="px-2 py-1.5 text-right">Area</th>
+                    <th className="px-1.5 py-1">District</th>
+                    <th className="px-1.5 py-1">Sub-District</th>
+                    <th className="px-1.5 py-1">Village</th>
+                    <th className="px-1.5 py-1">M. Owner No.</th>
+                    <th className="px-1.5 py-1">Khasra</th>
+                    <th className="px-1.5 py-1 text-right">Area</th>
                   </tr>
                 </thead>
                 <tbody className={`divide-y ${lightDivideTheme}`}>
@@ -814,23 +814,23 @@ const CardPreview: React.FC<CardPreviewProps> = ({
                         idx % 2 === 0 ? "bg-white/70" : lightBgHoverTheme
                       }
                     >
-                      <td className="px-2 py-1.5 text-slate-900 font-bold">
+                      <td className="px-1.5 py-1 text-slate-900 font-bold">
                         {land.district}
                       </td>
-                      <td className="px-2 py-1.5 text-slate-800 font-medium whitespace-nowrap">
+                      <td className="px-1.5 py-1 text-slate-800 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]">
                         {land.subDistrict}
                       </td>
-                      <td className="px-2 py-1.5 text-slate-800 font-medium">
+                      <td className="px-1.5 py-1 text-slate-800 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]">
                         {land.village}
                       </td>
-                      <td className="px-2 py-1.5 text-slate-950 font-black">
+                      <td className="px-1.5 py-1 text-slate-950 font-black">
                         {land.mOwnerNo}
                       </td>
-                      <td className="px-2 py-1.5 text-slate-950 font-black">
+                      <td className="px-1.5 py-1 text-slate-950 font-black">
                         {land.khasra}
                       </td>
                       <td
-                        className={`px-2 py-1.5 text-right font-black ${lightTextTheme}`}
+                        className={`px-1.5 py-1 text-right font-black ${lightTextTheme}`}
                       >
                         {land.area}
                       </td>
