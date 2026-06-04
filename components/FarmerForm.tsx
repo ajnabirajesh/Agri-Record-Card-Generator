@@ -334,6 +334,38 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
             </select>
           </div>
 
+          <div className="space-y-1 col-span-1 md:col-span-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Card Color
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {[
+                { name: 'Default State Color', value: '' },
+                { name: 'Green', value: 'green', bgColor: 'bg-[#8bc34a]' },
+                { name: 'Red', value: 'red', bgColor: 'bg-[#dc2626]' },
+                { name: 'Orange', value: 'orange', bgColor: 'bg-[#ea580c]' },
+                { name: 'Blue', value: 'blue', bgColor: 'bg-[#0ea5e9]' },
+                { name: 'Purple', value: 'purple', bgColor: 'bg-[#d946ef]' },
+              ].map((color) => (
+                <button
+                  key={color.value}
+                  type="button"
+                  onClick={() => onChange({ ...data, cardColor: color.value })}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-bold transition-all border ${
+                    data.cardColor === color.value || (color.value === '' && !data.cardColor)
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm'
+                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {color.bgColor && (
+                    <span className={`w-4 h-4 rounded-full ${color.bgColor} shadow-sm border border-black/10`} />
+                  )}
+                  {color.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="space-y-2 col-span-1 md:col-span-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
               Profile Photo

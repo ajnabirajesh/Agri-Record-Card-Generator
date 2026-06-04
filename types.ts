@@ -10,6 +10,7 @@ export interface LandDetail {
 
 export interface FarmerData {
   state?: string; // Add state to make it backwards compatible
+  cardColor?: string;
   nameHindi: string;
   nameEnglish: string;
   dob: string;
@@ -1189,6 +1190,7 @@ export const BIHAR_SUB_DISTRICTS: Record<string, string[]> = {
 
 export const INITIAL_FARMER_DATA: FarmerData = {
   state: "Bihar",
+  cardColor: "",
   nameHindi: "किसान का नाम",
   nameEnglish: "Farmer Name",
   dob: "01/01/2026",

@@ -403,6 +403,92 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       break;
   }
 
+  // Card Color Overlay logic
+  if (data.cardColor) {
+    switch (data.cardColor) {
+      case "green":
+        bgTheme = "bg-gradient-to-r from-[#8bc34a] to-[#cddc39]";
+        headerTheme = "bg-[#064e3b]";
+        textTheme = "text-[#064e3b]";
+        borderColorTheme = "border-[#064e3b]";
+        highlightColorTheme = "text-[#cddc39]";
+        highlightTopTheme = "bg-[#8bc34a]";
+        lightBorderTheme = "border-emerald-100";
+        lightBgTheme = "bg-emerald-50";
+        lightBgHoverTheme = "bg-emerald-50/30";
+        lightDivideTheme = "divide-emerald-50";
+        lightTextTheme = "text-emerald-900";
+        footerGradient = "from-[#064e3b] via-[#085a44] to-[#064e3b]";
+        footerBorderTheme = "border-[#cddc39]/30";
+        footerDividerTheme = "bg-[#cddc39]/20";
+        break;
+      case "red":
+        bgTheme = "bg-gradient-to-r from-[#dc2626] to-[#ef4444]";
+        headerTheme = "bg-[#7f1d1d]";
+        textTheme = "text-[#7f1d1d]";
+        borderColorTheme = "border-[#7f1d1d]";
+        highlightColorTheme = "text-[#fca5a5]";
+        highlightTopTheme = "bg-[#dc2626]";
+        lightBorderTheme = "border-red-100";
+        lightBgTheme = "bg-red-50";
+        lightBgHoverTheme = "bg-red-50/30";
+        lightDivideTheme = "divide-red-50";
+        lightTextTheme = "text-red-900";
+        footerGradient = "from-[#7f1d1d] via-[#991b1b] to-[#7f1d1d]";
+        footerBorderTheme = "border-[#fca5a5]/30";
+        footerDividerTheme = "bg-[#fca5a5]/20";
+        break;
+      case "orange":
+        bgTheme = "bg-gradient-to-r from-[#ea580c] to-[#f97316]";
+        headerTheme = "bg-[#9a3412]";
+        textTheme = "text-[#9a3412]";
+        borderColorTheme = "border-[#9a3412]";
+        highlightColorTheme = "text-[#fdba74]";
+        highlightTopTheme = "bg-[#ea580c]";
+        lightBorderTheme = "border-orange-100";
+        lightBgTheme = "bg-orange-50";
+        lightBgHoverTheme = "bg-orange-50/30";
+        lightDivideTheme = "divide-orange-50";
+        lightTextTheme = "text-orange-900";
+        footerGradient = "from-[#9a3412] via-[#c2410c] to-[#9a3412]";
+        footerBorderTheme = "border-[#fdba74]/30";
+        footerDividerTheme = "bg-[#fdba74]/20";
+        break;
+      case "blue":
+        bgTheme = "bg-gradient-to-r from-[#0ea5e9] to-[#38bdf8]";
+        headerTheme = "bg-[#0c4a6e]";
+        textTheme = "text-[#0c4a6e]";
+        borderColorTheme = "border-[#0c4a6e]";
+        highlightColorTheme = "text-[#7dd3fc]";
+        highlightTopTheme = "bg-[#0ea5e9]";
+        lightBorderTheme = "border-sky-100";
+        lightBgTheme = "bg-sky-50";
+        lightBgHoverTheme = "bg-sky-50/30";
+        lightDivideTheme = "divide-sky-50";
+        lightTextTheme = "text-sky-900";
+        footerGradient = "from-[#0c4a6e] via-[#075985] to-[#0c4a6e]";
+        footerBorderTheme = "border-[#7dd3fc]/30";
+        footerDividerTheme = "bg-[#7dd3fc]/20";
+        break;
+      case "purple":
+        bgTheme = "bg-gradient-to-r from-[#d946ef] to-[#e879f9]";
+        headerTheme = "bg-[#701a75]";
+        textTheme = "text-[#701a75]";
+        borderColorTheme = "border-[#701a75]";
+        highlightColorTheme = "text-[#f0abfc]";
+        highlightTopTheme = "bg-[#d946ef]";
+        lightBorderTheme = "border-fuchsia-100";
+        lightBgTheme = "bg-fuchsia-50";
+        lightBgHoverTheme = "bg-fuchsia-50/30";
+        lightDivideTheme = "divide-fuchsia-50";
+        lightTextTheme = "text-fuchsia-900";
+        footerGradient = "from-[#701a75] via-[#86198f] to-[#701a75]";
+        footerBorderTheme = "border-[#f0abfc]/30";
+        footerDividerTheme = "bg-[#f0abfc]/20";
+        break;
+    }
+  }
+
   // Dynamic Scaling Logic for Preview
   useEffect(() => {
     if (forceFullScale) {

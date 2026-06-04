@@ -105,6 +105,36 @@ const EditCardModal: React.FC<EditCardModalProps> = ({ cardId, initialData, onSa
             </div>
           </div>
 
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Card Color</label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { name: 'Default', value: '' },
+                { name: 'Green', value: 'green', bgColor: 'bg-[#8bc34a]' },
+                { name: 'Red', value: 'red', bgColor: 'bg-[#dc2626]' },
+                { name: 'Orange', value: 'orange', bgColor: 'bg-[#ea580c]' },
+                { name: 'Blue', value: 'blue', bgColor: 'bg-[#0ea5e9]' },
+                { name: 'Purple', value: 'purple', bgColor: 'bg-[#d946ef]' },
+              ].map((color) => (
+                <button
+                  key={color.value}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, cardColor: color.value }))}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all border ${
+                    formData.cardColor === color.value || (color.value === '' && !formData.cardColor)
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold'
+                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {color.bgColor && (
+                    <span className={`w-3.5 h-3.5 rounded-full ${color.bgColor} shadow-sm border border-black/10`} />
+                  )}
+                  {color.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mb-8">
             <label className="block text-sm font-semibold text-slate-700 mb-1">Address</label>
             <input required type="text" name="address" value={formData.address} onChange={handleChange} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" />
