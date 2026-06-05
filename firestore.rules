@@ -97,7 +97,7 @@ service cloud.firestore {
     match /cards/{cardId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() && isValidCard();
-      allow update: if (isDocOwner() || isAdmin()) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isDeleted']) && request.resource.data.isDeleted == true || (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['farmerData'])); 
+      allow update: if (isDocOwner() || isAdmin()) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isDeleted']) && request.resource.data.isDeleted is bool || (isAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['farmerData'])); 
       allow delete: if isDocOwner() || isAdmin(); // Allow users to delete their own cards, admins can delete any
     }
   }
