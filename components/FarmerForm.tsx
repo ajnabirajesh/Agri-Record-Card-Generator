@@ -29,7 +29,16 @@ import {
   Calendar,
   ScanText,
   Loader2,
+  Search,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  FileCheck
 } from "lucide-react";
+import { useAuth } from "../AuthContext";
+import { db } from "../firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import CardPreview from "./CardPreview";
 
 interface FarmerFormProps {
   data: FarmerData;
@@ -38,6 +47,75 @@ interface FarmerFormProps {
 
 const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+  const [searchType, setSearchType] = useState("mobileNumber");
+  const [searchValue, setSearchValue] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState<FarmerData | null>(null);
+  const [searchMessage, setSearchMessage] = useState({ text: "", type: "" });
+  const [searchDetails, setSearchDetails] = useState<{ date: string; total: number; id: string } | null>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  
+  const { user, isAdmin } = useAuth();
+
+  const handleSearch = async () => {
+    if (!user) {
+      setSearchMessage({ text: "Please login to search records.", type: "error" });
+      return;
+    }
+    if (!searchValue.trim()) {
+      setSearchMessage({ text: "Please enter a search value.", type: "error" });
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchMessage({ text: "", type: "" });
+    setSearchResult(null);
+    setSearchDetails(null);
+
+    try {
+      let q;
+      if (isAdmin) {
+        q = query(collection(db, "cards"), where(searchType, "==", searchValue.trim()));
+      } else {
+        q = query(collection(db, "cards"), where("userId", "==", user.uid), where(searchType, "==", searchValue.trim()));
+      }
+
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        setSearchMessage({ text: "No Existing Farmer Record Found", type: "error" });
+      } else {
+        const docs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
+        // Sort by createdAt descending
+        docs.sort((a, b) => {
+          const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+          const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+          return timeB - timeA;
+        });
+
+        const latestRecord = docs[0];
+        const parsedData: FarmerData = JSON.parse(latestRecord.farmerData);
+        
+        const generatedDate = latestRecord.createdAt?.toDate ? latestRecord.createdAt.toDate().toLocaleDateString() : 'Unknown';
+
+        setSearchResult(parsedData);
+        setSearchDetails({ date: generatedDate, total: docs.length, id: latestRecord.id });
+        setSearchMessage({ text: "Farmer Record Found", type: "success" });
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setSearchMessage({ text: "Error searching records. Please try again.", type: "error" });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleAutoFill = () => {
+    if (searchResult) {
+      onChange({ ...data, ...searchResult });
+      setSearchMessage({ text: "Form successfully auto-filled!", type: "success" });
+    }
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -311,6 +389,104 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
   return (
     <div className="bg-white/80 p-8 flex flex-col gap-10">
+      {/* Search Section */}
+      <section className="space-y-6 bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5">
+           <Search className="w-32 h-32" />
+        </div>
+        <div className="flex items-center gap-3 border-b border-emerald-200/50 pb-3 relative">
+          <Search className="w-5 h-5 text-emerald-600" />
+          <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+            Search Existing Farmer
+          </h2>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4 relative">
+          <div className="flex-1 space-y-1">
+             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Search By</label>
+             <select
+               value={searchType}
+               onChange={(e) => setSearchType(e.target.value)}
+               className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold bg-white"
+             >
+               <option value="farmerId">Farmer ID</option>
+               <option value="mobileNumber">Mobile Number</option>
+               <option value="aadhaarNumber">Aadhaar Number</option>
+             </select>
+          </div>
+          <div className="flex-[2] space-y-1">
+             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enter Value</label>
+             <div className="flex flex-col sm:flex-row gap-2">
+               <input
+                 type="text"
+                 value={searchValue}
+                 onChange={(e) => setSearchValue(e.target.value)}
+                 placeholder="Enter ID / Mobile / Aadhaar"
+                 className="flex-1 w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold bg-white"
+                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+               />
+               <button
+                 onClick={handleSearch}
+                 disabled={isSearching}
+                 className="flex items-center justify-center gap-2 px-6 py-3 bg-[#064e3b] text-white rounded-xl font-bold hover:bg-emerald-800 transition-colors disabled:opacity-50"
+               >
+                 {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                 <span>Search</span>
+               </button>
+             </div>
+          </div>
+        </div>
+
+        {searchMessage.text && (
+          <div className={`p-4 rounded-xl border ${searchMessage.type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white shadow-sm border-emerald-200 text-slate-800'} flex flex-col gap-4 relative`}>
+             <div className={`flex items-center gap-2 font-bold text-sm ${searchMessage.type === 'success' ? 'text-emerald-700' : ''}`}>
+                {searchMessage.type === 'error' ? <XCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                {searchMessage.text}
+             </div>
+             
+             {searchResult && searchDetails && searchMessage.type === 'success' && (
+               <div className="flex flex-col sm:flex-row gap-4 justify-between sm:items-center pt-2 border-t border-slate-100">
+                 <div className="flex items-center gap-4">
+                   <div className="w-12 h-12 rounded-lg bg-emerald-50 border border-emerald-100 overflow-hidden shrink-0 flex items-center justify-center">
+                     {searchResult.photoUrl && searchResult.photoUrl.startsWith('data:') || searchResult.photoUrl.startsWith('http') ? (
+                       <img src={searchResult.photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                     ) : (
+                       <UserCircle className="w-6 h-6 text-emerald-300" />
+                     )}
+                   </div>
+                   <div>
+                     <h4 className="font-black text-slate-800">{searchResult.nameEnglish || searchResult.nameHindi}</h4>
+                     <p className="text-xs text-slate-500 font-bold mt-1">
+                       {searchResult.mobile} • {searchResult.farmerId}
+                     </p>
+                     <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">
+                       Generated: {searchDetails.date} • Total Cards: {searchDetails.total}
+                     </p>
+                   </div>
+                 </div>
+                 
+                 <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0">
+                    <button
+                      onClick={handleAutoFill}
+                      className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-lg text-xs transition-colors flex"
+                    >
+                      <FileCheck className="w-4 h-4 shrink-0" />
+                      Auto Fill Details
+                    </button>
+                    <button
+                      onClick={() => setShowPreviewModal(true)}
+                      className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-lg text-xs transition-colors flex"
+                    >
+                      <Eye className="w-4 h-4 shrink-0" />
+                      View Card
+                    </button>
+                 </div>
+               </div>
+             )}
+          </div>
+        )}
+      </section>
+
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-3">
@@ -743,6 +919,37 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           })}
         </div>
       </section>
+
+      {/* Preview Modal */}
+      {showPreviewModal && searchResult && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 print:hidden">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl relative">
+            <div className="flex justify-between items-center p-4 border-b border-slate-100 bg-slate-50/50">
+               <h3 className="font-black text-slate-800 flex items-center gap-2">
+                 <Search className="w-4 h-4 text-emerald-600" /> Previous Card Preview
+               </h3>
+               <button onClick={() => setShowPreviewModal(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
+                 <XCircle className="w-5 h-5 text-slate-500" />
+               </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-100/50">
+               <div className="opacity-90 pointer-events-none origin-top flex items-center justify-center">
+                   <div className="transform scale-[0.6] sm:scale-75 md:scale-100 transform-gpu">
+                       <CardPreview data={searchResult} />
+                   </div>
+               </div>
+            </div>
+            <div className="p-4 border-t border-slate-100 bg-white flex flex-wrap justify-end gap-3 rounded-b-3xl">
+               <button onClick={() => setShowPreviewModal(false)} className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 rounded-xl transition-colors">
+                 Close
+               </button>
+               <button onClick={() => { handleAutoFill(); setShowPreviewModal(false); }} className="px-6 py-2.5 bg-[#064e3b] hover:bg-emerald-800 font-bold text-white rounded-xl transition-colors flex items-center justify-center gap-2">
+                 <FileCheck className="w-4 h-4" /> Use This Data
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

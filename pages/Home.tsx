@@ -57,6 +57,9 @@ const Home: React.FC = () => {
           userId: currentUser.uid,
           userEmail: currentUser.email,
           farmerData: JSON.stringify(farmerData),
+          farmerId: farmerData.farmerId,
+          mobileNumber: farmerData.mobile,
+          aadhaarNumber: farmerData.aadhaar,
           transactionId: `admin_bypass_${Date.now()}`,
           createdAt: serverTimestamp()
         });
@@ -81,6 +84,9 @@ const Home: React.FC = () => {
             userId: currentUser.uid,
             userEmail: currentUser.email,
             farmerData: JSON.stringify(farmerData),
+            farmerId: farmerData.farmerId,
+            mobileNumber: farmerData.mobile,
+            aadhaarNumber: farmerData.aadhaar,
             transactionId: `free_credit_${Date.now()}`,
             createdAt: serverTimestamp()
           });
@@ -130,6 +136,9 @@ const Home: React.FC = () => {
                 userId: activeUser.uid,
                 userEmail: activeUser.email,
                 farmerData: JSON.stringify(farmerData),
+                farmerId: farmerData.farmerId,
+                mobileNumber: farmerData.mobile,
+                aadhaarNumber: farmerData.aadhaar,
                 transactionId: response.razorpay_payment_id || order.id,
                 createdAt: serverTimestamp()
               });

@@ -68,7 +68,10 @@ service cloud.firestore {
              request.resource.data.transactionId.size() > 0 &&
              request.resource.data.transactionId.size() < 100 &&
              request.resource.data.createdAt is timestamp &&
-             (!('userEmail' in request.resource.data) || request.resource.data.userEmail == null || request.resource.data.userEmail is string);
+             (!('userEmail' in request.resource.data) || request.resource.data.userEmail == null || request.resource.data.userEmail is string) &&
+             (!('farmerId' in request.resource.data) || request.resource.data.farmerId is string) &&
+             (!('mobileNumber' in request.resource.data) || request.resource.data.mobileNumber is string) &&
+             (!('aadhaarNumber' in request.resource.data) || request.resource.data.aadhaarNumber is string);
     }
 
     match /payment_logs/{logId} {

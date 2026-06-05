@@ -38,6 +38,18 @@
           "type": "string",
           "description": "JSON stringified representation of the FarmerData object."
         },
+        "farmerId": {
+          "type": "string",
+          "description": "The unique ID of the farmer."
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "The mobile number of the farmer."
+        },
+        "aadhaarNumber": {
+          "type": "string",
+          "description": "The Aadhaar number of the farmer."
+        },
         "transactionId": {
           "type": "string",
           "description": "The Razorpay transaction/order ID associated with this card generation."
