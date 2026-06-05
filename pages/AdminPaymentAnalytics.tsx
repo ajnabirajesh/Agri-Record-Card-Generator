@@ -80,11 +80,18 @@ const AdminPaymentAnalytics: React.FC = () => {
           payload = typeof data.payload === 'string' ? JSON.parse(data.payload) : (data.payload || {});
         } catch(e) {}
         
+        let validDate = new Date();
+        try {
+          if (data.createdAt?.toDate) validDate = data.createdAt.toDate();
+          else if (data.createdAt) validDate = new Date(data.createdAt);
+          if (isNaN(validDate.getTime())) validDate = new Date();
+        } catch(e) {}
+
         fetchedLogs.push({
           id: doc.id,
           event: data.event,
           payload,
-          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+          createdAt: validDate,
         });
       });
       setLogs(fetchedLogs);
@@ -102,13 +109,20 @@ const AdminPaymentAnalytics: React.FC = () => {
           farmerData = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData) : (data.farmerData || {});
         } catch(e) {}
         
+        let validDate = new Date();
+        try {
+          if (data.createdAt?.toDate) validDate = data.createdAt.toDate();
+          else if (data.createdAt) validDate = new Date(data.createdAt);
+          if (isNaN(validDate.getTime())) validDate = new Date();
+        } catch(e) {}
+
         fetchedCards.push({
           id: doc.id,
-          userId: data.userId,
-          userEmail: data.userEmail,
+          userId: data.userId || 'unknown',
+          userEmail: data.userEmail || '',
           farmerData,
-          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
-          transactionId: data.transactionId || '',
+          createdAt: validDate,
+          transactionId: typeof data.transactionId === 'string' ? data.transactionId : '',
           isDeleted: data.isDeleted || false
         });
       });
@@ -199,7 +213,9 @@ const AdminPaymentAnalytics: React.FC = () => {
     const now = new Date();
     const todayRev = allPaidCards.filter(c => isSameDay(c.createdAt, now)).length * 11;
     const monthRev = allPaidCards.filter(c => isSameMonth(c.createdAt, now)).length * 11;
-    const diffDays = Math.max(1, Math.ceil((now.getTime() - (allPaidCards[allPaidCards.length-1]?.createdAt.getTime() || now.getTime())) / (1000 * 60 * 60 * 24)));
+    const sortedPaidCards = [...allPaidCards].sort((a,b) => a.createdAt.getTime() - b.createdAt.getTime());
+    const oldestDate = sortedPaidCards.length > 0 ? sortedPaidCards[0].createdAt.getTime() : now.getTime();
+    const diffDays = Math.max(1, Math.ceil((now.getTime() - oldestDate) / (1000 * 60 * 60 * 24)));
     const avgDaily = (allPaidCards.length * 11) / diffDays;
 
     return { todayRev, monthRev, avgDaily: avgDaily.toFixed(2) };
