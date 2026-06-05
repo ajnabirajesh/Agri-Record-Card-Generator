@@ -5,7 +5,7 @@ import { collection, query, getDocs, orderBy, updateDoc, doc, deleteDoc } from '
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X, Edit3 } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Trash, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X, Edit3, Archive } from 'lucide-react';
 import EditCardModal from '../components/EditCardModal';
 
 interface SavedCard {
@@ -116,6 +116,19 @@ const AdminCards: React.FC = () => {
   };
 
   const handleDelete = async (cardId: string) => {
+    if (window.confirm("Are you sure you want to delete this card? It will be removed from view but payment logic will be retained.")) {
+      try {
+        await updateDoc(doc(db, 'cards', cardId), { isDeleted: true });
+        setCards(cards.map(c => c.id === cardId ? { ...c, isDeleted: true } : c));
+        if (viewingCard?.id === cardId) setViewingCard(null);
+      } catch (error) {
+        console.error("Error deleting card:", error);
+        alert("Failed to delete card.");
+      }
+    }
+  };
+
+  const handlePermanentDelete = async (cardId: string) => {
     if (window.confirm("Are you sure you want to permanently delete this card data? This action cannot be undone.")) {
       try {
         await deleteDoc(doc(db, 'cards', cardId));
@@ -544,7 +557,14 @@ const AdminCards: React.FC = () => {
                         </button>
                         <button 
                           onClick={() => handleDelete(card.id)}
-                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Delete (Hide from view)"
+                        >
+                          <Trash className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={() => handlePermanentDelete(card.id)}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors border border-transparent hover:border-red-200"
                           title="Permanently Delete Record"
                         >
                           <Trash2 className="w-5 h-5" />
