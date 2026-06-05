@@ -5,7 +5,7 @@ import { collection, query, getDocs, orderBy, updateDoc, doc, deleteDoc } from '
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Trash, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X, Edit3, Archive } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Trash, Trash2, Search, Lock, Download, TrendingUp, CalendarDays, CreditCard, Users, Eye, X, Edit3, Archive, RefreshCcw } from 'lucide-react';
 import EditCardModal from '../components/EditCardModal';
 
 interface SavedCard {
@@ -26,6 +26,7 @@ const AdminCards: React.FC = () => {
   const [stateFilter, setStateFilter] = useState('All');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [showDeleted, setShowDeleted] = useState(false);
   const [printingCardId, setPrintingCardId] = useState<string | null>(null);
   const [viewingCard, setViewingCard] = useState<SavedCard | null>(null);
   const [editingCard, setEditingCard] = useState<SavedCard | null>(null);
@@ -141,6 +142,18 @@ const AdminCards: React.FC = () => {
     }
   };
 
+  const handleRestore = async (cardId: string) => {
+    if (window.confirm("Are you sure you want to restore this card?")) {
+      try {
+        await updateDoc(doc(db, 'cards', cardId), { isDeleted: false });
+        setCards(cards.map(c => c.id === cardId ? { ...c, isDeleted: false } : c));
+      } catch (error) {
+        console.error("Error restoring card:", error);
+        alert("Failed to restore card.");
+      }
+    }
+  };
+
   const handlePrint = (cardId: string) => {
     setPrintingCardId(cardId);
     setTimeout(() => {
@@ -234,7 +247,7 @@ const AdminCards: React.FC = () => {
     }
   }
 
-  const filteredCards = cards.filter(c => !c.isDeleted).filter(card => {
+  const filteredCards = cards.filter(c => showDeleted ? c.isDeleted : !c.isDeleted).filter(card => {
     // Search Term match
     const matchesSearch = 
       card.farmerData.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -425,13 +438,25 @@ const AdminCards: React.FC = () => {
                  className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
                />
              </div>
-             {(startDate || endDate || stateFilter !== 'All' || searchTerm) && (
+             <div className="flex items-center gap-2 border-l border-slate-200 pl-4 ml-2">
+               <label className="flex items-center gap-2 cursor-pointer">
+                 <input 
+                   type="checkbox" 
+                   checked={showDeleted}
+                   onChange={(e) => setShowDeleted(e.target.checked)}
+                   className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
+                 />
+                 <span className="text-sm font-medium text-slate-600">Show Deleted Info</span>
+               </label>
+             </div>
+             {(startDate || endDate || stateFilter !== 'All' || searchTerm || showDeleted) && (
                <button 
                  onClick={() => {
                    setStartDate('');
                    setEndDate('');
                    setStateFilter('All');
                    setSearchTerm('');
+                   setShowDeleted(false);
                  }}
                  className="ml-auto flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
                >
@@ -555,13 +580,23 @@ const AdminCards: React.FC = () => {
                         >
                           <Printer className="w-5 h-5" />
                         </button>
-                        <button 
-                          onClick={() => handleDelete(card.id)}
-                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                          title="Delete (Hide from view)"
-                        >
-                          <Trash className="w-5 h-5" />
-                        </button>
+                        {card.isDeleted ? (
+                          <button 
+                            onClick={() => handleRestore(card.id)}
+                            className="p-2 text-amber-600 hover:bg-amber-100 rounded-lg transition-colors border border-transparent hover:border-amber-200"
+                            title="Restore Record"
+                          >
+                            <RefreshCcw className="w-5 h-5" />
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => handleDelete(card.id)}
+                            className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Delete (Hide from view)"
+                          >
+                            <Trash className="w-5 h-5" />
+                          </button>
+                        )}
                         <button 
                           onClick={() => handlePermanentDelete(card.id)}
                           className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors border border-transparent hover:border-red-200"
