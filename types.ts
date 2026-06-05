@@ -1197,7 +1197,7 @@ export const INITIAL_FARMER_DATA: FarmerData = {
   gender: "Male",
   mobile: "7070200199",
   aadhaar: "000000000000",
-  farmerId: "000-00-00-00-00",
+  farmerId: "00000000000",
   address: "",
   photoUrl: "https://picsum.photos/200/200",
   downloadDate: "0",

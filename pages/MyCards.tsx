@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Printer, Download, CreditCard, IndianRupee, Gift, Clock } from 'lucide-react';
+import { ArrowLeft, Loader2, Printer, Download, CreditCard, IndianRupee, Gift, Clock, User, Search } from 'lucide-react';
 
 interface SavedCard {
   id: string;
@@ -18,6 +18,7 @@ const MyCards: React.FC = () => {
   const { user, loading: authLoading, freeCredits } = useAuth();
   const [cards, setCards] = useState<SavedCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,6 +72,14 @@ const MyCards: React.FC = () => {
       setPrintingCardId(null);
     }, 100);
   };
+
+  const filteredCards = cards.filter(card => {
+    const searchLower = searchQuery.toLowerCase();
+    const nameEngMatch = card.farmerData.nameEnglish?.toLowerCase().includes(searchLower) || false;
+    const nameHinMatch = card.farmerData.nameHindi?.toLowerCase().includes(searchLower) || false;
+    const idMatch = card.farmerData.farmerId?.toLowerCase().includes(searchLower) || false;
+    return nameEngMatch || nameHinMatch || idMatch;
+  });
 
   if (authLoading || loading) {
     return (
@@ -149,29 +158,59 @@ const MyCards: React.FC = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {cards.map((card) => (
-              <div key={card.id} id={`card-container-${card.id}`} className="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 flex flex-col card-wrapper">
-                <div className="flex justify-between items-center mb-6 no-print">
-                  <div className="text-xs text-slate-500 font-medium">
-                    Generated: {card.createdAt.toLocaleDateString()}
-                  </div>
-                  <button 
-                    onClick={() => handlePrint(card.id)}
-                    className="flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg font-bold hover:bg-emerald-200 transition-colors"
-                  >
-                    <Printer className="w-4 h-4" /> Print
-                  </button>
-                </div>
-                
-                <div id={`card-${card.id}`} className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-4 md:p-8 rounded-2xl border border-slate-100 overflow-x-auto w-full">
-                  <div className="w-full max-w-[450px] mx-auto scale-95 md:scale-100 origin-top">
-                    <CardPreview data={card.farmerData} />
-                  </div>
-                </div>
+          <>
+            <div className="mb-6 relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-slate-400" />
               </div>
-            ))}
-          </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by farmer name or registration ID..."
+                className="block w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl leading-5 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors shadow-sm text-slate-800 placeholder-slate-400"
+              />
+            </div>
+            
+            {filteredCards.length === 0 ? (
+              <div className="text-center py-10 bg-white rounded-2xl border border-slate-200 border-dashed">
+                <p className="text-slate-500">No cards match your search query.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {filteredCards.map((card) => (
+                  <div key={card.id} id={`card-container-${card.id}`} className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all hover:shadow-md card-wrapper">
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-slate-100 border-2 border-slate-200 shrink-0">
+                        {card.farmerData.photoUrl ? (
+                          <img src={card.farmerData.photoUrl} alt="Farmer" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400">
+                            <User className="w-8 h-8 md:w-10 md:h-10" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <h3 className="font-bold text-lg md:text-xl text-slate-800 line-clamp-1">{card.farmerData.nameEnglish} {card.farmerData.nameHindi && <span className="text-slate-500 font-normal text-sm md:text-base">({card.farmerData.nameHindi})</span>}</h3>
+                        <p className="text-slate-500 text-sm md:text-base font-medium">ID: {card.farmerData.farmerId}</p>
+                        <p className="text-slate-500 text-xs md:text-sm">Mobile: {card.farmerData.mobile || 'N/A'}</p>
+                        <p className="text-xs text-slate-400 mt-1 md:mt-2">Generated: {card.createdAt.toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0 pb-1">
+                      <button 
+                        onClick={() => handlePrint(card.id)}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-sm"
+                      >
+                        <Printer className="w-5 h-5" /> Print Card
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

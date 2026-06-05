@@ -73,7 +73,8 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     setSearchDetails(null);
 
     try {
-      const searchVal = searchValue.trim();
+      const normalizeStr = (str?: string) => (str || '').replace(/\s+/g, '').toLowerCase();
+      const normSearchVal = normalizeStr(searchValue);
       
       // Fetch all documents so we can filter them locally.
       // This ensures we can find OLD data where farmerId/mobile/aadhaar was only saved inside JSON string.
@@ -86,21 +87,21 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
          let match = false;
          
          // 1. Check top-level fields (New format)
-         if (data[searchType] === searchVal) {
+         if (normalizeStr(data[searchType]) === normSearchVal) {
              match = true;
          } else if (data.farmerData) {
              // 2. Check inside JSON string (Old format)
              try {
                  const parsed = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData) : data.farmerData;
-                 if (searchType === 'mobileNumber' && (parsed.mobile === searchVal || parsed.phone === searchVal)) match = true;
-                 else if (searchType === 'aadhaarNumber' && parsed.aadhaar === searchVal) match = true;
-                 else if (searchType === 'farmerId' && parsed.farmerId === searchVal) match = true;
+                 if (searchType === 'mobileNumber' && (normalizeStr(parsed.mobile) === normSearchVal || normalizeStr(parsed.phone) === normSearchVal)) match = true;
+                 else if (searchType === 'aadhaarNumber' && normalizeStr(parsed.aadhaar) === normSearchVal) match = true;
+                 else if (searchType === 'farmerId' && normalizeStr(parsed.farmerId) === normSearchVal) match = true;
              } catch (e) {
                  console.error("Error parsing farmerData for doc", doc.id);
              }
          }
 
-         if (match) {
+         if (match && !data.isDeleted) {
              matchedDocs.push({ id: doc.id, ...data });
          }
       });
@@ -646,7 +647,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
               name="farmerId"
               value={data.farmerId}
               onChange={handleInputChange}
-              placeholder="Ex: 123-45-678-90"
+              placeholder="Ex: 1234567890"
               className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 outline-none text-sm font-bold"
             />
           </div>
