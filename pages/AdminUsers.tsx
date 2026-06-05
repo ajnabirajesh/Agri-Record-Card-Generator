@@ -204,6 +204,9 @@ const AdminUsers: React.FC = () => {
              <Link to="/admin/payment-logs" className="w-full sm:w-auto text-center flex justify-center items-center gap-2 bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition font-medium">
                Logs
              </Link>
+             <Link to="/admin/payment-analytics" className="hidden lg:flex w-full sm:w-auto text-center justify-center items-center gap-2 bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition font-medium">
+               Analytics
+             </Link>
              <button 
                onClick={() => setShowAddForm(!showAddForm)}
                className="w-full sm:w-auto justify-center flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium"

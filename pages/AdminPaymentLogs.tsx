@@ -110,6 +110,9 @@ const AdminPaymentLogs: React.FC = () => {
              <Link to="/admin/users" className="text-sm font-medium bg-purple-700 hover:bg-purple-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 md:px-4 md:py-2">
                Users
              </Link>
+             <Link to="/admin/payment-analytics" className="text-sm font-medium bg-purple-700 hover:bg-purple-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 md:px-4 md:py-2">
+               Analytics
+             </Link>
           </div>
         </div>
       </header>
