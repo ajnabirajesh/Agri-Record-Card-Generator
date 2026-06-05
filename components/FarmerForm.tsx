@@ -74,31 +74,54 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
 
     try {
       const searchVal = searchValue.trim();
-      const q = query(
-        collection(db, "cards"),
-        where(searchType, "==", searchVal)
-      );
-
+      
+      // Fetch all documents so we can filter them locally.
+      // This ensures we can find OLD data where farmerId/mobile/aadhaar was only saved inside JSON string.
+      const q = query(collection(db, "cards"));
       const querySnapshot = await getDocs(q);
       
-      if (querySnapshot.empty) {
+      let matchedDocs: any[] = [];
+      querySnapshot.forEach(doc => {
+         const data = doc.data() as any;
+         let match = false;
+         
+         // 1. Check top-level fields (New format)
+         if (data[searchType] === searchVal) {
+             match = true;
+         } else if (data.farmerData) {
+             // 2. Check inside JSON string (Old format)
+             try {
+                 const parsed = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData) : data.farmerData;
+                 if (searchType === 'mobileNumber' && (parsed.mobile === searchVal || parsed.phone === searchVal)) match = true;
+                 else if (searchType === 'aadhaarNumber' && parsed.aadhaar === searchVal) match = true;
+                 else if (searchType === 'farmerId' && parsed.farmerId === searchVal) match = true;
+             } catch (e) {
+                 console.error("Error parsing farmerData for doc", doc.id);
+             }
+         }
+
+         if (match) {
+             matchedDocs.push({ id: doc.id, ...data });
+         }
+      });
+      
+      if (matchedDocs.length === 0) {
         setSearchMessage({ text: "No Existing Farmer Record Found", type: "error" });
       } else {
-        const docs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as any }));
-        // Sort by createdAt descending locally since we have very few matched documents
-        docs.sort((a, b) => {
+        // Sort by createdAt descending locally
+        matchedDocs.sort((a, b) => {
           const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
           const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
           return timeB - timeA;
         });
 
-        const latestRecord = docs[0];
+        const latestRecord = matchedDocs[0];
         const parsedData: FarmerData = typeof latestRecord.farmerData === 'string' ? JSON.parse(latestRecord.farmerData) : latestRecord.farmerData;
         
         const generatedDate = latestRecord.createdAt?.toDate ? latestRecord.createdAt.toDate().toLocaleDateString() : 'Unknown';
 
         setSearchResult(parsedData);
-        setSearchDetails({ date: generatedDate, total: docs.length, id: latestRecord.id });
+        setSearchDetails({ date: generatedDate, total: matchedDocs.length, id: latestRecord.id });
         setSearchMessage({ text: "Farmer Record Found", type: "success" });
       }
     } catch (error: any) {
