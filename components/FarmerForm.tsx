@@ -51,7 +51,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const [searchValue, setSearchValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState<FarmerData | null>(null);
-  const [searchMessage, setSearchMessage] = useState({ text: "", type: "" });
+  const [searchMessage, setSearchMessage] = useState<{ text: React.ReactNode, type: string }>({ text: "", type: "" });
   const [searchDetails, setSearchDetails] = useState<{ date: string; total: number; id: string } | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   
@@ -106,7 +106,16 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       });
       
       if (matchedDocs.length === 0) {
-        setSearchMessage({ text: "No Existing Farmer Record Found", type: "error" });
+        setSearchMessage({ 
+          text: (
+            <div className="flex flex-col gap-1.5 -mt-0.5">
+              <span className="font-bold text-[15px] pb-1 flex items-center gap-2"><Search className="w-4 h-4" /> कोई रिकॉर्ड नहीं मिला</span>
+              <span className="text-[13px] font-semibold text-red-600/90 leading-snug">इस Farmer ID / Mobile Number / Aadhaar Number से संबंधित डेटा हमारी वेबसाइट पर उपलब्ध नहीं है।</span>
+              <span className="text-[13px] font-semibold text-red-600/90">Please fill all farmer details manually to generate a new card.</span>
+            </div>
+          ), 
+          type: "error" 
+        });
       } else {
         // Sort by createdAt descending locally
         matchedDocs.sort((a, b) => {
@@ -460,10 +469,12 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         </div>
 
         {searchMessage.text && (
-          <div className={`p-4 rounded-xl border ${searchMessage.type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white shadow-sm border-emerald-200 text-slate-800'} flex flex-col gap-4 relative`}>
-             <div className={`flex items-center gap-2 font-bold text-sm ${searchMessage.type === 'success' ? 'text-emerald-700' : ''}`}>
-                {searchMessage.type === 'error' ? <XCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
-                {searchMessage.text}
+          <div className={`p-4 rounded-xl border ${searchMessage.type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white shadow-sm border-emerald-200 text-slate-800'} flex flex-col relative`}>
+             <div className={`flex items-start gap-3 font-bold text-sm ${searchMessage.type === 'success' ? 'items-center text-emerald-700' : ''}`}>
+                {searchMessage.type === 'error' ? (typeof searchMessage.text === 'string' ? <XCircle className="w-5 h-5 shrink-0" /> : <XCircle className="w-5 h-5 shrink-0 mt-0.5 opacity-0 hidden sm:block" />) : <CheckCircle2 className="w-5 h-5 shrink-0" />}
+                <div className="flex-1">
+                  {searchMessage.text}
+                </div>
              </div>
              
              {searchResult && searchDetails && searchMessage.type === 'success' && (
