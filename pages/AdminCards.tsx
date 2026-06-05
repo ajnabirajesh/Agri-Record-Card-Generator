@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { db, signInWithEmail } from '../firebase';
-import { collection, query, getDocs, orderBy, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
@@ -116,10 +116,10 @@ const AdminCards: React.FC = () => {
   };
 
   const handleDelete = async (cardId: string) => {
-    if (window.confirm("Are you sure you want to delete this card? It will be removed from view but payment logic will be retained.")) {
+    if (window.confirm("Are you sure you want to permanently delete this card data? This action cannot be undone.")) {
       try {
-        await updateDoc(doc(db, 'cards', cardId), { isDeleted: true });
-        setCards(cards.map(c => c.id === cardId ? { ...c, isDeleted: true } : c));
+        await deleteDoc(doc(db, 'cards', cardId));
+        setCards(cards.filter(c => c.id !== cardId));
         if (viewingCard?.id === cardId) setViewingCard(null);
       } catch (error) {
         console.error("Error deleting card:", error);
@@ -544,8 +544,8 @@ const AdminCards: React.FC = () => {
                         </button>
                         <button 
                           onClick={() => handleDelete(card.id)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete Record"
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                          title="Permanently Delete Record"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
