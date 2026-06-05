@@ -467,40 +467,40 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
              </div>
              
              {searchResult && searchDetails && searchMessage.type === 'success' && (
-               <div className="flex flex-col sm:flex-row gap-4 justify-between sm:items-center pt-2 border-t border-slate-100">
-                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-lg bg-emerald-50 border border-emerald-100 overflow-hidden shrink-0 flex items-center justify-center">
-                     {searchResult.photoUrl && searchResult.photoUrl.startsWith('data:') || searchResult.photoUrl.startsWith('http') ? (
+               <div className="flex flex-col lg:flex-row gap-3 justify-between lg:items-center pt-3 border-t border-slate-100">
+                 <div className="flex items-center gap-3 min-w-0">
+                   <div className="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-100 overflow-hidden shrink-0 flex items-center justify-center">
+                     {searchResult.photoUrl && (searchResult.photoUrl.startsWith('data:') || searchResult.photoUrl.startsWith('http')) ? (
                        <img src={searchResult.photoUrl} alt="Profile" className="w-full h-full object-cover" />
                      ) : (
-                       <UserCircle className="w-6 h-6 text-emerald-300" />
+                       <UserCircle className="w-5 h-5 text-emerald-300" />
                      )}
                    </div>
-                   <div>
-                     <h4 className="font-black text-slate-800">{searchResult.nameEnglish || searchResult.nameHindi}</h4>
-                     <p className="text-xs text-slate-500 font-bold mt-1">
+                   <div className="min-w-0 flex-1">
+                     <h4 className="font-black text-slate-800 text-sm truncate">{searchResult.nameEnglish || searchResult.nameHindi}</h4>
+                     <p className="text-[11px] text-slate-500 font-bold mt-0.5 truncate">
                        {searchResult.mobile} • {searchResult.farmerId}
                      </p>
-                     <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">
-                       Generated: {searchDetails.date} • Total Cards: {searchDetails.total}
+                     <p className="text-[9px] text-slate-400 mt-0.5 uppercase tracking-wider truncate">
+                       Gen: {searchDetails.date} • Total: {searchDetails.total}
                      </p>
                    </div>
                  </div>
                  
-                 <div className="flex flex-wrap sm:flex-nowrap gap-2 shrink-0">
+                 <div className="flex gap-2 shrink-0">
                     <button
                       onClick={handleAutoFill}
-                      className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-lg text-xs transition-colors flex"
+                      className="flex-1 items-center justify-center gap-1.5 px-3 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-lg text-[11px] transition-colors flex"
                     >
-                      <FileCheck className="w-4 h-4 shrink-0" />
-                      Auto Fill Details
+                      <FileCheck className="w-3.5 h-3.5" />
+                      Auto Fill
                     </button>
                     <button
                       onClick={() => setShowPreviewModal(true)}
-                      className="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-lg text-xs transition-colors flex"
+                      className="flex-1 items-center justify-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold rounded-lg text-[11px] transition-colors flex"
                     >
-                      <Eye className="w-4 h-4 shrink-0" />
-                      View Card
+                      <Eye className="w-3.5 h-3.5" />
+                      View
                     </button>
                  </div>
                </div>
