@@ -92,7 +92,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
          } else if (data.farmerData) {
              // 2. Check inside JSON string (Old format)
              try {
-                 const parsed = JSON.parse(data.farmerData);
+                 const parsed = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData) : data.farmerData;
                  if (searchType === 'mobileNumber' && (parsed.mobile === searchVal || parsed.phone === searchVal)) match = true;
                  else if (searchType === 'aadhaarNumber' && parsed.aadhaar === searchVal) match = true;
                  else if (searchType === 'farmerId' && parsed.farmerId === searchVal) match = true;
@@ -125,9 +125,9 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
         setSearchDetails({ date: generatedDate, total: matchedDocs.length, id: latestRecord.id });
         setSearchMessage({ text: "Farmer Record Found", type: "success" });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Search error:", error);
-      setSearchMessage({ text: "Error searching records. Please try again.", type: "error" });
+      setSearchMessage({ text: "Error: " + (error.message || "Unknown error"), type: "error" });
     } finally {
       setIsSearching(false);
     }
