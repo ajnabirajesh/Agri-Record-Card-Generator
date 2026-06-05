@@ -40,6 +40,8 @@ import { db } from "../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import CardPreview from "./CardPreview";
 
+const ENABLE_FARMER_SEARCH = false;
+
 interface FarmerFormProps {
   data: FarmerData;
   onChange: (data: FarmerData) => void;
@@ -58,6 +60,8 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   const { user, isAdmin } = useAuth();
 
   const handleSearch = async () => {
+    if (!ENABLE_FARMER_SEARCH) return;
+    
     if (!user) {
       setSearchMessage({ text: "Please login to search records.", type: "error" });
       return;
@@ -422,10 +426,11 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
   return (
     <div className="bg-white/80 p-8 flex flex-col gap-10">
       {/* Search Section */}
-      <section className="space-y-6 bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-5">
-           <Search className="w-32 h-32" />
-        </div>
+      {ENABLE_FARMER_SEARCH && (
+        <section className="space-y-6 bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+             <Search className="w-32 h-32" />
+          </div>
         <div className="flex items-center gap-3 border-b border-emerald-200/50 pb-3 relative">
           <Search className="w-5 h-5 text-emerald-600" />
           <h2 className="text-sm font-black text-slate-800 uppercase tracking-widest">
@@ -520,6 +525,7 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           </div>
         )}
       </section>
+      )}
 
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
