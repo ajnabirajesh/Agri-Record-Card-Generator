@@ -166,9 +166,9 @@ const Home: React.FC = () => {
         alert("Payment Failed. Please try again.");
       });
       rzp.open();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Payment error:", error);
-      alert("Failed to initiate payment. Ensure the server is running.");
+      alert("Failed to initiate payment: " + (error.message || "Ensure the server is properly configured."));
     } finally {
       setIsProcessingPayment(false);
     }
