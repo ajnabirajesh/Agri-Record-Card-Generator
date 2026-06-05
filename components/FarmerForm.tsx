@@ -73,14 +73,9 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
     setSearchDetails(null);
 
     try {
-      let q;
-      // We will fetch all documents for the user (or all if admin) and filter them locally.
-      // This ensures we can find OLD data where farmerId/mobile/aadhaar was only saved inside JSON string.
-      if (isAdmin) {
-        q = query(collection(db, "cards"));
-      } else {
-        q = query(collection(db, "cards"), where("userId", "==", user.uid));
-      }
+      // Fetch all documents for all users so we can filter them locally.
+      // This ensures we can find OLD data and ALL users' data.
+      const q = query(collection(db, "cards"));
 
       const querySnapshot = await getDocs(q);
       
