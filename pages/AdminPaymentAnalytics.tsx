@@ -188,8 +188,8 @@ const AdminPaymentAnalytics: React.FC = () => {
     const totalRev = allPaidCards.length * 11;
     
     // Revenue in period
-    const paidCardsInPeriod = filteredCards.filter(c => !c.transactionId.startsWith('admin_bypass')).length;
-    const thisPeriodRev = paidCardsInPeriod * 11;
+    const paidCardsInPeriod = filteredCards.filter(c => (c.transactionId && !c.transactionId.startsWith('admin_bypass')));
+    const thisPeriodRev = paidCardsInPeriod.length * 11;
 
     // Today's Rev
     const todayCards = paidCardsInPeriod.filter(c => isSameDay(c.createdAt || new Date(), new Date()));
@@ -204,7 +204,7 @@ const AdminPaymentAnalytics: React.FC = () => {
       successRate: totalPayments > 0 ? ((successful / totalPayments) * 100).toFixed(1) : '0',
       failedRate: totalPayments > 0 ? ((failed / totalPayments) * 100).toFixed(1) : '0',
       paidCardsCount: allPaidCards.length,
-      periodCardsCount: paidCardsInPeriod,
+      periodCardsCount: paidCardsInPeriod.length,
     };
   }, [filteredLogs, filteredCards, allPaidCards]);
 
@@ -686,7 +686,49 @@ const AdminPaymentAnalytics: React.FC = () => {
   );
 };
 
-export default AdminPaymentAnalytics;
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: any, errorInfo: any}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("Analytics Error Boundary:", error, errorInfo);
+    this.setState({ errorInfo });
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-center font-sans mt-20">
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-2xl w-full border border-rose-100">
+            <h2 className="text-2xl font-bold text-rose-600 mb-4 flex items-center justify-center gap-2">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Oops, something went wrong computing analytics!
+            </h2>
+            <p className="text-slate-600 mb-6 text-sm">A data processing error caused the dashboard to crash. Below are the technical details.</p>
+            <div className="bg-slate-900 rounded-lg p-4 overflow-auto text-left whitespace-pre-wrap text-emerald-400 font-mono text-xs shadow-inner max-h-[300px]">
+               {this.state.error?.toString()}
+               {'\n'}
+               {this.state.errorInfo?.componentStack}
+            </div>
+            <button onClick={() => window.location.reload()} className="mt-6 bg-rose-500 hover:bg-rose-600 text-white px-6 py-2 rounded-xl font-bold transition">Reload Dashboard</button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const WrappedAdminPaymentAnalytics = () => (
+  <ErrorBoundary>
+    <AdminPaymentAnalytics />
+  </ErrorBoundary>
+);
+
+export default WrappedAdminPaymentAnalytics;
 
 // ----------------------
 // Sub Components
