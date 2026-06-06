@@ -61,20 +61,9 @@ const AdminUsers: React.FC = () => {
         ...doc.data()
       } as UserData));
       
-      // Fetch cards to aggregate counts
-      const cardsCol = collection(db, 'cards');
-      const cardSnapshot = await getDocs(cardsCol);
-      const cardCounts: Record<string, number> = {};
-      cardSnapshot.forEach(doc => {
-        const userId = doc.data().userId;
-        if (userId) {
-           cardCounts[userId] = (cardCounts[userId] || 0) + 1;
-        }
-      });
-      
       const usersWithCounts = userList.map(u => ({
         ...u,
-        cardCount: cardCounts[u.id] || 0
+        cardCount: u.cardCount || 0
       })).sort((a, b) => {
         const timeA = a.createdAt?.seconds || (a.createdAt ? Date.now() / 1000 : 0);
         const timeB = b.createdAt?.seconds || (b.createdAt ? Date.now() / 1000 : 0);

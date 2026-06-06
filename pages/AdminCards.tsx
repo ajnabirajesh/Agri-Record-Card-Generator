@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { db, signInWithEmail } from '../firebase';
-import { collection, query, getDocs, orderBy, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, updateDoc, doc, deleteDoc, limit, getCountFromServer, where, getDoc } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
@@ -37,16 +37,46 @@ const AdminCards: React.FC = () => {
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+  const [stats, setStats] = useState({ totalCards: 0, todayCards: 0, paidCards: 0, revenue: 0 });
   const navigate = useNavigate();
 
   useEffect(() => {
     if (authLoading) return;
     if (isAdmin) {
       fetchCards();
+      fetchStats();
     } else {
       setLoading(false);
     }
   }, [isAdmin, authLoading]);
+
+  const fetchStats = async () => {
+    try {
+      const statsRef = doc(db, 'stats', 'global');
+      const statsDoc = await getDoc(statsRef);
+      let total = 0, paid = 0, rev = 0;
+      if (statsDoc.exists()) {
+        const d = statsDoc.data();
+        total = d.totalCards || 0;
+        paid = d.totalPaidCards || 0;
+        rev = d.totalRevenue || 0;
+      }
+      
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const todayQuery = query(collection(db, 'cards'), where('createdAt', '>=', today));
+      const todayCount = await getCountFromServer(todayQuery);
+      
+      setStats({
+        totalCards: total,
+        paidCards: paid,
+        revenue: rev,
+        todayCards: todayCount.data().count
+      });
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+    }
+  };
 
   const handleSaveEdit = async (id: string, newFarmerData: FarmerData) => {
     try {
@@ -64,9 +94,11 @@ const AdminCards: React.FC = () => {
   const fetchCards = async () => {
     setLoading(true);
     try {
+      // Limit to 100 to prevent quota issues on dashboard load. Export or full search requires specific queries if needed.
       const q = query(
         collection(db, 'cards'),
-        orderBy('createdAt', 'desc')
+        orderBy('createdAt', 'desc'),
+        limit(100)
       );
       
       const querySnapshot = await getDocs(q);
@@ -309,14 +341,6 @@ const AdminCards: React.FC = () => {
     document.body.removeChild(link);
   };
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const activeCards = cards.filter(c => !c.isDeleted);
-  const cardsToday = activeCards.filter(c => c.createdAt >= today).length;
-  // Total Revenue tracks ALL cards ever generated, including deleted ones
-  const totalRevenueCards = cards.filter(c => !c.transactionId.startsWith('admin_bypass')).length;
-  const totalRevenue = totalRevenueCards * 11; // ₹11 per card
-
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
       <header className="no-print sticky top-0 z-50 bg-purple-800 text-white shadow-xl border-b border-purple-900">
@@ -333,7 +357,7 @@ const AdminCards: React.FC = () => {
               <span className="sm:hidden">Users</span>
             </Link>
             <div className="hidden sm:block text-sm font-medium bg-purple-900 px-3 py-1 rounded-full">
-              Active Cards: {activeCards.length}
+              Total Cards: {stats.totalCards}
             </div>
           </div>
         </div>
@@ -347,8 +371,8 @@ const AdminCards: React.FC = () => {
               <TrendingUp className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <div className="text-xs text-slate-500 font-medium">Active Cards</div>
-              <div className="text-xl font-black text-slate-800">{activeCards.length}</div>
+              <div className="text-xs text-slate-500 font-medium">Total Cards</div>
+              <div className="text-xl font-black text-slate-800">{stats.totalCards}</div>
             </div>
           </div>
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
@@ -357,7 +381,7 @@ const AdminCards: React.FC = () => {
             </div>
             <div>
               <div className="text-xs text-slate-500 font-medium">Generated Today</div>
-              <div className="text-xl font-black text-slate-800">{cardsToday}</div>
+              <div className="text-xl font-black text-slate-800">{stats.todayCards}</div>
             </div>
           </div>
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
@@ -366,8 +390,8 @@ const AdminCards: React.FC = () => {
             </div>
             <div>
               <div className="text-xs text-slate-500 font-medium">Total Paid Cards</div>
-              <div className="text-xl font-black text-slate-800">{totalRevenueCards}</div>
-              <div className="text-[10px] text-slate-400 font-medium">₹{totalRevenue} Revenue</div>
+              <div className="text-xl font-black text-slate-800">{stats.paidCards}</div>
+              <div className="text-[10px] text-slate-400 font-medium">₹{stats.revenue} Revenue</div>
             </div>
           </div>
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center">

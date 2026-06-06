@@ -80,32 +80,21 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
       const normalizeStr = (str?: string) => (str || '').replace(/\s+/g, '').toLowerCase();
       const normSearchVal = normalizeStr(searchValue);
       
-      // Fetch all documents so we can filter them locally.
-      // This ensures we can find OLD data where farmerId/mobile/aadhaar was only saved inside JSON string.
-      const q = query(collection(db, "cards"));
+      let q;
+      if (searchType === 'mobileNumber') {
+        q = query(collection(db, "cards"), where("mobileNumber", "==", searchValue));
+      } else if (searchType === 'aadhaarNumber') {
+        q = query(collection(db, "cards"), where("aadhaarNumber", "==", searchValue));
+      } else {
+        q = query(collection(db, "cards"), where("farmerId", "==", searchValue));
+      }
+      
       const querySnapshot = await getDocs(q);
       
       let matchedDocs: any[] = [];
       querySnapshot.forEach(doc => {
          const data = doc.data() as any;
-         let match = false;
-         
-         // 1. Check top-level fields (New format)
-         if (normalizeStr(data[searchType]) === normSearchVal) {
-             match = true;
-         } else if (data.farmerData) {
-             // 2. Check inside JSON string (Old format)
-             try {
-                 const parsed = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData) : data.farmerData;
-                 if (searchType === 'mobileNumber' && (normalizeStr(parsed.mobile) === normSearchVal || normalizeStr(parsed.phone) === normSearchVal)) match = true;
-                 else if (searchType === 'aadhaarNumber' && normalizeStr(parsed.aadhaar) === normSearchVal) match = true;
-                 else if (searchType === 'farmerId' && normalizeStr(parsed.farmerId) === normSearchVal) match = true;
-             } catch (e) {
-                 console.error("Error parsing farmerData for doc", doc.id);
-             }
-         }
-
-         if (match && !data.isDeleted) {
+         if (!data.isDeleted) {
              matchedDocs.push({ id: doc.id, ...data });
          }
       });

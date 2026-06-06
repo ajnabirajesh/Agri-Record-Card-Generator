@@ -7,7 +7,7 @@ import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { auth, db } from '../firebase';
-import { collection, addDoc, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, setDoc, getDoc } from 'firebase/firestore';
 
 const Home: React.FC = () => {
   const [farmerData, setFarmerData] = useState<FarmerData>(INITIAL_FARMER_DATA);
@@ -51,6 +51,25 @@ const Home: React.FC = () => {
       return;
     }
 
+    const updateCounters = async (uid: string, isPaid: boolean) => {
+      try {
+        const userRef = doc(db, 'users', uid);
+        await updateDoc(userRef, { cardCount: increment(1) });
+        
+        const statsRef = doc(db, 'stats', 'global');
+        const statsDoc = await getDoc(statsRef);
+        if (!statsDoc.exists()) {
+           await setDoc(statsRef, { totalCards: 1, totalPaidCards: isPaid ? 1 : 0, totalRevenue: isPaid ? 11 : 0 });
+        } else {
+           await updateDoc(statsRef, { 
+             totalCards: increment(1),
+             totalPaidCards: isPaid ? increment(1) : increment(0),
+             totalRevenue: isPaid ? increment(11) : increment(0)
+           });
+        }
+      } catch (err) {}
+    };
+
     if (isAdmin) {
       try {
         await addDoc(collection(db, 'cards'), {
@@ -61,8 +80,10 @@ const Home: React.FC = () => {
           mobileNumber: farmerData.mobile,
           aadhaarNumber: farmerData.aadhaar,
           transactionId: `admin_bypass_${Date.now()}`,
-          createdAt: serverTimestamp()
+          createdAt: serverTimestamp(),
+          isDeleted: false
         });
+        await updateCounters(currentUser.uid, false);
         setHasPaid(true);
         onSuccess();
       } catch (err) {
@@ -88,8 +109,10 @@ const Home: React.FC = () => {
             mobileNumber: farmerData.mobile,
             aadhaarNumber: farmerData.aadhaar,
             transactionId: `free_credit_${Date.now()}`,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            isDeleted: false
           });
+          await updateCounters(currentUser.uid, false);
           setHasPaid(true);
           onSuccess();
         } catch (err) {
@@ -140,8 +163,10 @@ const Home: React.FC = () => {
                 mobileNumber: farmerData.mobile,
                 aadhaarNumber: farmerData.aadhaar,
                 transactionId: response.razorpay_payment_id || order.id,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                isDeleted: false
               });
+              await updateCounters(activeUser.uid, true);
             }
             setHasPaid(true);
             onSuccess();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../AuthContext';
 import { db } from '../firebase';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { FarmerData } from '../types';
 import CardPreview from '../components/CardPreview';
 import { Link, useNavigate } from 'react-router-dom';
@@ -34,7 +34,8 @@ const MyCards: React.FC = () => {
         const q = query(
           collection(db, 'cards'),
           where('userId', '==', user.uid),
-          orderBy('createdAt', 'desc')
+          orderBy('createdAt', 'desc'),
+          limit(100)
         );
         
         const querySnapshot = await getDocs(q);
