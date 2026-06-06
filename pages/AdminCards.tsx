@@ -40,6 +40,13 @@ const AdminCards: React.FC = () => {
   const [stats, setStats] = useState({ totalCards: 0, todayCards: 0, paidCards: 0, revenue: 0 });
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 20;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, stateFilter, startDate, endDate, showDeleted]);
+
   useEffect(() => {
     if (authLoading) return;
     if (isAdmin) {
@@ -94,11 +101,11 @@ const AdminCards: React.FC = () => {
   const fetchCards = async () => {
     setLoading(true);
     try {
-      // Limit to 100 to prevent quota issues on dashboard load. Export or full search requires specific queries if needed.
+      // Limit to 500 to prevent quota issues on dashboard load. Export or full search requires specific queries if needed.
       const q = query(
         collection(db, 'cards'),
         orderBy('createdAt', 'desc'),
-        limit(100)
+        limit(500)
       );
       
       const querySnapshot = await getDocs(q);
@@ -106,11 +113,18 @@ const AdminCards: React.FC = () => {
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        let parsedFarmerData = {};
+        try {
+          parsedFarmerData = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData || '{}') : (data.farmerData || {});
+        } catch (e) {
+           console.error('Error parsing card data', e);
+        }
+        
         fetchedCards.push({
           id: doc.id,
           userId: data.userId,
           userEmail: data.userEmail,
-          farmerData: JSON.parse(data.farmerData),
+          farmerData: parsedFarmerData,
           createdAt: data.createdAt?.toDate() || new Date(),
           transactionId: data.transactionId,
           isDeleted: data.isDeleted || false
@@ -281,16 +295,17 @@ const AdminCards: React.FC = () => {
 
   const filteredCards = cards.filter(c => showDeleted ? c.isDeleted : !c.isDeleted).filter(card => {
     // Search Term match
+    const filterTerm = searchTerm.toLowerCase();
     const matchesSearch = 
-      card.farmerData.nameEnglish.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      card.farmerData.nameHindi.includes(searchTerm) ||
-      card.farmerData.mobile?.includes(searchTerm) ||
-      card.farmerData.phone?.includes(searchTerm) ||
-      card.farmerData.aadhaar?.includes(searchTerm) ||
-      (card.userEmail && card.userEmail.toLowerCase().includes(searchTerm.toLowerCase()));
+      (card.farmerData?.nameEnglish || '').toLowerCase().includes(filterTerm) ||
+      (card.farmerData?.nameHindi || '').includes(searchTerm) ||
+      (card.farmerData?.mobile || '').includes(searchTerm) ||
+      (card.farmerData?.phone || '').includes(searchTerm) ||
+      (card.farmerData?.aadhaar || '').includes(searchTerm) ||
+      (card.userEmail || '').toLowerCase().includes(filterTerm);
       
     // State Match
-    const cardState = card.farmerData.state || 'Bihar';
+    const cardState = card.farmerData?.state || 'Bihar';
     const matchesState = stateFilter === 'All' || cardState === stateFilter;
     
     // Date Match
@@ -313,6 +328,11 @@ const AdminCards: React.FC = () => {
     return matchesSearch && matchesState && matchesDate;
   });
 
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentCards = filteredCards.slice(indexOfFirstCard, indexOfLastCard);
+  const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+
   const exportToCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Generated Date,User Email,Farmer Name (Eng),Farmer Name (Hi),Phone,Aadhaar,DOB,State,Transaction ID\n";
@@ -320,12 +340,12 @@ const AdminCards: React.FC = () => {
     filteredCards.forEach(card => {
       const date = card.createdAt.toLocaleString().replace(/,/g, '');
       const email = card.userEmail || card.userId;
-      const nameEng = card.farmerData.nameEnglish || '';
-      const nameHi = card.farmerData.nameHindi || '';
-      const phone = card.farmerData.mobile || card.farmerData.phone || '';
-      const aadhaar = card.farmerData.aadhaar || '';
-      const dob = card.farmerData.dob || '';
-      const state = card.farmerData.state || 'Bihar';
+      const nameEng = card.farmerData?.nameEnglish || '';
+      const nameHi = card.farmerData?.nameHindi || '';
+      const phone = card.farmerData?.mobile || card.farmerData?.phone || '';
+      const aadhaar = card.farmerData?.aadhaar || '';
+      const dob = card.farmerData?.dob || '';
+      const state = card.farmerData?.state || 'Bihar';
       const txnInfo = card.transactionId || '';
       
       const row = `"${date}","${email}","${nameEng}","${nameHi}","${phone}","${aadhaar}","${dob}","${state}","${txnInfo}"`;
@@ -550,7 +570,7 @@ const AdminCards: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredCards.map((card) => (
+                  {currentCards.map((card) => (
                     <tr key={card.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="p-4 text-sm text-slate-600">
                         <div className="flex flex-col">
@@ -559,23 +579,23 @@ const AdminCards: React.FC = () => {
                         </div>
                       </td>
                       <td className="p-4 text-sm font-bold text-slate-900">
-                         {card.farmerData.nameEnglish}
-                         <span className="block text-xs font-normal text-slate-500">{card.farmerData.nameHindi}</span>
+                         {card.farmerData?.nameEnglish || 'N/A'}
+                         <span className="block text-xs font-normal text-slate-500">{card.farmerData?.nameHindi || ''}</span>
                       </td>
                       <td className="p-4 text-sm font-medium text-slate-700">
-                         {card.farmerData.mobile || card.farmerData.phone || 'N/A'}
+                         {card.farmerData?.mobile || card.farmerData?.phone || 'N/A'}
                       </td>
                       <td className="p-4">
                          <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-bold ${
-                           card.farmerData.state === 'Uttar Pradesh' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                           card.farmerData?.state === 'Uttar Pradesh' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
                          }`}>
-                           {card.farmerData.state || 'Bihar'}
+                           {card.farmerData?.state || 'Bihar'}
                          </span>
                       </td>
                       <td className="p-4 text-sm">
                          <span className="truncate max-w-[150px] block text-slate-600">{card.userEmail || card.userId}</span>
                          <span className="text-[10px] text-slate-400 font-mono" title={card.transactionId}>
-                            Txn: {card.transactionId.substring(0, 10)}...
+                            Txn: {(card.transactionId || '').substring(0, 10)}...
                          </span>
                       </td>
                       <td className="p-4 text-right flex items-center justify-end gap-2">
@@ -630,6 +650,33 @@ const AdminCards: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            
+            {totalPages > 1 && (
+              <div className="bg-slate-50 border-t border-slate-100 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p className="text-sm text-slate-600 font-medium">
+                  Showing {indexOfFirstCard + 1} to {Math.min(indexOfLastCard, filteredCards.length)} of {filteredCards.length} entries
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm font-medium text-slate-700 mx-2">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>

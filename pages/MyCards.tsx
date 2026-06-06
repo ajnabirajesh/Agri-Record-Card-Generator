@@ -44,9 +44,14 @@ const MyCards: React.FC = () => {
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           if (!data.isDeleted) {
+            let parsedFarmerData = {};
+            try {
+              parsedFarmerData = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData || '{}') : (data.farmerData || {});
+            } catch (err) {}
+            
             fetchedCards.push({
               id: doc.id,
-              farmerData: JSON.parse(data.farmerData),
+              farmerData: parsedFarmerData,
               createdAt: data.createdAt?.toDate() || new Date(),
               transactionId: data.transactionId
             });
@@ -76,9 +81,9 @@ const MyCards: React.FC = () => {
 
   const filteredCards = cards.filter(card => {
     const searchLower = searchQuery.toLowerCase();
-    const nameEngMatch = card.farmerData.nameEnglish?.toLowerCase().includes(searchLower) || false;
-    const nameHinMatch = card.farmerData.nameHindi?.toLowerCase().includes(searchLower) || false;
-    const idMatch = card.farmerData.farmerId?.toLowerCase().includes(searchLower) || false;
+    const nameEngMatch = card.farmerData?.nameEnglish?.toLowerCase().includes(searchLower) || false;
+    const nameHinMatch = card.farmerData?.nameHindi?.toLowerCase().includes(searchLower) || false;
+    const idMatch = card.farmerData?.farmerId?.toLowerCase().includes(searchLower) || false;
     return nameEngMatch || nameHinMatch || idMatch;
   });
 
@@ -183,7 +188,7 @@ const MyCards: React.FC = () => {
                   <div key={card.id} id={`card-container-${card.id}`} className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all hover:shadow-md card-wrapper">
                     <div className="flex items-center gap-4 w-full md:w-auto">
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-slate-100 border-2 border-slate-200 shrink-0">
-                        {card.farmerData.photoUrl ? (
+                        {card.farmerData?.photoUrl ? (
                           <img src={card.farmerData.photoUrl} alt="Farmer" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-400">
@@ -192,9 +197,9 @@ const MyCards: React.FC = () => {
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <h3 className="font-bold text-lg md:text-xl text-slate-800 line-clamp-1">{card.farmerData.nameEnglish} {card.farmerData.nameHindi && <span className="text-slate-500 font-normal text-sm md:text-base">({card.farmerData.nameHindi})</span>}</h3>
-                        <p className="text-slate-500 text-sm md:text-base font-medium">ID: {card.farmerData.farmerId}</p>
-                        <p className="text-slate-500 text-xs md:text-sm">Mobile: {card.farmerData.mobile || 'N/A'}</p>
+                        <h3 className="font-bold text-lg md:text-xl text-slate-800 line-clamp-1">{card.farmerData?.nameEnglish} {card.farmerData?.nameHindi && <span className="text-slate-500 font-normal text-sm md:text-base">({card.farmerData?.nameHindi})</span>}</h3>
+                        <p className="text-slate-500 text-sm md:text-base font-medium">ID: {card.farmerData?.farmerId}</p>
+                        <p className="text-slate-500 text-xs md:text-sm">Mobile: {card.farmerData?.mobile || 'N/A'}</p>
                         <p className="text-xs text-slate-400 mt-1 md:mt-2">Generated: {card.createdAt.toLocaleDateString()}</p>
                       </div>
                     </div>
