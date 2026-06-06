@@ -336,7 +336,7 @@ const AdminCards: React.FC = () => {
   const cardsToday = activeCards.filter(c => c.createdAt >= todayDate).length;
   // Total Revenue tracks ALL cards ever generated, including deleted ones
   const totalRevenueCards = cards.filter(c => !c.transactionId || !c.transactionId.startsWith('admin_bypass')).length;
-  const totalRevenue = totalRevenueCards * 11; // ₹11 per card
+  const totalRevenue = totalRevenueCards * 15; // ₹15 per card
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">

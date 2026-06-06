@@ -23,7 +23,7 @@ const Home: React.FC = () => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
         if (!hasPaid && !isAdmin) {
           e.preventDefault();
-          alert("Please complete the payment of ₹11 to print or save the ID card.");
+          alert("Please complete the payment of ₹15 to print or save the ID card.");
         }
       }
     };
@@ -59,12 +59,12 @@ const Home: React.FC = () => {
         const statsRef = doc(db, 'stats', 'global');
         const statsDoc = await getDoc(statsRef);
         if (!statsDoc.exists()) {
-           await setDoc(statsRef, { totalCards: 1, totalPaidCards: isPaid ? 1 : 0, totalRevenue: isPaid ? 11 : 0 });
+           await setDoc(statsRef, { totalCards: 1, totalPaidCards: isPaid ? 1 : 0, totalRevenue: isPaid ? 15 : 0 });
         } else {
            await updateDoc(statsRef, { 
              totalCards: increment(1),
              totalPaidCards: isPaid ? increment(1) : increment(0),
-             totalRevenue: isPaid ? increment(11) : increment(0)
+             totalRevenue: isPaid ? increment(15) : increment(0)
            });
         }
       } catch (err) {}
@@ -132,7 +132,7 @@ const Home: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ amount: 11 }), // 11 INR
+        body: JSON.stringify({ amount: 15 }), // 15 INR
       });
 
       const order = await response.json();
@@ -226,7 +226,7 @@ const Home: React.FC = () => {
       {isPrintBlocked && (
         <div className="hidden print:flex fixed inset-0 z-[9999] bg-white items-center justify-center text-center p-10">
           <h1 className="text-3xl font-black text-[#064e3b]">
-            Please complete the payment of ₹11 to print or save the ID card.
+            Please complete the payment of ₹15 to print or save the ID card.
           </h1>
         </div>
       )}
@@ -292,7 +292,7 @@ const Home: React.FC = () => {
                  {isProcessingPayment ? <Loader2 className="w-3.5 h-3.5 md:w-4 h-4 animate-spin" /> : (hasPaid ? <Printer className="w-3.5 h-3.5 md:w-4 h-4" /> : <Lock className="w-3.5 h-3.5 md:w-4 h-4" />)}
                  <span className="hidden md:inline text-xs uppercase tracking-wider">{hasPaid ? 'Print' : (freeCredits > 0 ? 'Use Credit' : 'Pay & Print')}</span>
                </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free` : '₹11 Only'}</span>}
+               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free` : '₹15 Only'}</span>}
              </button>
 
              <button 
@@ -306,7 +306,7 @@ const Home: React.FC = () => {
                    {hasPaid ? 'SAVE' : (freeCredits > 0 ? 'USE CREDIT' : 'PAY & SAVE')}
                  </span>
                </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free Available` : '₹11 Only'}</span>}
+               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free Available` : '₹15 Only'}</span>}
              </button>
           </div>
         </div>
