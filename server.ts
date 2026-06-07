@@ -54,7 +54,7 @@ async function startServer() {
 
   app.post("/api/create-order", async (req, res) => {
     try {
-      const amount = Number(req.body.amount) || 15; // amount in INR
+      const amount = 15; // Hardcoded to 15 to prevent cached clients from paying 11
       
       const key_id = process.env.VITE_RAZORPAY_KEY_ID;
       const key_secret = process.env.RAZORPAY_KEY_SECRET;

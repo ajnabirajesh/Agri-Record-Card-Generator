@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         body = JSON.parse(body);
       } catch (e) {}
     }
-    const amount = Number(body.amount) || 15;
+    const amount = 15; // Hardcoded to 15 to prevent cached clients from paying 11
     
     const order = await razorpay.orders.create({
       amount: amount * 100,
