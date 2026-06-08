@@ -15,6 +15,7 @@ const Home: React.FC = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
   const [showNoCreditsAlert, setShowNoCreditsAlert] = useState(false);
+  const [showUseCreditAlert, setShowUseCreditAlert] = useState(false);
   
   const { user, isAdmin, freeCredits, signIn, signOut } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Home: React.FC = () => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
         if (!hasPaid && !isAdmin) {
           e.preventDefault();
-          alert("Please generate the card using credits before printing or saving.");
+          setShowUseCreditAlert(true);
         }
       }
     };
@@ -134,7 +135,7 @@ const Home: React.FC = () => {
     }
 
     if (method === 'pay') {
-      alert("Payment gateway is currently disabled. Please use the 'Use Credit' option to generate your card.");
+      setShowUseCreditAlert(true);
       return;
     }
   };
@@ -439,6 +440,33 @@ const Home: React.FC = () => {
                 className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Use Credit Alert Modal */}
+      {showUseCreditAlert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-blue-50 p-6 flex flex-col items-center text-center border-b border-blue-100">
+              <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Notice</h3>
+              <p className="text-slate-700 text-sm font-semibold mb-3">
+                पेमेंट गेटवे अभी बंद है। कृपया कार्ड जनरेट करने के लिए 'Use Credit' बटन का उपयोग करें।
+              </p>
+              <p className="text-slate-600 text-sm">
+                The payment gateway is currently disabled in test mode. Please use the 'Use Credit' option to generate your card.
+              </p>
+            </div>
+            <div className="p-6">
+              <button
+                onClick={() => setShowUseCreditAlert(false)}
+                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
+              >
+                Got it
               </button>
             </div>
           </div>
