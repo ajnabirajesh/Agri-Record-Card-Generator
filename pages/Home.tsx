@@ -134,38 +134,8 @@ const Home: React.FC = () => {
     }
 
     if (method === 'pay') {
-      setIsProcessingPayment(true);
-      const TEST_MODE = true; 
-      if (TEST_MODE) {
-        setTimeout(async () => {
-          try {
-            if (currentUser) {
-              await addDoc(collection(db, 'cards'), {
-                userId: currentUser.uid,
-                userEmail: currentUser.email,
-                farmerData: JSON.stringify(farmerData),
-                farmerId: farmerData.farmerId,
-                mobileNumber: farmerData.mobile,
-                aadhaarNumber: farmerData.aadhaar,
-                transactionId: `test_txn_${Date.now()}`,
-                createdAt: serverTimestamp(),
-                expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-                isDeleted: false
-              });
-              await updateCounters(currentUser.uid, true);
-            }
-            setHasPaid(true);
-            onSuccess();
-          } catch (err) {
-            console.error("Error saving card to database:", err);
-            alert("Payment successful (Test Mode), but error saving.");
-            setHasPaid(true);
-            onSuccess();
-          } finally {
-            setIsProcessingPayment(false);
-          }
-        }, 1500);
-      }
+      alert("Payment gateway is currently disabled. Please use the 'Use Credit' option to generate your card.");
+      return;
     }
   };
 
