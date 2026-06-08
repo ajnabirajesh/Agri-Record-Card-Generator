@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   const [hasPaid, setHasPaid] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
-  const [showPaymentAlert, setShowPaymentAlert] = useState(true);
+  const [showNoCreditsAlert, setShowNoCreditsAlert] = useState(false);
   
   const { user, isAdmin, freeCredits, signIn, signOut } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Home: React.FC = () => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
         if (!hasPaid && !isAdmin) {
           e.preventDefault();
-          alert("Please complete the payment of ₹15 to print or save the ID card.");
+          alert("Please generate the card using credits before printing or saving.");
         }
       }
     };
@@ -33,25 +33,19 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [hasPaid, isAdmin]);
 
-  const handlePayment = async (onSuccess: () => void) => {
+  const handlePayment = async (onSuccess: () => void, method: 'credit' | 'pay' = 'credit') => {
     let currentUser = auth.currentUser;
     
-    // TEMPORARY: Removed login requirement to allow printing and payments without login
-    /*
-    if (!currentUser) {
-      alert("Please log in first to generate and save your card permanently.");
-      try {
-        const loggedInUser = await signIn();
-        currentUser = loggedInUser || auth.currentUser;
-        if (!currentUser) return;
-      } catch (e) {
-        return;
-      }
-    }
-    */
-
     if (hasPaid) {
       onSuccess();
+      return;
+    }
+
+    if (!currentUser && !isAdmin) {
+      alert("Please log in first to generate and save your card.");
+      try {
+        await signIn();
+      } catch (e) {}
       return;
     }
 
@@ -77,8 +71,8 @@ const Home: React.FC = () => {
     if (isAdmin) {
       try {
         await addDoc(collection(db, 'cards'), {
-          userId: currentUser.uid,
-          userEmail: currentUser.email,
+          userId: currentUser?.uid || 'admin',
+          userEmail: currentUser?.email || 'admin',
           farmerData: JSON.stringify(farmerData),
           farmerId: farmerData.farmerId,
           mobileNumber: farmerData.mobile,
@@ -88,7 +82,9 @@ const Home: React.FC = () => {
           expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
           isDeleted: false
         });
-        await updateCounters(currentUser.uid, false);
+        if (currentUser) {
+           await updateCounters(currentUser.uid, false);
+        }
         setHasPaid(true);
         onSuccess();
       } catch (err) {
@@ -98,159 +94,85 @@ const Home: React.FC = () => {
       return;
     }
 
-    if (currentUser && freeCredits > 0) {
-      if (window.confirm(`You have ${freeCredits} free credit(s) available. Do you want to use 1 credit to generate this card for free?`)) {
-        setIsProcessingPayment(true);
-        try {
-          // Decrement by exactly 1 as required by security rules
-          const userRef = doc(db, 'users', currentUser.uid);
-          await updateDoc(userRef, { freeCredits: freeCredits - 1 });
-          
-          await addDoc(collection(db, 'cards'), {
-            userId: currentUser.uid,
-            userEmail: currentUser.email,
-            farmerData: JSON.stringify(farmerData),
-            farmerId: farmerData.farmerId,
-            mobileNumber: farmerData.mobile,
-            aadhaarNumber: farmerData.aadhaar,
-            transactionId: `free_credit_${Date.now()}`,
-            createdAt: serverTimestamp(),
-            expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-            isDeleted: false
-          });
-          await updateCounters(currentUser.uid, false);
-          setHasPaid(true);
-          onSuccess();
-        } catch (err) {
-          console.error("Error using free credit:", err);
-          alert("Failed to use free credit. Please try again.");
-        } finally {
-          setIsProcessingPayment(false);
-        }
-        return;
-      }
-    }
-
-    setIsProcessingPayment(true);
-
-    const TEST_MODE = true; // Use test mode to bypass Razorpay integration
-    if (TEST_MODE) {
-      setTimeout(async () => {
-        try {
-          const activeUser = auth.currentUser;
-          if (activeUser) {
-            await addDoc(collection(db, 'cards'), {
-              userId: activeUser.uid,
-              userEmail: activeUser.email,
-              farmerData: JSON.stringify(farmerData),
-              farmerId: farmerData.farmerId,
-              mobileNumber: farmerData.mobile,
-              aadhaarNumber: farmerData.aadhaar,
-              transactionId: `test_txn_${Date.now()}`,
-              createdAt: serverTimestamp(),
-              expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-              isDeleted: false
-            });
-            await updateCounters(activeUser.uid, true);
-          }
-          setHasPaid(true);
-          onSuccess();
-        } catch (err) {
-          console.error("Error saving card to database:", err);
-          alert("Payment was successful (Test Mode), but there was an error saving your card to the database.");
-          setHasPaid(true);
-          onSuccess();
-        } finally {
-          setIsProcessingPayment(false);
-        }
-      }, 1000);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount: 15 }), // 15 INR
-      });
-
-      const order = await response.json();
-
-      if (order.error) {
-        alert("Payment Error: " + order.error + "\n\nPlease configure Razorpay keys in AI Studio environment variables (VITE_RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET).");
-        setIsProcessingPayment(false);
-        return;
-      }
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Agri Record",
-        description: "Farmer Card Generation Fee",
-        order_id: order.id,
-        handler: async function (response: any) {
-          try {
-            // Save to Firestore
-            const activeUser = auth.currentUser;
-            if (activeUser) {
+    if (method === 'credit') {
+      if (currentUser) {
+        if (freeCredits > 0) {
+          if (window.confirm(`You have ${freeCredits} credit(s) available. Do you want to use 1 credit to generate this card?`)) {
+            setIsProcessingPayment(true);
+            try {
+              // Decrement by exactly 1 as required by security rules
+              const userRef = doc(db, 'users', currentUser.uid);
+              await updateDoc(userRef, { freeCredits: freeCredits - 1 });
+              
               await addDoc(collection(db, 'cards'), {
-                userId: activeUser.uid,
-                userEmail: activeUser.email,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
                 farmerData: JSON.stringify(farmerData),
                 farmerId: farmerData.farmerId,
                 mobileNumber: farmerData.mobile,
                 aadhaarNumber: farmerData.aadhaar,
-                transactionId: response.razorpay_payment_id || order.id,
+                transactionId: `credit_txn_${Date.now()}`,
                 createdAt: serverTimestamp(),
                 expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
                 isDeleted: false
               });
-              await updateCounters(activeUser.uid, true);
+              await updateCounters(currentUser.uid, true); // Count credit usage as revenue/paid card
+              setHasPaid(true);
+              onSuccess();
+            } catch (err) {
+              console.error("Error using credit:", err);
+              alert("Failed to use credit. Please try again.");
+            } finally {
+              setIsProcessingPayment(false);
+            }
+          }
+        } else {
+          setShowNoCreditsAlert(true);
+        }
+      }
+      return;
+    }
+
+    if (method === 'pay') {
+      setIsProcessingPayment(true);
+      const TEST_MODE = true; 
+      if (TEST_MODE) {
+        setTimeout(async () => {
+          try {
+            if (currentUser) {
+              await addDoc(collection(db, 'cards'), {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                farmerData: JSON.stringify(farmerData),
+                farmerId: farmerData.farmerId,
+                mobileNumber: farmerData.mobile,
+                aadhaarNumber: farmerData.aadhaar,
+                transactionId: `test_txn_${Date.now()}`,
+                createdAt: serverTimestamp(),
+                expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+                isDeleted: false
+              });
+              await updateCounters(currentUser.uid, true);
             }
             setHasPaid(true);
             onSuccess();
           } catch (err) {
             console.error("Error saving card to database:", err);
-            alert("Payment was successful, but there was an error saving your card to the database. Please contact support.");
+            alert("Payment successful (Test Mode), but error saving.");
             setHasPaid(true);
             onSuccess();
+          } finally {
+            setIsProcessingPayment(false);
           }
-        },
-        prefill: {
-          name: farmerData.nameEnglish || farmerData.nameHindi || "Farmer",
-          contact: "9999999999",
-        },
-        theme: {
-          color: "#064e3b"
-        }
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', function (response: any){
-        alert("Payment Failed. Please try again.");
-      });
-      rzp.open();
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      alert("Failed to initiate payment: " + (error.message || "Ensure the server is properly configured."));
-    } finally {
-      setIsProcessingPayment(false);
+        }, 1500);
+      }
     }
   };
 
-  const handlePrint = () => {
+  const handlePrintAction = (method: 'credit' | 'pay' = 'credit') => {
     handlePayment(() => {
       setShowPrintConfirm(true);
-    });
-  };
-
-  const handleSaveAsPDF = () => {
-    handlePayment(() => {
-      setShowPrintConfirm(true);
-    });
+    }, method);
   };
 
   const confirmPrint = () => {
@@ -268,7 +190,7 @@ const Home: React.FC = () => {
       {isPrintBlocked && (
         <div className="hidden print:flex fixed inset-0 z-[9999] bg-white items-center justify-center text-center p-10">
           <h1 className="text-3xl font-black text-[#064e3b]">
-            Please complete the payment of ₹15 to print or save the ID card.
+            You must use a credit to generate the card before printing.
           </h1>
         </div>
       )}
@@ -328,32 +250,56 @@ const Home: React.FC = () => {
                </button>
              )}
 
-             <button 
-                onClick={handlePrint}
-                title="Print"
-                disabled={isProcessingPayment}
-                className="group flex flex-col items-center justify-center bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95 disabled:opacity-50"
-             >
-               <div className="flex items-center gap-2">
-                 {isProcessingPayment ? <Loader2 className="w-3.5 h-3.5 md:w-4 h-4 animate-spin" /> : (hasPaid ? <Printer className="w-3.5 h-3.5 md:w-4 h-4" /> : <Lock className="w-3.5 h-3.5 md:w-4 h-4" />)}
-                 <span className="hidden md:inline text-xs uppercase tracking-wider">{hasPaid ? 'Print' : (freeCredits > 0 ? 'Use Credit' : 'Pay & Print')}</span>
-               </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-200 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free` : '₹15 Only'}</span>}
-             </button>
+             <div className="flex items-center gap-2">
+               {hasPaid || isAdmin ? (
+                 <>
+                   <button 
+                     onClick={() => handlePrintAction('credit')}
+                     title="Print"
+                     disabled={isProcessingPayment}
+                     className="group flex items-center justify-center bg-emerald-700/50 hover:bg-emerald-700 text-white font-bold px-3 py-2 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95 disabled:opacity-50"
+                   >
+                     <Printer className="w-4 h-4 md:w-5 md:h-5" />
+                     <span className="hidden md:inline ml-2 text-xs uppercase tracking-wider">Print</span>
+                   </button>
 
-             <button 
-                onClick={handleSaveAsPDF}
-                disabled={isProcessingPayment}
-                className="group flex flex-col items-center justify-center bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-2.5 py-1.5 md:px-6 md:py-2 rounded-lg md:rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95 disabled:opacity-50"
-             >
-               <div className="flex items-center gap-2">
-                 {isProcessingPayment ? <Loader2 className="w-3.5 h-3.5 md:w-5 h-5 animate-spin" /> : (hasPaid ? <Download className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" /> : <Lock className="w-3.5 h-3.5 md:w-5 h-5 group-hover:-translate-y-1 transition-transform" />)}
-                 <span className="text-[9px] md:text-base uppercase tracking-tight md:tracking-normal font-black">
-                   {hasPaid ? 'SAVE' : (freeCredits > 0 ? 'USE CREDIT' : 'PAY & SAVE')}
-                 </span>
-               </div>
-               {!hasPaid && <span className="text-[8px] md:text-[10px] text-emerald-800 mt-0.5">{freeCredits > 0 ? `${freeCredits} Free Available` : '₹15 Only'}</span>}
-             </button>
+                   <button 
+                     onClick={() => handlePrintAction('credit')}
+                     disabled={isProcessingPayment}
+                     className="group flex items-center justify-center bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-extrabold px-3 py-2 md:px-6 md:py-2 rounded-lg md:rounded-xl transition-all shadow-xl shadow-emerald-950/20 active:scale-95 disabled:opacity-50"
+                   >
+                     <Download className="w-4 h-4 md:w-5 md:h-5" />
+                     <span className="ml-2 text-[10px] md:text-base uppercase tracking-tight md:tracking-normal font-black">SAVE</span>
+                   </button>
+                 </>
+               ) : (
+                 <>
+                   <button 
+                     onClick={() => freeCredits > 0 ? handlePrintAction('credit') : setShowNoCreditsAlert(true)}
+                     disabled={isProcessingPayment}
+                     className="group flex flex-col items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-blue-500 active:scale-95 disabled:opacity-50"
+                   >
+                     <div className="flex items-center gap-1.5 md:gap-2">
+                       {isProcessingPayment ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" /> : <Lock className="w-3 h-3 md:w-4 md:h-4" />}
+                       <span className="hidden md:inline text-xs uppercase tracking-wider">{freeCredits > 0 ? 'Use Credit' : 'Get Credits'}</span>
+                     </div>
+                     <span className="text-[8px] md:text-[10px] text-blue-200 mt-0.5">{freeCredits > 0 ? `${freeCredits} Available` : 'WhatsApp'}</span>
+                   </button>
+
+                   <button 
+                     onClick={() => handlePrintAction('pay')}
+                     disabled={isProcessingPayment}
+                     className="group flex flex-col items-center justify-center bg-[#cddc39] hover:bg-[#dce775] text-[#064e3b] font-black px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                   >
+                     <div className="flex items-center gap-1.5 md:gap-2">
+                       {isProcessingPayment ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin" /> : <Lock className="w-3 h-3 md:w-4 md:h-4" />}
+                       <span className="text-[9px] md:text-xs uppercase tracking-wider">Pay ₹15</span>
+                     </div>
+                     <span className="text-[8px] md:text-[10px] text-[#064e3b]/70 mt-0.5">Test Mode</span>
+                   </button>
+                 </>
+               )}
+             </div>
           </div>
         </div>
       </header>
@@ -488,33 +434,38 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      {/* Payment Issue Alert Modal */}
-      {showPaymentAlert && (
+      {/* No Credits Alert Modal */}
+      {showNoCreditsAlert && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="bg-red-50 p-6 flex flex-col items-center text-center border-b border-red-100">
               <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
                 <AlertCircle className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-black text-slate-800 mb-2">Notice</h3>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Insufficient Credits</h3>
               <p className="text-slate-700 text-sm font-semibold mb-3">
-                इस वेबसाइट में अभी पेमेंट की तकनीकी समस्या चल रही है। अपने कार्ड जनरेट करने के लिए कृपया हमारी पुरानी वेबसाइट का उपयोग करें।
+                आपके पास कार्ड जनरेट करने के लिए पर्याप्त क्रेडिट नहीं हैं। कृपया व्हाट्सएप पर हमसे संपर्क करें ताकि आप क्रेडिट प्राप्त कर सकें।
               </p>
-              <p className="text-slate-600 text-sm">
-                This website is currently experiencing payment issues. Please use our old website to generate your cards.
+              <p className="text-slate-600 text-sm mb-4">
+                You don't have enough credits to generate a card. Please contact us on WhatsApp to recharge your credits.
               </p>
+              
+              <div className="mt-2 p-3 bg-white rounded-xl border border-red-100 w-full flex items-center justify-center gap-3 shadow-sm">
+                <Leaf className="w-5 h-5 text-emerald-600" />
+                <span className="font-bold text-slate-800">+91 70702 00199</span>
+              </div>
             </div>
             <div className="p-6 flex flex-col gap-3">
               <a
-                href="https://agri-record.vercel.app/"
+                href="https://wa.me/917070200199?text=I%20want%20to%20buy%20credits%20for%20Agri%20Record%20Card%20Generator"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold rounded-xl transition-colors shadow-sm"
               >
-                Go to agri-record.vercel.app
+                Contact via WhatsApp
               </a>
               <button
-                onClick={() => setShowPaymentAlert(false)}
+                onClick={() => setShowNoCreditsAlert(false)}
                 className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
               >
                 Close
