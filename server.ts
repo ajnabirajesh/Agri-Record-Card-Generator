@@ -4,19 +4,63 @@ import dotenv from "dotenv";
 import path from "path";
 import crypto from "crypto";
 import fs from "fs";
+import cron from "node-cron";
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+} from "firebase/firestore";
 
 dotenv.config({ path: ".env.local" });
 dotenv.config(); // fallback to .env
 
-const firebaseConfig = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'firebase-applet-config.json'), 'utf8'));
+const firebaseConfig = JSON.parse(
+  fs.readFileSync(
+    path.join(process.cwd(), "firebase-applet-config.json"),
+    "utf8",
+  ),
+);
 const firebaseServerApp = initializeApp(firebaseConfig, "serverInstance");
 const db = getFirestore(firebaseServerApp, firebaseConfig.firestoreDatabaseId);
+
+// Background job to clean up expired cards
+async function cleanupExpiredCards() {
+  try {
+    const cardsRef = collection(db, "cards");
+    const q = query(cardsRef, where("expireAt", "<", new Date()));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      console.log(`Found ${snapshot.size} expired cards. Deleting...`);
+      for (const document of snapshot.docs) {
+        await deleteDoc(document.ref);
+      }
+      console.log(`Successfully deleted ${snapshot.size} expired cards.`);
+    } else {
+      console.log("No expired cards found to delete.");
+    }
+  } catch (error) {
+    console.error("Error cleaning up expired cards:", error);
+  }
+}
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Run cleanup once on startup
+  cleanupExpiredCards();
+
+  // Schedule cleanup to run exactly at 11:55 PM IST every day
+  cron.schedule("55 23 * * *", cleanupExpiredCards, {
+    timezone: "Asia/Kolkata",
+  });
 
   app.use(express.json());
 
@@ -55,12 +99,14 @@ async function startServer() {
   app.post("/api/create-order", async (req, res) => {
     try {
       const amount = 15; // Hardcoded to 15 to prevent cached clients from paying 11
-      
+
       const key_id = process.env.VITE_RAZORPAY_KEY_ID;
       const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
       if (!key_id || !key_secret) {
-        return res.status(500).json({ error: "Razorpay keys are not configured" });
+        return res
+          .status(500)
+          .json({ error: "Razorpay keys are not configured" });
       }
 
       const instance = new Razorpay({
@@ -78,7 +124,12 @@ async function startServer() {
       res.json(order);
     } catch (error: any) {
       console.error("Error creating Razorpay order:", error);
-      res.status(500).json({ error: error.message || "Failed to create order", details: error });
+      res
+        .status(500)
+        .json({
+          error: error.message || "Failed to create order",
+          details: error,
+        });
     }
   });
 
@@ -91,10 +142,10 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*all", (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      res.sendFile(path.join(distPath, "index.html"));
     });
   }
 
