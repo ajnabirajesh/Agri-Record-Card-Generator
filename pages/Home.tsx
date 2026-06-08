@@ -374,9 +374,6 @@ const Home: React.FC = () => {
                 <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.5em] leading-relaxed">
                     © 2026 Agri Record Management System <span className="hidden md:inline mx-3 text-slate-200">|</span> Digital India
                 </p>
-                <p className="text-xs md:text-sm text-slate-500 font-medium max-w-2xl mx-auto px-4">
-                    Note: This website is a private service platform and is not affiliated with any government authority.
-                </p>
               </div>
 
               <div className="flex flex-col items-center">
