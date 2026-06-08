@@ -132,6 +132,41 @@ const Home: React.FC = () => {
     }
 
     setIsProcessingPayment(true);
+
+    const TEST_MODE = true; // Use test mode to bypass Razorpay integration
+    if (TEST_MODE) {
+      setTimeout(async () => {
+        try {
+          const activeUser = auth.currentUser;
+          if (activeUser) {
+            await addDoc(collection(db, 'cards'), {
+              userId: activeUser.uid,
+              userEmail: activeUser.email,
+              farmerData: JSON.stringify(farmerData),
+              farmerId: farmerData.farmerId,
+              mobileNumber: farmerData.mobile,
+              aadhaarNumber: farmerData.aadhaar,
+              transactionId: `test_txn_${Date.now()}`,
+              createdAt: serverTimestamp(),
+              expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+              isDeleted: false
+            });
+            await updateCounters(activeUser.uid, true);
+          }
+          setHasPaid(true);
+          onSuccess();
+        } catch (err) {
+          console.error("Error saving card to database:", err);
+          alert("Payment was successful (Test Mode), but there was an error saving your card to the database.");
+          setHasPaid(true);
+          onSuccess();
+        } finally {
+          setIsProcessingPayment(false);
+        }
+      }, 1000);
+      return;
+    }
+
     try {
       const response = await fetch('/api/create-order', {
         method: 'POST',
