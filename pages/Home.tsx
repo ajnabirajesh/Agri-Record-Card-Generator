@@ -81,6 +81,7 @@ const Home: React.FC = () => {
           aadhaarNumber: farmerData.aadhaar,
           transactionId: `admin_bypass_${Date.now()}`,
           createdAt: serverTimestamp(),
+          expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
           isDeleted: false
         });
         await updateCounters(currentUser.uid, false);
@@ -110,6 +111,7 @@ const Home: React.FC = () => {
             aadhaarNumber: farmerData.aadhaar,
             transactionId: `free_credit_${Date.now()}`,
             createdAt: serverTimestamp(),
+            expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
             isDeleted: false
           });
           await updateCounters(currentUser.uid, false);
@@ -164,6 +166,7 @@ const Home: React.FC = () => {
                 aadhaarNumber: farmerData.aadhaar,
                 transactionId: response.razorpay_payment_id || order.id,
                 createdAt: serverTimestamp(),
+                expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
                 isDeleted: false
               });
               await updateCounters(activeUser.uid, true);

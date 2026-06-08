@@ -82,6 +82,9 @@ const AdminCards: React.FC = () => {
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        const expireAt = data.expireAt?.toDate();
+        const isExpired = expireAt && expireAt < new Date();
+        
         let parsedFarmerData = {};
         try {
           parsedFarmerData = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData || '{}') : (data.farmerData || {});
@@ -96,7 +99,7 @@ const AdminCards: React.FC = () => {
           farmerData: parsedFarmerData,
           createdAt: data.createdAt?.toDate() || new Date(),
           transactionId: data.transactionId,
-          isDeleted: data.isDeleted || false
+          isDeleted: data.isDeleted || isExpired || false
         });
       });
       

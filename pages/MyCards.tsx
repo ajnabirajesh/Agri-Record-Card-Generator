@@ -43,7 +43,10 @@ const MyCards: React.FC = () => {
         
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          if (!data.isDeleted) {
+          const expireAt = data.expireAt?.toDate();
+          const isExpired = expireAt && expireAt < new Date();
+          
+          if (!data.isDeleted && !isExpired) {
             let parsedFarmerData = {};
             try {
               parsedFarmerData = typeof data.farmerData === 'string' ? JSON.parse(data.farmerData || '{}') : (data.farmerData || {});
