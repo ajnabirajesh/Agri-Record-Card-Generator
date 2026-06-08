@@ -35,6 +35,8 @@ const Home: React.FC = () => {
   const handlePayment = async (onSuccess: () => void) => {
     let currentUser = auth.currentUser;
     
+    // TEMPORARY: Removed login requirement to allow printing and payments without login
+    /*
     if (!currentUser) {
       alert("Please log in first to generate and save your card permanently.");
       try {
@@ -45,6 +47,7 @@ const Home: React.FC = () => {
         return;
       }
     }
+    */
 
     if (hasPaid) {
       onSuccess();
@@ -94,7 +97,7 @@ const Home: React.FC = () => {
       return;
     }
 
-    if (freeCredits > 0) {
+    if (currentUser && freeCredits > 0) {
       if (window.confirm(`You have ${freeCredits} free credit(s) available. Do you want to use 1 credit to generate this card for free?`)) {
         setIsProcessingPayment(true);
         try {
