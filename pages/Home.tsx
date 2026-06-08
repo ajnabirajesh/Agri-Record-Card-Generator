@@ -182,10 +182,6 @@ const Home: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-1 md:gap-3">
-             <a href="https://agri-record.vercel.app/" target="_blank" rel="noopener noreferrer" className="bg-red-500/20 hover:bg-red-500 text-red-100 hover:text-white font-bold p-1.5 md:px-3 md:py-1.5 rounded-lg md:rounded-xl transition-all border border-red-500/50 flex items-center gap-2">
-                 <AlertCircle className="w-3.5 h-3.5 md:w-4 h-4" />
-                 <span className="hidden lg:inline text-xs uppercase tracking-wider">Old Site</span>
-             </a>
              {user ? (
                <div className="flex items-center gap-2">
                  {isAdmin && (
