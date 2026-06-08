@@ -481,6 +481,12 @@ const Home: React.FC = () => {
               >
                 Go to agri-record.vercel.app
               </a>
+              <button
+                onClick={() => setShowPaymentAlert(false)}
+                className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
