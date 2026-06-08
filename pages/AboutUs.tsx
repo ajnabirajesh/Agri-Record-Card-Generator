@@ -12,10 +12,6 @@ const AboutUs: React.FC = () => {
         
         <h1 className="text-3xl md:text-4xl font-black text-slate-800 mb-6">About Us</h1>
         
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl mb-8 font-medium">
-          ⚠️ We are not a government website and are not affiliated with any government authority. We only provide private document preparation assistance services.
-        </div>
-        
         <div className="space-y-6 text-slate-600 leading-relaxed">
           <p>
             Welcome to <strong>Agri Record Management System</strong>, an initiative by Ajnabi Creation. We are dedicated to empowering farmers and agricultural workers through digital solutions.
