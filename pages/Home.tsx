@@ -14,6 +14,7 @@ const Home: React.FC = () => {
   const [hasPaid, setHasPaid] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
+  const [showPaymentAlert, setShowPaymentAlert] = useState(true);
   
   const { user, isAdmin, freeCredits, signIn, signOut } = useAuth();
   const navigate = useNavigate();
@@ -253,6 +254,10 @@ const Home: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-1 md:gap-3">
+             <a href="https://agri-record.vercel.app/" target="_blank" rel="noopener noreferrer" className="bg-red-500/20 hover:bg-red-500 text-red-100 hover:text-white font-bold p-1.5 md:px-3 md:py-1.5 rounded-lg md:rounded-xl transition-all border border-red-500/50 flex items-center gap-2">
+                 <AlertCircle className="w-3.5 h-3.5 md:w-4 h-4" />
+                 <span className="hidden lg:inline text-xs uppercase tracking-wider">Old Site</span>
+             </a>
              {user ? (
                <div className="flex items-center gap-2">
                  {isAdmin && (
@@ -445,6 +450,40 @@ const Home: React.FC = () => {
               >
                 <Printer className="w-4 h-4" />
                 Yes, Print
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Issue Alert Modal */}
+      {showPaymentAlert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-red-50 p-6 flex flex-col items-center text-center border-b border-red-100">
+              <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Notice</h3>
+              <p className="text-slate-600 text-sm font-medium">
+                Iss website me abhi payment issue chal raha hai. Aap apne cards generate karne ke liye purani website ka istemaal kar sakte hain.
+              </p>
+            </div>
+            <div className="p-6 flex flex-col gap-3">
+              <a
+                href="https://agri-record.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setShowPaymentAlert(false)}
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold rounded-xl transition-colors"
+              >
+                Go to agri-record.vercel.app
+              </a>
+              <button
+                onClick={() => setShowPaymentAlert(false)}
+                className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+              >
+                Close
               </button>
             </div>
           </div>
