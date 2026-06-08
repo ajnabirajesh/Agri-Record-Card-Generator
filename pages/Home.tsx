@@ -465,8 +465,11 @@ const Home: React.FC = () => {
                 <AlertCircle className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-black text-slate-800 mb-2">Notice</h3>
-              <p className="text-slate-600 text-sm font-medium">
-                Iss website me abhi payment issue chal raha hai. Aap apne cards generate karne ke liye purani website ka istemaal kar sakte hain.
+              <p className="text-slate-700 text-sm font-semibold mb-3">
+                इस वेबसाइट में अभी पेमेंट की तकनीकी समस्या चल रही है। अपने कार्ड जनरेट करने के लिए कृपया हमारी पुरानी वेबसाइट का उपयोग करें।
+              </p>
+              <p className="text-slate-600 text-sm">
+                This website is currently experiencing payment issues. Please use our old website to generate your cards.
               </p>
             </div>
             <div className="p-6 flex flex-col gap-3">
@@ -474,17 +477,10 @@ const Home: React.FC = () => {
                 href="https://agri-record.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setShowPaymentAlert(false)}
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold rounded-xl transition-colors"
+                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold rounded-xl transition-colors shadow-sm"
               >
                 Go to agri-record.vercel.app
               </a>
-              <button
-                onClick={() => setShowPaymentAlert(false)}
-                className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
