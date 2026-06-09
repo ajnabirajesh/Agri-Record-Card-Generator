@@ -1,33 +1,46 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
+import PageModalLayout from '../components/PageModalLayout';
 
 const AboutUs: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10">
-        <Link to="/" className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-800 font-semibold mb-8">
-          <ArrowLeft className="w-4 h-4" /> Back to Home
-        </Link>
+    <PageModalLayout 
+      icon={<HelpCircle className="w-6 h-6" />}
+      title="About Our Platform / हमारे बारे में"
+    >
+      <div className="text-sm md:text-base leading-relaxed text-slate-600 font-medium space-y-6">
+        <p>
+          <strong>Agri Record Management System</strong> is an innovative, dedicated digital formatting service engineered specifically for Indian farmers. We believe that physical documentation should be highly durable, digitally secure, and easy to carry.
+        </p>
         
-        <h1 className="text-3xl md:text-4xl font-black text-slate-800 mb-6">About Us</h1>
+        <div className="border-l-4 border-emerald-500 bg-emerald-50 p-4 text-emerald-800 italic rounded-r-lg font-medium">
+          "हमारा लक्ष्य देश के हर किसान को एक आधुनिक, सुरक्षित और आसानी से सत्यापन योग्य डिजिटल पहचान पत्र प्रदान करना है।"
+        </div>
         
-        <div className="space-y-6 text-slate-600 leading-relaxed">
-          <p>
-            Welcome to <strong>Agri Record Management System</strong>, an initiative by Ajnabi Creation. We are dedicated to empowering farmers and agricultural workers through digital solutions.
-          </p>
-          <p>
-            Our mission is to simplify the process of generating professional Farmer ID cards (Agri Records) with integrated QR codes and land details. We believe in the vision of Digital India and strive to bring technology to the grassroots level.
-          </p>
-          <p>
-            Founded by Raj Kumar Urf Rajesh Yadav in Supaul, Bihar, Ajnabi Creation has been at the forefront of creating accessible and user-friendly tools for the agricultural community.
-          </p>
-          <p>
-            With our platform, generating a secure and standardized Farmer ID card is just a few clicks away. We ensure data privacy and provide a seamless experience for our users.
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          <div className="border border-slate-100 rounded-2xl p-6 bg-white shadow-sm">
+            <h3 className="font-bold text-slate-800 text-sm md:text-base mb-4 uppercase tracking-wide">
+              Key Objectives <span className="text-emerald-600">/ मुख्य उद्देश्य</span>
+            </h3>
+            <ul className="space-y-2 text-xs md:text-sm text-slate-600 list-disc list-outside ml-4">
+              <li>Generate high-fidelity pocket identity cards.</li>
+              <li>Secure QR codes for quick instant verification.</li>
+              <li>Visual management of verified land and record details.</li>
+              <li>Local-first security ensuring full data privacy.</li>
+            </ul>
+          </div>
+          
+          <div className="border border-slate-100 rounded-2xl p-6 bg-white shadow-sm">
+            <h3 className="font-bold text-slate-800 text-sm md:text-base mb-4 uppercase tracking-wide">
+              Technology Stack <span className="text-emerald-600">/ तकनीकी संरचना</span>
+            </h3>
+            <p className="text-xs md:text-sm leading-relaxed text-slate-600">
+              Designed with high performance and zero external exposure. Your personal details, photos, and official documents are processed directly in your local session, securing your identity from leaks.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </PageModalLayout>
   );
 };
 

@@ -329,6 +329,7 @@ const Home: React.FC = () => {
                   <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-8 text-xs md:text-sm font-semibold text-slate-500">
                       <Link to="/about" className="hover:text-emerald-600 transition-colors">About Us</Link>
                       <Link to="/contact" className="hover:text-emerald-600 transition-colors">Contact Us</Link>
+                      <Link to="/disclaimer" className="hover:text-emerald-600 transition-colors">Disclaimer</Link>
                       <Link to="/privacy-policy" className="hover:text-emerald-600 transition-colors">Privacy Policy</Link>
                       <Link to="/terms" className="hover:text-emerald-600 transition-colors">Terms & Conditions</Link>
                       <Link to="/refund-policy" className="hover:text-emerald-600 transition-colors">Refund Policy</Link>
@@ -363,7 +364,14 @@ const Home: React.FC = () => {
                   </div>
               </div>
            </div>
-           <div className="mt-12 pt-8 border-t border-slate-200/20 text-center text-slate-400 text-sm flex flex-col items-center gap-2">
+           
+           <div className="mt-8 mb-4 p-4 md:p-6 bg-slate-50 border border-slate-100 rounded-2xl max-w-4xl mx-auto text-center">
+             <p className="text-slate-600 text-xs md:text-sm font-medium leading-relaxed">
+               <strong>महत्वपूर्ण सूचना:</strong> यह एक निजी (Private) प्लेटफॉर्म है। इसका किसी भी सरकारी विभाग, संस्था या सरकारी योजना से कोई संबंध नहीं है। इस वेबसाइट द्वारा कोई सरकारी प्रमाणपत्र, पहचान पत्र या आधिकारिक दस्तावेज जारी नहीं किया जाता।
+             </p>
+           </div>
+           
+           <div className="mt-8 pt-8 border-t border-slate-200/20 text-center text-slate-400 text-sm flex flex-col items-center gap-2">
              <p>© {new Date().getFullYear()} Agri Record. All rights reserved.</p>
              <Link to="/admin" className="text-slate-500 hover:text-emerald-400 transition-colors font-medium">Admin Access</Link>
            </div>
