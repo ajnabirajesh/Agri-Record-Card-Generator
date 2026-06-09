@@ -481,26 +481,27 @@ const Home: React.FC = () => {
       {showSiteAlert && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="bg-red-50 p-6 flex flex-col items-center text-center border-b border-red-100">
-              <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
+            <div className="bg-amber-50 p-6 flex flex-col items-center text-center border-b border-amber-100">
+              <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
                 <AlertCircle className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-black text-slate-800 mb-2">Important Notice</h3>
-              <p className="text-slate-700 text-sm font-semibold mb-3">
-                इस वेबसाइट पर पेमेंट सिस्टम काम नहीं कर रहा है, कृपया कार्ड जनरेट करने के लिए हमारी नई वेबसाइट का उपयोग करें।
+              <h3 className="text-xl font-black text-amber-600 mb-2">Important Notice</h3>
+              <p className="text-slate-700 text-base font-bold mb-3">
+                Payment Gateway is currently unavailable.
               </p>
-              <p className="text-slate-600 text-sm">
-                The payment system is not working on this website. Please visit our new website to generate your cards.
+              <p className="text-slate-600 text-sm font-medium leading-relaxed">
+                पेमेंट सिस्टम अभी काम नहीं कर रहा है। कृपया नया कार्ड जनरेट करने के लिए व्हाट्सएप पर संपर्क करके क्रेडिट खरीदें।
               </p>
             </div>
             <div className="p-6 flex flex-col gap-3">
               <a
-                href="https://agri-record.vercel.app/"
+                href="https://wa.me/917070200199?text=Hi, I want to purchase credits for Agri Record."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold rounded-xl transition-colors shadow-sm cursor-pointer block"
+                className="w-full py-3 px-4 bg-[#25D366] hover:bg-[#128C7E] text-white text-center font-bold rounded-xl transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-2"
               >
-                Go to New Website
+                <div className="bg-white/20 p-1 rounded-full"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+                WhatsApp on 7070200199
               </a>
               <button
                 onClick={() => setShowSiteAlert(false)}
