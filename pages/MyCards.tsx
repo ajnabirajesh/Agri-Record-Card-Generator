@@ -117,6 +117,21 @@ const MyCards: React.FC = () => {
             </Link>
             <h1 className="text-lg md:text-xl font-black tracking-tight">My Saved Cards</h1>
           </div>
+          {user && (
+            <div className="flex items-center gap-2 md:gap-3 bg-emerald-800/50 py-1.5 md:py-2 px-3 md:px-4 rounded-full border border-emerald-700/50 max-w-[50%] md:max-w-none">
+              {user.photoURL ? (
+                <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-emerald-500 shrink-0" />
+              ) : (
+                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-white border border-emerald-500 text-xs md:text-sm shrink-0">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              )}
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs md:text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</span>
+                <span className="text-[10px] md:text-xs text-emerald-200/80 leading-tight truncate">{user.email}</span>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
