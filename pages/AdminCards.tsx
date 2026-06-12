@@ -82,8 +82,6 @@ const AdminCards: React.FC = () => {
       
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const expireAt = data.expireAt?.toDate();
-        const isExpired = expireAt && expireAt < new Date();
         
         let parsedFarmerData = {};
         try {
@@ -99,7 +97,7 @@ const AdminCards: React.FC = () => {
           farmerData: parsedFarmerData,
           createdAt: data.createdAt?.toDate() || new Date(),
           transactionId: data.transactionId,
-          isDeleted: data.isDeleted || isExpired || false
+          isDeleted: data.isDeleted || false
         });
       });
       

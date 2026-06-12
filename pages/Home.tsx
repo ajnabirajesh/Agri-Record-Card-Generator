@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FarmerData, INITIAL_FARMER_DATA } from '../types';
 import FarmerForm from '../components/FarmerForm';
 import CardPreview from '../components/CardPreview';
+import FAQ from '../components/FAQ';
 import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
@@ -81,7 +82,6 @@ const Home: React.FC = () => {
           aadhaarNumber: farmerData.aadhaar,
           transactionId: `admin_bypass_${Date.now()}`,
           createdAt: serverTimestamp(),
-          expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
           isDeleted: false
         });
         if (currentUser) {
@@ -115,7 +115,6 @@ const Home: React.FC = () => {
                 aadhaarNumber: farmerData.aadhaar,
                 transactionId: `credit_txn_${Date.now()}`,
                 createdAt: serverTimestamp(),
-                expireAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
                 isDeleted: false
               });
               await updateCounters(currentUser.uid, true); // Count credit usage as revenue/paid card
@@ -314,6 +313,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* FOOTER SECTION - RESTORED CREDITS PER REQUEST */}
       <footer className="no-print bg-white border-t py-12 md:py-20 mt-10">

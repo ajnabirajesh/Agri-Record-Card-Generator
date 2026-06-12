@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import path from "path";
 import crypto from "crypto";
 import fs from "fs";
-import cron from "node-cron";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -29,38 +28,9 @@ const firebaseConfig = JSON.parse(
 const firebaseServerApp = initializeApp(firebaseConfig, "serverInstance");
 const db = getFirestore(firebaseServerApp, firebaseConfig.firestoreDatabaseId);
 
-// Background job to clean up expired cards
-async function cleanupExpiredCards() {
-  try {
-    const cardsRef = collection(db, "cards");
-    const q = query(cardsRef, where("expireAt", "<", new Date()));
-    const snapshot = await getDocs(q);
-
-    if (!snapshot.empty) {
-      console.log(`Found ${snapshot.size} expired cards. Deleting...`);
-      for (const document of snapshot.docs) {
-        await deleteDoc(document.ref);
-      }
-      console.log(`Successfully deleted ${snapshot.size} expired cards.`);
-    } else {
-      console.log("No expired cards found to delete.");
-    }
-  } catch (error) {
-    console.error("Error cleaning up expired cards:", error);
-  }
-}
-
 async function startServer() {
   const app = express();
   const PORT = 3000;
-
-  // Run cleanup once on startup
-  cleanupExpiredCards();
-
-  // Schedule cleanup to run exactly at 11:55 PM IST every day
-  cron.schedule("55 23 * * *", cleanupExpiredCards, {
-    timezone: "Asia/Kolkata",
-  });
 
   app.use(express.json());
 
