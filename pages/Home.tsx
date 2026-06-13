@@ -150,7 +150,7 @@ const Home: React.FC = () => {
     setShowPrintConfirm(false);
     setTimeout(() => {
       window.print();
-    }, 100);
+    }, 300); // Delay slightly so the modal finishes closing before the print dialog opens
   };
 
   const isPrintBlocked = !hasPaid && !isAdmin;

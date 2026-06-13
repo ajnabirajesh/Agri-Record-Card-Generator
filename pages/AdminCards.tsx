@@ -170,25 +170,41 @@ const AdminCards: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const handleAfterPrint = () => {
-      setPrintingCardId(null);
-    };
-    window.addEventListener('afterprint', handleAfterPrint);
-    return () => window.removeEventListener('afterprint', handleAfterPrint);
-  }, []);
-
   const handlePrint = (cardId: string) => {
     setPrintingCardId(cardId);
     setTimeout(() => {
       window.print();
-    }, 700);
+    }, 500);
   };
 
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-purple-600 animate-spin" />
+      </div>
+    );
+  }
+
+  if (printingCardId) {
+    const cardToPrint = cards.find(c => c.id === printingCardId) || cards[0];
+    return (
+      <div className="min-h-screen bg-slate-50 p-4 md:p-8 flex flex-col items-center">
+        <div className="w-full max-w-2xl flex justify-between items-center mb-8 no-print">
+          <h2 className="text-xl font-bold text-slate-800">Print Preview</h2>
+          <button 
+            onClick={() => setPrintingCardId(null)} 
+            className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold transition-colors"
+          >
+            Done / Close
+          </button>
+        </div>
+        <CardPreview data={cardToPrint?.farmerData} />
+        
+        <div className="mt-8 no-print p-4 bg-blue-50 text-blue-800 rounded-xl text-sm max-w-2xl w-full">
+          <p className="font-bold mb-1">Having trouble printing?</p>
+          <p>If the preview is blank, please ensure you allow background graphics in your print settings. You can click the "Done / Close" button to go back.</p>
+          <button onClick={() => window.print()} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">Print Again</button>
+        </div>
       </div>
     );
   }
@@ -335,11 +351,10 @@ const AdminCards: React.FC = () => {
   const totalCreditCards = cards.filter(c => !c.transactionId || !c.transactionId.startsWith('admin_bypass')).length;
 
   return (
-    <>
-      <div className={`min-h-screen bg-[#f8fafc] flex flex-col font-sans ${printingCardId ? 'print:hidden' : ''}`}>
-        <header className="no-print sticky top-0 z-50 bg-purple-800 text-white shadow-xl border-b border-purple-900">
-          <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-[#f8fafc] flex flex-col font-sans">
+      <header className="no-print sticky top-0 z-50 bg-purple-800 text-white shadow-xl border-b border-purple-900">
+        <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <Link to="/" className="p-2 hover:bg-purple-700 rounded-full transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
@@ -655,15 +670,6 @@ const AdminCards: React.FC = () => {
         )}
       </main>
     </div>
-      {printingCardId && (
-        <div className="fixed inset-0 z-[99999] bg-white w-full h-full overflow-auto flex flex-col items-center pt-8 print:static print:h-auto print:overflow-visible print:pt-0">
-          <div className="w-full max-w-2xl px-4 flex justify-end mb-4 no-print">
-            <button onClick={() => setPrintingCardId(null)} className="px-6 py-2 bg-slate-200 text-slate-800 rounded-lg font-bold">Close Preview</button>
-          </div>
-          <CardPreview data={cards.find(c => c.id === printingCardId)?.farmerData || cards[0]?.farmerData} />
-        </div>
-      )}
-    </>
   );
 };
 
