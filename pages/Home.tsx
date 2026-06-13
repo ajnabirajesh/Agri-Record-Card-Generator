@@ -6,6 +6,12 @@ import CardPreview from '../components/CardPreview';
 import FAQ from '../components/FAQ';
 import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import AboutUs from './AboutUs';
+import ContactUs from './ContactUs';
+import Disclaimer from './Disclaimer';
+import PrivacyPolicy from './PrivacyPolicy';
+import RefundPolicy from './RefundPolicy';
+import TermsConditions from './TermsConditions';
 import { useAuth } from '../AuthContext';
 import { auth, db } from '../firebase';
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment, setDoc, getDoc } from 'firebase/firestore';
@@ -17,7 +23,7 @@ const Home: React.FC = () => {
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
   const [showNoCreditsAlert, setShowNoCreditsAlert] = useState(false);
   const [showUseCreditAlert, setShowUseCreditAlert] = useState(false);
-  const [showSiteAlert, setShowSiteAlert] = useState(true);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
   
   const { user, isAdmin, freeCredits, signIn, signOut } = useAuth();
   const navigate = useNavigate();
@@ -329,12 +335,12 @@ const Home: React.FC = () => {
 
               <div className="flex flex-col items-center">
                   <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-8 text-xs md:text-sm font-semibold text-slate-500">
-                      <Link to="/about" className="hover:text-emerald-600 transition-colors">About Us</Link>
-                      <Link to="/contact" className="hover:text-emerald-600 transition-colors">Contact Us</Link>
-                      <Link to="/disclaimer" className="hover:text-emerald-600 transition-colors">Disclaimer</Link>
-                      <Link to="/privacy-policy" className="hover:text-emerald-600 transition-colors">Privacy Policy</Link>
-                      <Link to="/terms" className="hover:text-emerald-600 transition-colors">Terms & Conditions</Link>
-                      <Link to="/refund-policy" className="hover:text-emerald-600 transition-colors">Refund Policy</Link>
+                      <button onClick={() => setActiveModal('about')} className="hover:text-emerald-600 transition-colors">About Us</button>
+                      <button onClick={() => setActiveModal('contact')} className="hover:text-emerald-600 transition-colors">Contact Us</button>
+                      <button onClick={() => setActiveModal('disclaimer')} className="hover:text-emerald-600 transition-colors">Disclaimer</button>
+                      <button onClick={() => setActiveModal('privacy')} className="hover:text-emerald-600 transition-colors">Privacy Policy</button>
+                      <button onClick={() => setActiveModal('terms')} className="hover:text-emerald-600 transition-colors">Terms & Conditions</button>
+                      <button onClick={() => setActiveModal('refund')} className="hover:text-emerald-600 transition-colors">Refund Policy</button>
                   </div>
 
                   <div className="flex items-center justify-center gap-3 mb-6">
@@ -480,41 +486,12 @@ const Home: React.FC = () => {
         </div>
       )}
       {/* Site Alert Modal */}
-      {showSiteAlert && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 no-print">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="bg-amber-50 p-6 flex flex-col items-center text-center border-b border-amber-100">
-              <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
-                <AlertCircle className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-black text-amber-600 mb-2">Important Notice</h3>
-              <p className="text-slate-700 text-base font-bold mb-3">
-                Payment Gateway is currently unavailable.
-              </p>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">
-                पेमेंट सिस्टम अभी काम नहीं कर रहा है। कृपया नया कार्ड जनरेट करने के लिए व्हाट्सएप पर संपर्क करके क्रेडिट खरीदें।
-              </p>
-            </div>
-            <div className="p-6 flex flex-col gap-3">
-              <a
-                href="https://wa.me/917070200199?text=Hi, I want to purchase credits for Agri Record."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 px-4 bg-[#25D366] hover:bg-[#128C7E] text-white text-center font-bold rounded-xl transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-2"
-              >
-                <div className="bg-white/20 p-1 rounded-full"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className="css-i6dzq1"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
-                WhatsApp on 7070200199
-              </a>
-              <button
-                onClick={() => setShowSiteAlert(false)}
-                className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeModal === 'about' && <AboutUs onClose={() => setActiveModal(null)} />}
+      {activeModal === 'contact' && <ContactUs onClose={() => setActiveModal(null)} />}
+      {activeModal === 'disclaimer' && <Disclaimer onClose={() => setActiveModal(null)} />}
+      {activeModal === 'privacy' && <PrivacyPolicy onClose={() => setActiveModal(null)} />}
+      {activeModal === 'terms' && <TermsConditions onClose={() => setActiveModal(null)} />}
+      {activeModal === 'refund' && <RefundPolicy onClose={() => setActiveModal(null)} />}
     </div>
   );
 };

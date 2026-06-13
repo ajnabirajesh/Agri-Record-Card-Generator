@@ -7,19 +7,23 @@ interface PageModalLayoutProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
+  onClose?: () => void;
 }
 
-const PageModalLayout: React.FC<PageModalLayoutProps> = ({ icon, title, subtitle = "AGRI RECORD MANAGEMENT SYSTEM", children }) => {
+const PageModalLayout: React.FC<PageModalLayoutProps> = ({ icon, title, subtitle = "AGRI RECORD MANAGEMENT SYSTEM", children, onClose }) => {
   const navigate = useNavigate();
   
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate('/');
+    }
+  };
+  
   return (
-    <div className="min-h-screen bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 selection:bg-emerald-100 selection:text-emerald-900 font-sans relative">
-      {/* Background elements just to make it feel like an overlay over the app */}
-      <div className="absolute inset-0 z-[-1] overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-64 bg-emerald-800/20"></div>
-      </div>
-
-      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 selection:bg-emerald-100 selection:text-emerald-900 font-sans">
+      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-300 relative">
         
         {/* Header content */}
         <div className="p-6 md:p-8 flex items-start justify-between relative">
@@ -36,7 +40,7 @@ const PageModalLayout: React.FC<PageModalLayoutProps> = ({ icon, title, subtitle
           </div>
           
           <button 
-            onClick={() => navigate('/')}
+            onClick={handleClose}
             className="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-100 rounded-full transition-colors absolute top-6 right-6"
           >
             <X className="w-5 h-5" />
@@ -61,7 +65,7 @@ const PageModalLayout: React.FC<PageModalLayoutProps> = ({ icon, title, subtitle
           </div>
           
           <button 
-            onClick={() => navigate('/')}
+            onClick={handleClose}
             className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs md:text-sm font-bold py-2.5 px-6 rounded-full transition-colors"
           >
             CLOSE / बंद करें

@@ -2,11 +2,12 @@ import React from 'react';
 import { ShieldCheck } from 'lucide-react';
 import PageModalLayout from '../components/PageModalLayout';
 
-const PrivacyPolicy: React.FC = () => {
+const PrivacyPolicy: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
     <PageModalLayout 
       icon={<ShieldCheck className="w-6 h-6" />}
       title="Privacy Policy / गोपनीयता नीति"
+      onClose={onClose}
     >
       <div className="space-y-6 text-sm md:text-base text-slate-600 font-medium">
         <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">

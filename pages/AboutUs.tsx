@@ -2,11 +2,12 @@ import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import PageModalLayout from '../components/PageModalLayout';
 
-const AboutUs: React.FC = () => {
+const AboutUs: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
     <PageModalLayout 
       icon={<HelpCircle className="w-6 h-6" />}
       title="About Our Platform / हमारे बारे में"
+      onClose={onClose}
     >
       <div className="text-sm md:text-base leading-relaxed text-slate-600 font-medium space-y-6">
         <p>

@@ -2,11 +2,12 @@ import React from 'react';
 import { FileText } from 'lucide-react';
 import PageModalLayout from '../components/PageModalLayout';
 
-const TermsConditions: React.FC = () => {
+const TermsConditions: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
     <PageModalLayout 
       icon={<FileText className="w-6 h-6" />}
       title="Terms & Conditions / नियम व शर्तें"
+      onClose={onClose}
     >
       <div className="space-y-6 text-sm md:text-base text-slate-600 font-medium">
         <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">

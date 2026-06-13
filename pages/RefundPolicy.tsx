@@ -2,11 +2,12 @@ import React from 'react';
 import { Banknote } from 'lucide-react';
 import PageModalLayout from '../components/PageModalLayout';
 
-const RefundPolicy: React.FC = () => {
+const RefundPolicy: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
     <PageModalLayout 
       icon={<Banknote className="w-6 h-6" />}
       title="Refund Policy / धनवापसी नीति"
+      onClose={onClose}
     >
       <div className="space-y-6 text-sm md:text-base text-slate-600 font-medium">
         <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">

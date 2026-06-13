@@ -2,11 +2,12 @@ import React from 'react';
 import { Mail, Phone, MapPin, Contact } from 'lucide-react';
 import PageModalLayout from '../components/PageModalLayout';
 
-const ContactUs: React.FC = () => {
+const ContactUs: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
   return (
     <PageModalLayout 
       icon={<Contact className="w-6 h-6" />}
       title="Contact Us / संपर्क करें"
+      onClose={onClose}
     >
       <div className="space-y-6 text-sm md:text-base text-slate-600 font-medium">
         <p>

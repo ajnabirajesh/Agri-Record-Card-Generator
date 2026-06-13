@@ -37,38 +37,38 @@ const FAQ: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-12 px-4 no-print">
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center p-3 bg-emerald-100 text-emerald-600 rounded-full mb-4">
-          <HelpCircle className="w-6 h-6" />
+    <div className="w-full max-w-2xl mx-auto py-8 px-4 no-print">
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center p-2 bg-emerald-100 text-emerald-600 rounded-full mb-3">
+          <HelpCircle className="w-5 h-5" />
         </div>
-        <h2 className="text-2xl md:text-3xl font-black text-slate-800 mb-4">Frequently Asked Questions</h2>
-        <p className="text-slate-600 font-medium max-w-2xl mx-auto">
+        <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-2">Frequently Asked Questions</h2>
+        <p className="text-slate-600 font-medium text-sm md:text-base max-w-xl mx-auto">
           Quick answers to common questions about using the Agri Record generator and getting support.
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {faqs.map((faq, index) => (
           <div 
             key={index} 
-            className={`border rounded-2xl overflow-hidden transition-all duration-200 ${openIndex === index ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+            className={`border rounded-xl overflow-hidden transition-all duration-200 ${openIndex === index ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
           >
             <button
-              className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
+              className="w-full px-4 py-3 flex items-center justify-between text-left focus:outline-none"
               onClick={() => toggleFAQ(index)}
             >
-              <span className={`font-bold pr-4 ${openIndex === index ? 'text-emerald-700' : 'text-slate-800'}`}>
+              <span className={`font-bold text-sm md:text-base pr-4 ${openIndex === index ? 'text-emerald-700' : 'text-slate-800'}`}>
                 {faq.question}
               </span>
               <div className={`shrink-0 transition-transform duration-200 ${openIndex === index ? 'rotate-180 text-emerald-600' : 'text-slate-400'}`}>
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-4 h-4" />
               </div>
             </button>
             <div 
-              className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'pb-5 opacity-100 max-h-40' : 'max-h-0 opacity-0 pb-0'}`}
+              className={`px-4 overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'pb-4 opacity-100 max-h-40' : 'max-h-0 opacity-0 pb-0'}`}
             >
-              <p className="text-slate-600 leading-relaxed text-sm md:text-base">
+              <p className="text-slate-600 leading-relaxed text-xs md:text-sm">
                 {faq.answer}
               </p>
             </div>
