@@ -170,14 +170,19 @@ const AdminCards: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setPrintingCardId(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
+
   const handlePrint = (cardId: string) => {
     setPrintingCardId(cardId);
     setTimeout(() => {
       window.print();
-      setTimeout(() => {
-        setPrintingCardId(null);
-      }, 500);
-    }, 250);
+    }, 700);
   };
 
   if (authLoading || loading) {
@@ -651,8 +656,11 @@ const AdminCards: React.FC = () => {
       </main>
     </div>
       {printingCardId && (
-        <div className="hidden print:flex flex-col items-center justify-start bg-white w-full h-full absolute inset-0 m-0 p-0 z-[9999]" style={{ margin: 0, padding: 0 }}>
-          <CardPreview data={cards.find(c => c.id === printingCardId)?.farmerData || cards[0]?.farmerData} forceFullScale={true} />
+        <div className="fixed inset-0 z-[99999] bg-white w-full h-full overflow-auto flex flex-col items-center pt-8 print:static print:h-auto print:overflow-visible print:pt-0">
+          <div className="w-full max-w-2xl px-4 flex justify-end mb-4 no-print">
+            <button onClick={() => setPrintingCardId(null)} className="px-6 py-2 bg-slate-200 text-slate-800 rounded-lg font-bold">Close Preview</button>
+          </div>
+          <CardPreview data={cards.find(c => c.id === printingCardId)?.farmerData || cards[0]?.farmerData} />
         </div>
       )}
     </>
