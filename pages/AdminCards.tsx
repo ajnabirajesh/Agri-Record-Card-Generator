@@ -188,7 +188,7 @@ const AdminCards: React.FC = () => {
   if (printingCardId) {
     const cardToPrint = cards.find(c => c.id === printingCardId) || cards[0];
     return (
-      <div className="min-h-screen bg-slate-50 p-4 md:p-8 flex flex-col items-center">
+      <div className="min-h-screen bg-slate-50 p-4 md:p-8 flex flex-col items-center print:min-h-0 print:h-fit print:p-0 print:bg-white print:overflow-hidden">
         <div className="w-full max-w-2xl flex justify-between items-center mb-8 no-print">
           <h2 className="text-xl font-bold text-slate-800">Print Preview</h2>
           <button 
