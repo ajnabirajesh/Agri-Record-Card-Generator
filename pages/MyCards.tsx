@@ -76,8 +76,10 @@ const MyCards: React.FC = () => {
     setPrintingCardId(cardId);
     setTimeout(() => {
       window.print();
-      setPrintingCardId(null);
-    }, 100);
+      setTimeout(() => {
+        setPrintingCardId(null);
+      }, 500);
+    }, 250);
   };
 
   const filteredCards = cards.filter(card => {
@@ -96,20 +98,10 @@ const MyCards: React.FC = () => {
     );
   }
 
-  if (printingCardId) {
-    const cardToPrint = cards.find(c => c.id === printingCardId);
-    if (cardToPrint) {
-      return (
-        <div className="bg-white min-h-screen flex items-center justify-center p-8">
-          <CardPreview data={cardToPrint.farmerData} />
-        </div>
-      );
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <header className="no-print sticky top-0 z-50 bg-[#064e3b] text-white shadow-xl border-b border-emerald-800">
+    <>
+      <div className={`min-h-screen bg-[#f8fafc] flex flex-col ${printingCardId ? 'print:hidden' : ''}`}>
+        <header className="no-print sticky top-0 z-50 bg-[#064e3b] text-white shadow-xl border-b border-emerald-800">
         <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="p-2 hover:bg-emerald-800 rounded-full transition-colors">
@@ -236,6 +228,12 @@ const MyCards: React.FC = () => {
         )}
       </main>
     </div>
+      {printingCardId && (
+        <div className="hidden print:flex flex-col items-center justify-start bg-white w-full h-full absolute inset-0 m-0 p-0 z-[9999]" style={{ margin: 0, padding: 0 }}>
+          <CardPreview data={cards.find(c => c.id === printingCardId)?.farmerData || cards[0].farmerData} forceFullScale={true} />
+        </div>
+      )}
+    </>
   );
 };
 
