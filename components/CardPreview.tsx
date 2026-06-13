@@ -6,6 +6,7 @@ import { Sprout, Leaf, ShieldCheck } from "lucide-react";
 interface CardPreviewProps {
   data: FarmerData;
   forceFullScale?: boolean; // Prop to override responsive scaling
+  showWatermark?: boolean; // Prop to show a 'Live Preview' watermark
 }
 
 interface ScaledCardProps {
@@ -43,9 +44,21 @@ const ScaledCard: React.FC<ScaledCardProps> = ({
 const CardPreview: React.FC<CardPreviewProps> = ({
   data,
   forceFullScale = false,
+  showWatermark = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  
+  const renderWatermark = () => {
+    if (!showWatermark) return null;
+    return (
+      <div className="absolute inset-0 z-[100] pointer-events-none flex items-center justify-center overflow-hidden no-print select-none bg-white/10 backdrop-blur-[0.5px]">
+        <div className="transform -rotate-12 text-slate-800/40 font-black text-xl whitespace-nowrap tracking-wider leading-none">
+          LIVE PREVIEW • DO NOT SCREENSHOT • INVALID ID
+        </div>
+      </div>
+    );
+  };
 
   // Government Logo URLs
   const biharLogoUrl =
@@ -574,6 +587,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       {/* Front Side */}
       <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 relative card-pattern select-none">
+          {renderWatermark()}
           {/* Transparent Watermark */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
             <img
@@ -776,6 +790,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({
       {/* Back Side */}
       <ScaledCard forceFullScale={forceFullScale} scale={currentScale}>
         <div className="card-ratio bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-xl overflow-hidden border border-gray-200 p-6 flex flex-col relative card-pattern select-none">
+          {renderWatermark()}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
             <img
               src={logoUrl}

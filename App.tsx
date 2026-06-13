@@ -16,9 +16,6 @@ import WhatsAppButton from './components/WhatsAppButton';
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <div className="bg-amber-50 text-amber-800 text-xs md:text-sm font-bold text-center px-4 py-2 border-b border-amber-200 no-print flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2">
-        <span className="text-amber-600">⚠️ Disclaimer:</span> This website is a private design and document generation platform. It is not affiliated with any Government Department.
-      </div>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />

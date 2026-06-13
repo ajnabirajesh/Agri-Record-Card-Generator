@@ -287,7 +287,7 @@ const Home: React.FC = () => {
             </div>
             
             <div id="preview-area" className={`flex-1 w-full min-h-0 ${isPrintBlocked ? 'print:hidden' : ''}`}>
-                <CardPreview data={farmerData} />
+                <CardPreview data={farmerData} showWatermark={true} />
             </div>
             
         </div>
