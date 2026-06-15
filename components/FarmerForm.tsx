@@ -33,7 +33,8 @@ import {
   CheckCircle2,
   XCircle,
   Eye,
-  FileCheck
+  FileCheck,
+  Upload
 } from "lucide-react";
 import { useAuth } from "../AuthContext";
 import { db } from "../firebase";
@@ -611,26 +612,42 @@ const FarmerForm: React.FC<FarmerFormProps> = ({ data, onChange }) => {
           </div>
 
           <div className="space-y-2 col-span-1 md:col-span-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">
               Profile Photo
             </label>
-            <div className="flex items-center gap-4 p-3 border-2 border-dashed border-emerald-100 rounded-xl bg-emerald-50/30">
-              <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border shadow-sm overflow-hidden">
-                {data.photoUrl ? (
-                  <img
-                    src={data.photoUrl}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Camera className="text-slate-300" />
-                )}
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="text-xs text-slate-500"
-              />
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center gap-4 p-3 border-2 border-dashed border-emerald-200 rounded-xl bg-emerald-50/30 hover:bg-emerald-50 transition-colors cursor-pointer group">
+                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-emerald-100 shadow-sm overflow-hidden shrink-0 group-hover:border-emerald-300 group-hover:shadow transition-all relative">
+                  {data.photoUrl ? (
+                    <>
+                      <img
+                        src={data.photoUrl}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Upload className="w-4 h-4 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <Camera className="w-5 h-5 text-emerald-400 group-hover:text-emerald-600 group-hover:scale-110 transition-all" />
+                  )}
+                </div>
+                <div className="flex flex-col justify-center">
+                  <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700 transition-colors">
+                    {data.photoUrl ? 'Change Photo' : 'Upload Profile Photo'}
+                  </span>
+                  <span className="text-xs font-medium text-slate-500">
+                    Click to browse files (JPG, PNG)
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
             </div>
           </div>
 
