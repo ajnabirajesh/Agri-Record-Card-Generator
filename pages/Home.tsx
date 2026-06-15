@@ -172,8 +172,18 @@ const Home: React.FC = () => {
         </div>
       )}
 
+      {/* New Website Banner */}
+      <div className="no-print bg-amber-500 text-amber-950 px-4 py-2 text-center text-xs md:text-sm font-bold relative z-50 shadow-md">
+        <div className="flex items-center justify-center gap-2">
+          <span>हमारी नई वेबसाइट लाइव हो चुकी है!</span>
+          <a href="https://agri-record.vercel.app/" target="_blank" rel="noopener noreferrer" className="bg-amber-950 text-amber-50 px-3 py-1 rounded-full text-xs hover:bg-amber-900 transition-colors inline-flex items-center gap-1">
+            अभी जाएँ
+          </a>
+        </div>
+      </div>
+
       {/* Header */}
-      <header className="no-print sticky top-0 z-50 bg-[#064e3b] text-white shadow-2xl border-b border-emerald-800">
+      <header className="no-print sticky top-0 z-40 bg-[#064e3b] text-white shadow-2xl border-b border-emerald-800">
         <div className="max-w-7xl mx-auto px-4 h-14 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4 group cursor-default">
             <div className="bg-white p-1 rounded-lg md:rounded-xl shadow-lg transform group-hover:rotate-12 transition-transform duration-300 shrink-0">
@@ -468,13 +478,21 @@ const Home: React.FC = () => {
               </div>
               <h3 className="text-xl font-black text-slate-800 mb-2">Notice</h3>
               <p className="text-slate-700 text-sm font-semibold mb-3">
-                पेमेंट गेटवे अभी बंद है। कृपया कार्ड जनरेट करने के लिए 'Use Credit' बटन का उपयोग करें।
+                पेमेंट गेटवे अभी बंद है। कृपया हमारी नई वेबसाइट का उपयोग करें या कार्ड जनरेट करने के लिए 'Use Credit' बटन का उपयोग करें।
               </p>
-              <p className="text-slate-600 text-sm">
-                The payment gateway is currently disabled in test mode. Please use the 'Use Credit' option to generate your card.
+              <p className="text-slate-600 text-sm mb-4">
+                The payment gateway is currently disabled in test mode. Please visit our new website or use the 'Use Credit' option to generate your card.
               </p>
             </div>
-            <div className="p-6">
+            <div className="p-6 flex flex-col gap-3">
+              <a
+                href="https://agri-record.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold rounded-xl transition-colors text-center inline-flex items-center justify-center gap-2 shadow-sm"
+              >
+                नई वेबसाइट पर जाएं (Visit New Website)
+              </a>
               <button
                 onClick={() => setShowUseCreditAlert(false)}
                 className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
