@@ -4,7 +4,7 @@ import { FarmerData, INITIAL_FARMER_DATA } from '../types';
 import FarmerForm from '../components/FarmerForm';
 import CardPreview from '../components/CardPreview';
 import FAQ from '../components/FAQ';
-import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle, LogIn, LogOut, User as UserIcon } from 'lucide-react';
+import { Printer, Download, Leaf, FileText, Info, Loader2, CheckCircle2, Youtube, Heart, Lock, AlertCircle, LogIn, LogOut, User as UserIcon, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AboutUs from './AboutUs';
 import ContactUs from './ContactUs';
@@ -23,6 +23,7 @@ const Home: React.FC = () => {
   const [showPrintConfirm, setShowPrintConfirm] = useState(false);
   const [showNoCreditsAlert, setShowNoCreditsAlert] = useState(false);
   const [showUseCreditAlert, setShowUseCreditAlert] = useState(false);
+  const [showNewWebsitePopup, setShowNewWebsitePopup] = useState(true);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   
   const { user, isAdmin, freeCredits, signIn, signOut } = useAuth();
@@ -163,6 +164,48 @@ const Home: React.FC = () => {
 
   return (
     <div className={`min-h-screen bg-[#f8fafc] flex flex-col ${isPrintBlocked ? 'print-blocked' : ''}`}>
+      {/* New Website Popup */}
+      {showNewWebsitePopup && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowNewWebsitePopup(false)}
+        >
+          <div 
+            className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowNewWebsitePopup(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-white/50 hover:bg-white p-2 rounded-full backdrop-blur-sm transition-all z-10"
+            >
+              <X size={20} />
+            </button>
+            <div className="bg-amber-50 p-6 flex flex-col items-center border-b border-amber-100 text-center pt-8">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4 text-amber-500 shadow-sm">
+                <AlertCircle size={32} />
+              </div>
+              <h3 className="text-2xl font-black text-amber-900 mb-2">Important Notice</h3>
+              <p className="text-amber-800 text-sm font-semibold">
+                We have moved to a new website! Please visit our new platform to continue generating cards and accessing all our features.
+              </p>
+              <p className="text-amber-700/80 text-sm mt-3 font-medium">
+                हमारी नई वेबसाइट लाइव हो चुकी है! कृपया अपनी नई कार्ड जनरेट करने और सभी सुविधाओं का उपयोग करने के लिए हमारी नई वेबसाइट पर जाएं।
+              </p>
+            </div>
+            <div className="p-6 flex flex-col gap-3 relative">
+              <a
+                href="https://agri-record.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 px-6 bg-amber-500 hover:bg-amber-600 text-amber-950 font-black text-lg rounded-xl transition-all text-center flex items-center justify-center gap-3 shadow-[0_4px_14px_0_rgba(245,158,11,0.39)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.23)] hover:-translate-y-0.5"
+              >
+                Go to New Website 🚀
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Print Block Overlay */}
       {isPrintBlocked && (
         <div className="hidden print:flex fixed inset-0 z-[9999] bg-white items-center justify-center text-center p-10">
