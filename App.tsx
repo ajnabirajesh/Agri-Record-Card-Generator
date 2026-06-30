@@ -1,37 +1,14 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import AboutUs from './pages/AboutUs';
-import ContactUs from './pages/ContactUs';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsConditions from './pages/TermsConditions';
-import RefundPolicy from './pages/RefundPolicy';
-import Disclaimer from './pages/Disclaimer';
-import MyCards from './pages/MyCards';
-import AdminCards from './pages/AdminCards';
-import AdminUsers from './pages/AdminUsers';
-import { AuthProvider } from './AuthContext';
-import WhatsAppButton from './components/WhatsAppButton';
+import React, { useEffect } from 'react';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    window.location.replace('https://agri-record.vercel.app/');
+  }, []);
+
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsConditions />} />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
-          <Route path="/disclaimer" element={<Disclaimer />} />
-          <Route path="/my-cards" element={<MyCards />} />
-          <Route path="/admin" element={<AdminCards />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-        </Routes>
-        <WhatsAppButton />
-      </Router>
-    </AuthProvider>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif' }}>
+      <p>Redirecting to Agri Record...</p>
+    </div>
   );
 };
 
