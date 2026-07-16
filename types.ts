@@ -1195,7 +1195,7 @@ export const INITIAL_FARMER_DATA: FarmerData = {
   nameEnglish: "Farmer Name",
   dob: "01/01/2026",
   gender: "Male",
-  mobile: "7070200199",
+  mobile: "1234567890",
   aadhaar: "000000000000",
   farmerId: "00000000000",
   address: "",
