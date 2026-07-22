@@ -27,6 +27,10 @@ const AdminUsers: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
+  
   // New User Form State
   const [showAddForm, setShowAddForm] = useState(false);
   const [newEmail, setNewEmail] = useState('');
@@ -172,6 +176,16 @@ const AdminUsers: React.FC = () => {
     );
   }
 
+  const filteredUsers = users.filter(u => {
+    const s = searchQuery.toLowerCase();
+    return (u.name?.toLowerCase() || '').includes(s) || (u.email?.toLowerCase() || '').includes(s);
+  });
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <div className="max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
@@ -187,9 +201,18 @@ const AdminUsers: React.FC = () => {
                type="text"
                placeholder="Search by name or email..."
                value={searchQuery}
-               onChange={(e) => setSearchQuery(e.target.value)}
+               onChange={(e) => {
+                 setSearchQuery(e.target.value);
+                 setCurrentPage(1);
+               }}
                className="w-full sm:w-64 border border-slate-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
              />
+             <Link 
+               to="/admin/wallet"
+               className="w-full sm:w-auto justify-center flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition font-medium"
+             >
+               Wallet Recharges
+             </Link>
              <button 
                onClick={() => setShowAddForm(!showAddForm)}
                className="w-full sm:w-auto justify-center flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium"
@@ -283,22 +306,19 @@ const AdminUsers: React.FC = () => {
                   <th className="p-4 font-semibold text-slate-600">Email</th>
                   <th className="p-4 font-semibold text-slate-600">Role</th>
                   <th className="p-4 font-semibold text-slate-600">Cards</th>
-                  <th className="p-4 font-semibold text-slate-600">Free Credits</th>
+                  <th className="p-4 font-semibold text-slate-600">Wallet (Credits)</th>
                   <th className="p-4 font-semibold text-slate-600 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {users.length === 0 ? (
+                {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="p-8 text-center text-slate-500">
                       No users found.
                     </td>
                   </tr>
                 ) : (
-                  users.filter(u => {
-                    const s = searchQuery.toLowerCase();
-                    return (u.name?.toLowerCase() || '').includes(s) || (u.email?.toLowerCase() || '').includes(s);
-                  }).map((u) => (
+                  currentUsers.map((u) => (
                     <tr key={u.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition">
                       <td className="p-4 text-slate-800 font-medium whitespace-nowrap">
                         <input
@@ -375,6 +395,28 @@ const AdminUsers: React.FC = () => {
             </table>
           </div>
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-slate-600 font-medium px-4">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

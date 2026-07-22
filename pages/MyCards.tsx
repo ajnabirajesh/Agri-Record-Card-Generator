@@ -129,6 +129,11 @@ const MyCards: React.FC = () => {
             </Link>
             <h1 className="text-lg md:text-xl font-black tracking-tight">My Saved Cards</h1>
           </div>
+          <div className="flex items-center gap-3">
+            <Link to="/wallet" className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-emerald-600 transition-colors">
+              <span className="font-bold text-sm">{freeCredits || 0}</span>
+              <span className="text-xs uppercase tracking-wider text-emerald-200">Credits</span>
+            </Link>
           {user && (
             <div className="flex items-center gap-2 md:gap-3 bg-emerald-800/50 py-1.5 md:py-2 px-3 md:px-4 rounded-full border border-emerald-700/50 max-w-[50%] md:max-w-none">
               {user.photoURL ? (
@@ -144,6 +149,7 @@ const MyCards: React.FC = () => {
               </div>
             </div>
           )}
+          </div>
         </div>
       </header>
 

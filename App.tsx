@@ -8,8 +8,10 @@ import TermsConditions from './pages/TermsConditions';
 import RefundPolicy from './pages/RefundPolicy';
 import Disclaimer from './pages/Disclaimer';
 import MyCards from './pages/MyCards';
+import Wallet from './pages/Wallet';
 import AdminCards from './pages/AdminCards';
 import AdminUsers from './pages/AdminUsers';
+import AdminWallet from './pages/AdminWallet';
 import VersionSelector from './pages/VersionSelector';
 import { AuthProvider } from './AuthContext';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -28,8 +30,10 @@ const App: React.FC = () => {
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/my-cards" element={<MyCards />} />
+          <Route path="/wallet" element={<Wallet />} />
           <Route path="/admin" element={<AdminCards />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/wallet" element={<AdminWallet />} />
           <Route path="*" element={<Home />} />
         </Routes>
         <WhatsAppButton />

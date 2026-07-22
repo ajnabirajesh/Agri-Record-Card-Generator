@@ -252,6 +252,13 @@ const Home: React.FC = () => {
                    </Link>
                  )}
                  <Link 
+                   to="/wallet"
+                   className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-emerald-100 font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-emerald-500 active:scale-95"
+                 >
+                   <span className="font-bold text-sm">{freeCredits || 0}</span>
+                   <span className="hidden lg:inline text-xs uppercase tracking-wider">Credits</span>
+                 </Link>
+                 <Link 
                    to="/my-cards"
                    className="flex items-center gap-2 bg-emerald-800 hover:bg-emerald-700 text-white font-bold p-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl transition-all border border-emerald-600 active:scale-95"
                  >
