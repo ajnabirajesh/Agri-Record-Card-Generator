@@ -25,36 +25,37 @@ const VersionSelector: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?auto=format&fit=crop&q=80&w=2000")' }}>
-      
-      {/* Background Overlay */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+          {/* Background Overlay */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm" 
+            onClick={handleBackdropClick} 
+          />
 
-      <AnimatePresence>
-        {isOpen && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            onClick={handleBackdropClick}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+            className="bg-white/90 backdrop-blur-xl border border-white/20 shadow-2xl rounded-[20px] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
           >
-            {/* Modal Container */}
-            <div 
-              className="bg-white/90 backdrop-blur-xl border border-white/20 shadow-2xl rounded-[20px] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="modal-title"
+            {/* Close Button */}
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 z-20"
+              aria-label="Close"
             >
-              {/* Close Button */}
-              <button
-                onClick={handleClose}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
-                aria-label="Close"
-              >
-                <X className="w-6 h-6 text-gray-600" />
-              </button>
+              <X className="w-6 h-6 text-gray-600" />
+            </button>
 
               <div className="p-8 sm:p-10">
                 {/* Header */}
@@ -138,11 +139,10 @@ const VersionSelector: React.FC = () => {
 
                 </div>
               </div>
-            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 };
 
