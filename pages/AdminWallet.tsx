@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { db } from '../firebase';
-import { collection, getDocs, updateDoc, doc, query, orderBy, getDoc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, query, orderBy, getDoc, writeBatch, deleteDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle, XCircle, Clock, AlertCircle, Trash2 } from 'lucide-react';
 
 interface WalletRequest {
   id: string;
@@ -22,6 +22,8 @@ const AdminWallet: React.FC = () => {
   const [requests, setRequests] = useState<WalletRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,6 +109,29 @@ const AdminWallet: React.FC = () => {
     }
   };
 
+  const handleDelete = async (request: WalletRequest) => {
+    if (!window.confirm(`Are you sure you want to delete this history record?`)) return;
+    
+    setActionLoading(request.id);
+    try {
+      await deleteDoc(doc(db, 'wallet_requests', request.id));
+      setRequests(prev => prev.filter(r => r.id !== request.id));
+      
+      // Adjust page if we delete the last item on the current page
+      if (paginatedRequests.length === 1 && currentPage > 1) {
+        setCurrentPage(p => p - 1);
+      }
+    } catch (error: any) {
+      console.error("Error deleting request:", error);
+      alert("Failed to delete: " + error.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const totalPages = Math.ceil(requests.length / itemsPerPage);
+  const paginatedRequests = requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -145,14 +170,14 @@ const AdminWallet: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {requests.length === 0 ? (
+                {paginatedRequests.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="p-8 text-center text-slate-500">
                       No wallet requests found.
                     </td>
                   </tr>
                 ) : (
-                  requests.map((r) => (
+                  paginatedRequests.map((r) => (
                     <tr key={r.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition">
                       <td className="p-4">
                         <div className="font-semibold text-slate-800">{r.userName}</div>
@@ -170,24 +195,34 @@ const AdminWallet: React.FC = () => {
                         {r.status === 'rejected' && <span className="inline-flex items-center gap-1 bg-red-100 text-red-700 px-2.5 py-1 rounded-full text-xs font-bold uppercase"><XCircle className="w-3 h-3"/> Rejected</span>}
                       </td>
                       <td className="p-4 text-right">
-                        {r.status === 'pending' && (
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => handleApprove(r)}
-                              disabled={actionLoading === r.id}
-                              className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition"
-                            >
-                              {actionLoading === r.id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Approve'}
-                            </button>
-                            <button
-                              onClick={() => handleReject(r)}
-                              disabled={actionLoading === r.id}
-                              className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-red-100 disabled:opacity-50 transition"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        )}
+                        <div className="flex justify-end gap-2 items-center">
+                          {r.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => handleApprove(r)}
+                                disabled={actionLoading === r.id}
+                                className="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition"
+                              >
+                                {actionLoading === r.id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Approve'}
+                              </button>
+                              <button
+                                onClick={() => handleReject(r)}
+                                disabled={actionLoading === r.id}
+                                className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-red-100 disabled:opacity-50 transition"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => handleDelete(r)}
+                            disabled={actionLoading === r.id}
+                            className="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                            title="Delete History"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -196,6 +231,28 @@ const AdminWallet: React.FC = () => {
             </table>
           </div>
         </div>
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+            >
+              Previous
+            </button>
+            <span className="text-slate-600 font-medium px-4">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
