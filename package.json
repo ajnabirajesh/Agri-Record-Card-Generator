@@ -19,6 +19,7 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^0.562.0",
+    "motion": "^12.42.2",
     "node-cron": "^4.2.1",
     "qrcode.react": "^4.2.0",
     "razorpay": "^2.9.6",
