@@ -55,6 +55,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
             setIsAdmin(false);
             setFreeCredits(0);
+          } else {
+            const data = userSnap.data();
+            const role = data.role;
+            setFreeCredits(data.freeCredits || 0);
+            const userEmail = currentUser.email?.toLowerCase() || '';
+            setIsAdmin(role === 'admin' || 
+                       userEmail === 'rajeshkumar1112000@gmail.com' || 
+                       userEmail === 'admin@agrirecord.com');
           }
           
           // Listen to user document to get real-time updates for freeCredits and role

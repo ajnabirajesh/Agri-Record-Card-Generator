@@ -20,7 +20,7 @@ interface UserData {
 
 
 const AdminUsers: React.FC = () => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserData[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,6 +41,8 @@ const AdminUsers: React.FC = () => {
   const [addError, setAddError] = useState('');
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user) {
       navigate('/admin');
       return;
@@ -52,7 +54,7 @@ const AdminUsers: React.FC = () => {
     }
 
     fetchUsers();
-  }, [user, isAdmin, navigate]);
+  }, [user, isAdmin, authLoading, navigate]);
 
   const fetchUsers = async () => {
     setLoading(true);
