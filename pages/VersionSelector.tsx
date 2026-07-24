@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Star } from 'lucide-react';
+import { useAuth } from '../AuthContext';
 
 const VersionSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const { isAdmin } = useAuth();
 
   // Close when clicking escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
+      if (e.key === 'Escape' && isAdmin) setIsOpen(false);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isAdmin]);
 
   const handleClose = () => {
-    setIsOpen(false);
+    if (isAdmin) setIsOpen(false);
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && isAdmin) {
       setIsOpen(false);
     }
   };
@@ -49,13 +51,15 @@ const VersionSelector: React.FC = () => {
             aria-labelledby="modal-title"
           >
             {/* Close Button */}
-            <button
-              onClick={handleClose}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 z-20"
-              aria-label="Close"
-            >
-              <X className="w-6 h-6 text-gray-600" />
-            </button>
+            {isAdmin && (
+              <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 z-20"
+                aria-label="Close"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            )}
 
               <div className="p-8 sm:p-10">
                 {/* Header */}
