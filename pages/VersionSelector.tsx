@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Star } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import { useLocation } from 'react-router-dom';
 
 const VersionSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const { isAdmin } = useAuth();
+  const location = useLocation();
 
   // Close when clicking escape key
   useEffect(() => {
@@ -25,6 +27,11 @@ const VersionSelector: React.FC = () => {
       setIsOpen(false);
     }
   };
+
+  // Hide popup on admin pages
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
