@@ -6,8 +6,25 @@ import { useLocation } from 'react-router-dom';
 
 const VersionSelector: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [countdown, setCountdown] = useState(5);
   const { isAdmin } = useAuth();
   const location = useLocation();
+
+  // Redirect after 5 seconds
+  useEffect(() => {
+    if (!isOpen || location.pathname.startsWith('/admin')) return;
+
+    if (countdown <= 0) {
+      window.location.href = "https://agri-record.vercel.app/";
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown, isOpen, location.pathname]);
 
   // Close when clicking escape key
   useEffect(() => {
@@ -77,6 +94,9 @@ const VersionSelector: React.FC = () => {
                   <p className="text-gray-600 text-lg">
                     अपनी सुविधा के अनुसार AgriRecord का संस्करण चुनें।<br />
                     AgriRecord को बेहतर अनुभव और नए फीचर्स के साथ अलग-अलग संस्करणों में उपलब्ध कराया गया है। कृपया नीचे दिए गए किसी एक संस्करण का चयन करें।
+                  </p>
+                  <p className="mt-4 text-green-600 font-medium">
+                    आप {countdown} सेकंड में मुख्य वेबसाइट पर रीडायरेक्ट हो जाएंगे...
                   </p>
                 </div>
 
